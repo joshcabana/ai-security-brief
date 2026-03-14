@@ -1,83 +1,153 @@
-import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { promises as fs } from 'node:fs';
+import { execFile as execFileCallback } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { BLOG_DIR } from '../lib/articles.ts';
-import {
-  setupBlogDir,
-  teardownBlogDir,
-  writeArticle,
-  VALID_FRONTMATTER,
-} from './helpers.ts';
+import { promisify } from 'node:util';
+import test from 'node:test';
+import { buildArticleMarkdown, createWorkspace } from './helpers';
 
-const MANIFEST_PATH = path.join(process.cwd(), 'content-manifest.json');
-const MANIFEST_BACKUP = MANIFEST_PATH + '.bak';
+const execFile = promisify(execFileCallback);
+const manifestScriptPath = path.join(process.cwd(), 'scripts', 'content-manifest.mjs');
 
-const VALID_BODY = '\n## Hello\n\nSome content\n';
-
-async function runManifestScript(args: string[] = []): Promise<{ exitCode: number | null; stdout: string; stderr: string }> {
-  const { spawn } = await import('node:child_process');
-  return new Promise((resolve) => {
-    const proc = spawn(
-      process.execPath,
-      ['scripts/content-manifest.mjs', ...args],
-      { stdio: ['ignore', 'pipe', 'pipe'] },
-    );
-    let stdout = '';
-    let stderr = '';
-    proc.stdout.on('data', (chunk: Buffer) => { stdout += chunk.toString(); });
-    proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString(); });
-    proc.on('close', (exitCode) => resolve({ exitCode, stdout, stderr }));
+async function runManifest(workspaceDir: string, mode: '--write' | '--check') {
+  return execFile(process.execPath, [manifestScriptPath, mode], {
+    cwd: workspaceDir,
   });
 }
 
-describe('content-manifest script', () => {
-  before(async () => {
-    // Back up existing manifest if present
-    try {
-      await fs.copyFile(MANIFEST_PATH, MANIFEST_BACKUP);
-    } catch {
-      // No existing manifest
-    }
-  });
+function rejectedWithStderr(pattern: RegExp) {
+  return (error: { stderr?: string; message?: string }) => {
+    assert.match(error.stderr || error.message || '', pattern);
+    return true;
+  };
+}
 
-  after(async () => {
-    // Restore backup
-    try {
-      await fs.rename(MANIFEST_BACKUP, MANIFEST_PATH);
-    } catch {
-      // No backup to restore
-    }
-    await teardownBlogDir();
-  });
+test('content-manifest writes a sorted manifest for a valid workspace', async () => {
+  const workspace = await createWorkspace([
+    {
+      fileName: 'beta.md',
+      source: buildArticleMarkdown({
+        slug: 'beta',
+        title: 'Beta',
+        category: 'Privacy',
+        date: '2026-03-11',
+      }),
+    },
+    {
+      fileName: 'alpha.md',
+      source: buildArticleMarkdown({
+        slug: 'alpha',
+        title: 'Alpha',
+        category: 'AI Threats',
+        date: '2026-03-12',
+      }),
+    },
+  ]);
 
-  it('--write creates manifest with correct slugs', async () => {
-    await setupBlogDir();
-    await writeArticle('article-a.md', VALID_FRONTMATTER + VALID_BODY);
-    await writeArticle('article-b.md', VALID_FRONTMATTER.replace('test-article', 'another-article').replace('Test Article', 'Another Article') + VALID_BODY);
+  try {
+    await runManifest(workspace.workspaceDir, '--write');
+    const manifest = JSON.parse(
+      await readFile(path.join(workspace.workspaceDir, 'content-manifest.json'), 'utf8'),
+    ) as { articleCount: number; categories: string[]; articles: Array<{ slug: string }> };
 
-    const { exitCode, stderr } = await runManifestScript(['--write']);
-    assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
-
-    const manifest = JSON.parse(await fs.readFile(MANIFEST_PATH, 'utf-8'));
-    assert.ok(Array.isArray(manifest.slugs), 'manifest.slugs should be an array');
-    assert.ok(manifest.slugs.includes('test-article'), 'Should include test-article slug');
-    assert.ok(manifest.slugs.includes('another-article'), 'Should include another-article slug');
-  });
-
-  it('--check passes when manifest matches articles', async () => {
-    // Reuse blog dir from previous test
-    const { exitCode, stderr } = await runManifestScript(['--check']);
-    assert.equal(exitCode, 0, `Expected exit 0, got ${exitCode}. stderr: ${stderr}`);
-  });
-
-  it('--check fails when manifest is stale', async () => {
-    // Add a new article without updating manifest
-    await writeArticle(
-      'extra.md',
-      VALID_FRONTMATTER.replace('test-article', 'extra-article').replace('Test Article', 'Extra Article') + VALID_BODY,
+    assert.equal(manifest.articleCount, 2);
+    assert.deepEqual(manifest.categories, ['AI Threats', 'Privacy']);
+    assert.deepEqual(
+      manifest.articles.map((article) => article.slug),
+      ['alpha', 'beta'],
     );
-    const { exitCode } = await runManifestScript(['--check']);
-    assert.equal(exitCode, 1, 'Expected exit 1 when manifest is stale');
-  });
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('content-manifest rejects duplicate slugs', async () => {
+  const workspace = await createWorkspace([
+    {
+      fileName: 'first.md',
+      source: buildArticleMarkdown({
+        slug: 'duplicate-slug',
+        title: 'First',
+      }),
+    },
+    {
+      fileName: 'second.md',
+      source: buildArticleMarkdown({
+        slug: 'duplicate-slug',
+        title: 'Second',
+      }),
+    },
+  ]);
+
+  try {
+    await assert.rejects(
+      () => runManifest(workspace.workspaceDir, '--write'),
+      rejectedWithStderr(/Duplicate slug/),
+    );
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('content-manifest rejects malformed read_time values', async () => {
+  const workspace = await createWorkspace([
+    {
+      fileName: 'bad-read-time.md',
+      source: buildArticleMarkdown({
+        slug: 'bad-read-time',
+        read_time: 'slow read',
+      }),
+    },
+  ]);
+
+  try {
+    await assert.rejects(
+      () => runManifest(workspace.workspaceDir, '--write'),
+      rejectedWithStderr(/read_time/),
+    );
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('content-manifest rejects invalid dates', async () => {
+  const workspace = await createWorkspace([
+    {
+      fileName: 'bad-date.md',
+      source: buildArticleMarkdown({
+        slug: 'bad-date',
+        date: 'not-a-real-date',
+      }),
+    },
+  ]);
+
+  try {
+    await assert.rejects(
+      () => runManifest(workspace.workspaceDir, '--write'),
+      rejectedWithStderr(/valid date/),
+    );
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('content-manifest rejects empty category values', async () => {
+  const workspace = await createWorkspace([
+    {
+      fileName: 'empty-category.md',
+      source: buildArticleMarkdown({
+        slug: 'empty-category',
+        category: ' ',
+      }),
+    },
+  ]);
+
+  try {
+    await assert.rejects(
+      () => runManifest(workspace.workspaceDir, '--write'),
+      rejectedWithStderr(/category/),
+    );
+  } finally {
+    await workspace.cleanup();
+  }
 });
