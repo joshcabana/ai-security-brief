@@ -54,6 +54,7 @@ async function waitForServer(url, label) {
 function startApp(port, extraEnv = {}) {
   const child = spawn('pnpm', ['start', '-p', String(port)], {
     cwd: repoDir,
+    detached: true,
     env: {
       ...process.env,
       NEXT_PUBLIC_SITE_URL: `http://127.0.0.1:${port}`,
@@ -62,6 +63,19 @@ function startApp(port, extraEnv = {}) {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   let logs = '';
+  const killProcessGroup = (signal) => {
+    if (!child.pid) {
+      return;
+    }
+
+    try {
+      process.kill(-child.pid, signal);
+    } catch (error) {
+      if (error.code !== 'ESRCH') {
+        throw error;
+      }
+    }
+  };
 
   child.stdout.on('data', (chunk) => {
     logs += chunk.toString();
@@ -100,7 +114,7 @@ function startApp(port, extraEnv = {}) {
         };
         const timeout = setTimeout(() => {
           if (child.exitCode === null) {
-            child.kill('SIGKILL');
+            killProcessGroup('SIGKILL');
           }
           if (child.exitCode !== null) {
             finish(resolve);
@@ -109,7 +123,7 @@ function startApp(port, extraEnv = {}) {
 
         child.once('exit', onExit);
         child.once('error', onError);
-        child.kill('SIGINT');
+        killProcessGroup('SIGINT');
         if (child.exitCode !== null) {
           finish(resolve);
         }
