@@ -1,29 +1,37 @@
 {
   "name": "ai-security-brief",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "check:content": "tsx scripts/check-content.ts",
+    "test:unit": "vitest run",
+    "test:smoke": "tsx scripts/smoke-test.ts",
+    "verify:release": "pnpm check:content && pnpm typecheck && pnpm test:unit && pnpm build && pnpm test:smoke"
   },
   "dependencies": {
-    "next": "15.1.0",
+    "next": "15.5.12",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@supabase/supabase-js": "^2.47.0",
-    "next-mdx-remote": "^5.0.0"
+    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
     "tailwindcss": "^4.0.0",
     "@tailwindcss/postcss": "^4.0.0",
     "postcss": "^8.5.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "15.1.0"
+    "eslint-config-next": "15.5.12",
+    "vitest": "^3.0.0",
+    "happy-dom": "^16.0.0"
   }
 }
