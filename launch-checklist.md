@@ -119,7 +119,7 @@ vercel env add NEXT_PUBLIC_SITE_NAME
 Sign up in order of highest commission rate:
 
 | # | Program | Commission | Signup URL | Est. Time |
-|---|---------|-----------|-----------|----------|
+|---|---------|-----------|-----------|-----------|
 | 1 | NordVPN | Up to 100% | [nordvpn.com/affiliate](https://nordvpn.com/affiliate/) | 5 min |
 | 2 | Proton | Up to 100% | [proton.me/partners/affiliates](https://proton.me/partners/affiliates) | 5 min |
 | 3 | PureVPN | 100% monthly | [purevpn.com/affiliates](https://www.purevpn.com/affiliates) | 5 min |
