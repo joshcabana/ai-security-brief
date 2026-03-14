@@ -103,6 +103,7 @@ function startApp(port, extraEnv = {}) {
 
 async function startMockBeehiivServer() {
   const port = await findFreePort();
+  const sockets = new Set();
   const server = createHttpServer(async (request, response) => {
     if (
       request.method !== 'POST' ||
@@ -129,11 +130,23 @@ async function startMockBeehiivServer() {
     response.end(JSON.stringify({ data: { id: 'sub_123', email: payload.email } }));
   });
 
+  server.on('connection', (socket) => {
+    sockets.add(socket);
+    socket.on('close', () => {
+      sockets.delete(socket);
+    });
+  });
+
   await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
 
   return {
     baseUrl: `http://127.0.0.1:${port}`,
     async stop() {
+      server.closeIdleConnections?.();
+      server.closeAllConnections?.();
+      for (const socket of sockets) {
+        socket.destroy();
+      }
       await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
     },
   };
