@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 export interface Article {
@@ -85,22 +87,16 @@ export default function ArticleCard({ article, variant = 'default', index = 0 }:
                 <span className="text-xs font-mono font-semibold px-2 py-1 rounded" style={{ background: 'rgba(0,180,255,0.1)', color: '#00b4ff', border: '1px solid rgba(0,180,255,0.2)' }}>FEATURED</span>
               )}
             </div>
-            <h3 className="text-xl font-bold mb-3 leading-snug transition-colors duration-200" style={{ color: '#ffffff' }}>
+            <h3 className="text-xl font-bold mb-3 leading-snug transition-colors duration-200" style={{ color: '#e6edf3' }}>
               <span className="group-hover:text-[#00b4ff] transition-colors duration-200">{article.title}</span>
             </h3>
-            <p className="text-sm leading-relaxed mb-6 line-clamp-3" style={{ color: '#8b949e' }}>{article.excerpt}</p>
+            <p className="text-sm leading-relaxed mb-6" style={{ color: '#8b949e' }}>{article.excerpt}</p>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-xs" style={{ color: '#484f58' }}>{formatDate(article.date)}</span>
-                <span style={{ color: '#30363d' }} aria-hidden="true">·</span>
-                <span className="text-xs font-mono" style={{ color: '#484f58' }}>{article.readTime}</span>
+                <span className="text-xs" style={{ color: '#484f58' }}>{article.readTime}</span>
               </div>
-              <span className="text-xs font-semibold flex items-center gap-1 transition-all duration-200" style={{ color: '#484f58' }}>
-                Read
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" className="group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true">
-                  <path fillRule="evenodd" d="M1 8a.5.5 0 01.5-.5h11.793l-3.147-3.146a.5.5 0 01.708-.708l4 4a.5.5 0 010 .708l-4 4a.5.5 0 01-.708-.708L13.293 8.5H1.5A.5.5 0 011 8z" />
-                </svg>
-              </span>
+              <span className="text-xs font-medium" style={{ color: '#00b4ff' }}>Read article →</span>
             </div>
           </div>
         </article>
@@ -112,35 +108,28 @@ export default function ArticleCard({ article, variant = 'default', index = 0 }:
     <Link href={`/blog/${article.slug}`} className="block group h-full" aria-label={article.title}>
       <article
         className="h-full p-6 rounded-xl transition-all duration-300"
-        style={{ background: '#161b22', border: '1px solid #30363d' }}
+        style={{ background: '#161b22', border: '1px solid #21262d' }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,180,255,0.35)';
-          (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,180,255,0.1)';
+          (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,180,255,0.3)';
+          (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
           (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.borderColor = '#30363d';
+          (e.currentTarget as HTMLElement).style.borderColor = '#21262d';
           (e.currentTarget as HTMLElement).style.boxShadow = 'none';
           (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
         }}
       >
-        <div className="mb-4">
-          <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded" style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}>{article.category}</span>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded" style={{ background: colors.bg, color: colors.text, border: `1px solid ${colors.border}` }}>{article.category}</span>
         </div>
-        <h3 className="text-base font-bold leading-snug mb-3 transition-colors duration-200" style={{ color: '#ffffff' }}>
+        <h3 className="font-bold mb-2 leading-snug" style={{ color: '#e6edf3', fontSize: '0.9375rem' }}>
           <span className="group-hover:text-[#00b4ff] transition-colors duration-200">{article.title}</span>
         </h3>
-        <p className="text-sm leading-relaxed mb-5 line-clamp-2" style={{ color: '#8b949e' }}>{article.excerpt}</p>
-        <div className="flex items-center gap-3 pt-4" style={{ borderTop: '1px solid #21262d' }}>
-          <time dateTime={article.date} className="text-xs" style={{ color: '#484f58' }}>{formatDate(article.date)}</time>
-          <span style={{ color: '#30363d' }} aria-hidden="true">·</span>
-          <span className="text-xs font-mono" style={{ color: '#484f58' }}>{article.readTime}</span>
-          {article.author && (
-            <>
-              <span style={{ color: '#30363d' }} aria-hidden="true">·</span>
-              <span className="text-xs" style={{ color: '#484f58' }}>{article.author}</span>
-            </>
-          )}
+        <p className="text-sm leading-relaxed mb-4" style={{ color: '#8b949e', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{article.excerpt}</p>
+        <div className="flex items-center gap-3 mt-auto">
+          <span className="text-xs" style={{ color: '#484f58' }}>{formatDate(article.date)}</span>
+          <span className="text-xs" style={{ color: '#484f58' }}>{article.readTime}</span>
         </div>
       </article>
     </Link>
