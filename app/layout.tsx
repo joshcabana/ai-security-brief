@@ -1,32 +1,49 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { siteName, siteDescription, siteUrl } from '@/lib/site';
+import { getSiteUrl, siteDescription, siteName, siteUrl } from '@/lib/site';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
   subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+  weight: ['400', '500', '700'],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
   title: {
-    default: siteName,
+    default: `${siteName} — AI Threats, Privacy Tools & Cybersecurity Intelligence`,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
+  keywords: [
+    'AI security',
+    'cybersecurity',
+    'AI threats',
+    'privacy tools',
+    'endpoint protection',
+    'threat intelligence',
+    'AI privacy',
+    'security brief',
+    'VPN',
+    'zero trust',
+  ],
+  authors: [{ name: siteName }],
+  creator: siteName,
+  metadataBase: getSiteUrl(),
   openGraph: {
     type: 'website',
     locale: 'en_AU',
-    url: siteUrl,
     siteName,
-    title: siteName,
+    title: `${siteName} — AI Threats, Privacy Tools & Cybersecurity Intelligence`,
     description: siteDescription,
   },
   twitter: {
@@ -37,23 +54,53 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-  },
-  alternates: {
-    canonical: siteUrl,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: siteName,
+              url: siteUrl,
+              description: siteDescription,
+              creator: {
+                '@type': 'SoftwareApplication',
+                name: 'Perplexity Computer',
+                url: 'https://www.perplexity.ai/computer',
+              },
+            }),
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-950 text-slate-100 min-h-screen flex flex-col`}
+        className="min-h-screen flex flex-col"
+        style={{ background: '#0d1117', color: '#e6edf3' }}
       >
-        {children}
+        <Header />
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>
