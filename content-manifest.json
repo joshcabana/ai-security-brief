@@ -1,0 +1,89 @@
+{
+  "articleCount": 4,
+  "categories": [
+    "AI Threats",
+    "Privacy"
+  ],
+  "articles": [
+    {
+      "title": "Australia's Privacy Act Reforms 2026: What You Need to Know",
+      "slug": "australias-privacy-act-reforms-2026",
+      "date": "2026-03-14",
+      "author": "AI Security Brief",
+      "excerpt": "Australia's Privacy Act has undergone its most significant overhaul since 1988 — with new penalties reaching $50 million, mandatory disclosure of AI decision-making systems, and a new statutory tort for serious privacy invasions. Here's what changed and what it means for your organisation.",
+      "category": "Privacy",
+      "featured": false,
+      "metaTitle": "Australia's Privacy Act Reforms 2026: Full Breakdown",
+      "metaDescription": "Australia's Privacy Act reforms 2025-2026 explained: $50M penalties, AI automated decision-making rules, new individual rights, GDPR comparison, and compliance deadlines.",
+      "keywords": [
+        "Australia Privacy Act reform 2026",
+        "automated decision making transparency",
+        "OAIC privacy enforcement 2026",
+        "Australian data breach penalties",
+        "Privacy Act AI provisions"
+      ],
+      "readTime": "7 min",
+      "fileName": "australias-privacy-act-reforms-2026.md"
+    },
+    {
+      "title": "Agentic AI Security Risks: What Every Developer Must Know",
+      "slug": "agentic-ai-security-risks",
+      "date": "2026-03-12",
+      "author": "AI Security Brief",
+      "excerpt": "Autonomous AI agents are now embedded in enterprise workflows with privileged access to databases, APIs, and critical systems — but the security infrastructure governing them hasn't kept pace. Here's what developers and security teams need to understand right now.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "Agentic AI Security Risks: What Developers Must Know",
+      "metaDescription": "Agentic AI security risks are exploding in 2026. Prompt injection, excessive permissions, data exfiltration, and supply chain attacks in autonomous AI agents explained.",
+      "keywords": [
+        "agentic AI security risks",
+        "autonomous AI agents security",
+        "prompt injection agentic workflows",
+        "AI agent supply chain attacks",
+        "OWASP LLM vulnerabilities"
+      ],
+      "readTime": "7 min",
+      "fileName": "agentic-ai-security-risks.md"
+    },
+    {
+      "title": "How AI Is Being Used to Launch Cyberattacks in 2026",
+      "slug": "how-ai-is-being-used-to-launch-cyberattacks-in-2026",
+      "date": "2026-03-10",
+      "author": "AI Security Brief",
+      "excerpt": "AI has crossed a threshold in 2026 — adversaries are no longer just using it to write phishing emails. Autonomous attack agents, AI-generated malware, and deepfake social engineering are redefining the threat landscape at machine speed.",
+      "category": "AI Threats",
+      "featured": true,
+      "metaTitle": "How AI Is Used to Launch Cyberattacks in 2026",
+      "metaDescription": "AI-powered cyberattacks surged in 2025–2026. Learn how threat actors use AI phishing, deepfakes, autonomous agents, and AI malware — with real stats and examples.",
+      "keywords": [
+        "AI cyberattacks 2026",
+        "AI-generated phishing",
+        "deepfake social engineering",
+        "autonomous attack agents",
+        "AI-powered malware"
+      ],
+      "readTime": "6 min",
+      "fileName": "how-ai-is-being-used-to-launch-cyberattacks-in-2026.md"
+    },
+    {
+      "title": "AI Model Prompt Injection Attacks Explained",
+      "slug": "ai-model-prompt-injection-attacks-explained",
+      "date": "2026-03-08",
+      "author": "AI Security Brief",
+      "excerpt": "Prompt injection is the #1 vulnerability in deployed AI systems — and unlike traditional software flaws, it cannot be patched. Here's how direct and indirect attacks work, real-world exploits from 2024–2026, and the defence strategies that actually reduce risk.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "Prompt Injection Attacks Explained: Direct vs Indirect",
+      "metaDescription": "Understand prompt injection attacks in AI models: direct vs indirect types, real-world CVEs, jailbreaking techniques, and proven defence strategies for 2025-2026.",
+      "keywords": [
+        "prompt injection attacks",
+        "AI security vulnerabilities",
+        "indirect prompt injection",
+        "LLM jailbreaking",
+        "AI model security"
+      ],
+      "readTime": "7 min",
+      "fileName": "ai-model-prompt-injection-attacks-explained.md"
+    }
+  ]
+}

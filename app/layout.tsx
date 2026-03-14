@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getSiteUrl, siteDescription, siteName, siteUrl } from '@/lib/site';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -19,11 +20,10 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'AI Security Brief — AI Threats, Privacy Tools & Cybersecurity Intelligence',
-    template: '%s | AI Security Brief',
+    default: `${siteName} — AI Threats, Privacy Tools & Cybersecurity Intelligence`,
+    template: `%s | ${siteName}`,
   },
-  description:
-    'Authoritative intelligence on AI-powered cyber threats, privacy defence strategies, and security tools. Stay ahead of the threat curve with expert analysis for technology professionals.',
+  description: siteDescription,
   keywords: [
     'AI security',
     'cybersecurity',
@@ -36,22 +36,20 @@ export const metadata: Metadata = {
     'VPN',
     'zero trust',
   ],
-  authors: [{ name: 'AI Security Brief' }],
-  creator: 'AI Security Brief',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://aisecuritybrief.com'),
+  authors: [{ name: siteName }],
+  creator: siteName,
+  metadataBase: getSiteUrl(),
   openGraph: {
     type: 'website',
-    locale: 'en_US',
-    siteName: 'AI Security Brief',
-    title: 'AI Security Brief — AI Threats, Privacy Tools & Cybersecurity Intelligence',
-    description:
-      'Authoritative intelligence on AI-powered cyber threats, privacy defence strategies, and security tools.',
+    locale: 'en_AU',
+    siteName,
+    title: `${siteName} — AI Threats, Privacy Tools & Cybersecurity Intelligence`,
+    description: siteDescription,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Security Brief',
-    description:
-      'Intelligence on AI-powered cyber threats, privacy defence, and security tools for tech professionals.',
+    title: siteName,
+    description: siteDescription,
   },
   robots: {
     index: true,
@@ -85,10 +83,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'AI Security Brief',
-              url: process.env.NEXT_PUBLIC_SITE_URL || 'https://aisecuritybrief.com',
-              description:
-                'Authoritative intelligence on AI-powered threats, privacy tools, and cybersecurity.',
+              name: siteName,
+              url: siteUrl,
+              description: siteDescription,
               creator: {
                 '@type': 'SoftwareApplication',
                 name: 'Perplexity Computer',
