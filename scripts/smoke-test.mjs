@@ -80,22 +80,39 @@ function startApp(port, extraEnv = {}) {
         return;
       }
 
-      child.kill('SIGINT');
       await new Promise((resolve, reject) => {
+        let settled = false;
+        const finish = (callback, value) => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+          clearTimeout(timeout);
+          child.off('exit', onExit);
+          child.off('error', onError);
+          callback(value);
+        };
+        const onExit = () => {
+          finish(resolve);
+        };
+        const onError = (error) => {
+          finish(reject, error);
+        };
         const timeout = setTimeout(() => {
           if (child.exitCode === null) {
             child.kill('SIGKILL');
           }
+          if (child.exitCode !== null) {
+            finish(resolve);
+          }
         }, 5_000);
 
-        child.once('exit', () => {
-          clearTimeout(timeout);
-          resolve();
-        });
-        child.once('error', (error) => {
-          clearTimeout(timeout);
-          reject(error);
-        });
+        child.once('exit', onExit);
+        child.once('error', onError);
+        child.kill('SIGINT');
+        if (child.exitCode !== null) {
+          finish(resolve);
+        }
       });
     },
   };
