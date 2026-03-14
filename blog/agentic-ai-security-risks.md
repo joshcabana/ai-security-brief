@@ -4,6 +4,8 @@ slug: "agentic-ai-security-risks"
 date: "2026-03-12"
 author: "AI Security Brief"
 excerpt: "Autonomous AI agents are now embedded in enterprise workflows with privileged access to databases, APIs, and critical systems — but the security infrastructure governing them hasn't kept pace. Here's what developers and security teams need to understand right now."
+category: "AI Threats"
+featured: false
 meta_title: "Agentic AI Security Risks: What Developers Must Know"
 meta_description: "Agentic AI security risks are exploding in 2026. Prompt injection, excessive permissions, data exfiltration, and supply chain attacks in autonomous AI agents explained."
 keywords:
