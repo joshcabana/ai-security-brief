@@ -1,109 +1,59 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { siteName, siteDescription, siteUrl } from '@/lib/site';
 
-const inter = Inter({
+const geistSans = Geist({
+  variable: '--font-geist-sans',
   subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
   subsets: ['latin'],
-  variable: '--font-jetbrains',
-  display: 'swap',
-  weight: ['400', '500', '700'],
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: 'AI Security Brief — AI Threats, Privacy Tools & Cybersecurity Intelligence',
-    template: '%s | AI Security Brief',
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description:
-    'Authoritative intelligence on AI-powered cyber threats, privacy defence strategies, and security tools. Stay ahead of the threat curve with expert analysis for technology professionals.',
-  keywords: [
-    'AI security',
-    'cybersecurity',
-    'AI threats',
-    'privacy tools',
-    'endpoint protection',
-    'threat intelligence',
-    'AI privacy',
-    'security brief',
-    'VPN',
-    'zero trust',
-  ],
-  authors: [{ name: 'AI Security Brief' }],
-  creator: 'AI Security Brief',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://aisecuritybrief.com'),
+  description: siteDescription,
   openGraph: {
     type: 'website',
-    locale: 'en_US',
-    siteName: 'AI Security Brief',
-    title: 'AI Security Brief — AI Threats, Privacy Tools & Cybersecurity Intelligence',
-    description:
-      'Authoritative intelligence on AI-powered cyber threats, privacy defence strategies, and security tools.',
+    locale: 'en_AU',
+    url: siteUrl,
+    siteName,
+    title: siteName,
+    description: siteDescription,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Security Brief',
-    description:
-      'Intelligence on AI-powered cyber threats, privacy defence, and security tools for tech professionals.',
+    title: siteName,
+    description: siteDescription,
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+  },
+  alternates: {
+    canonical: siteUrl,
   },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
-      suppressHydrationWarning
-    >
-      <head>
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: 'AI Security Brief',
-              url: process.env.NEXT_PUBLIC_SITE_URL || 'https://aisecuritybrief.com',
-              description:
-                'Authoritative intelligence on AI-powered threats, privacy tools, and cybersecurity.',
-              creator: {
-                '@type': 'SoftwareApplication',
-                name: 'Perplexity Computer',
-                url: 'https://www.perplexity.ai/computer',
-              },
-            }),
-          }}
-        />
-      </head>
+    <html lang="en">
       <body
-        className="min-h-screen flex flex-col"
-        style={{ background: '#0d1117', color: '#e6edf3' }}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-950 text-slate-100 min-h-screen flex flex-col`}
       >
-        <Header />
-        <main className="flex-1">{children}</main>
+        {children}
         <Footer />
       </body>
     </html>

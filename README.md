@@ -1,82 +1,68 @@
 # AI Security Brief
 
-> Intelligence on AI-Powered Threats & Privacy Defence
+A Next.js 15 publication site for AI security intelligence, built for weekly automated content delivery via Perplexity Computer Skills.
 
-AI Security Brief is an authority publication covering AI-powered cybersecurity threats, privacy tools, and defence strategies for tech professionals and IT decision-makers.
+## Overview
+
+AI Security Brief is an independent publication covering AI-powered cyber threats, privacy defence strategies, and security tooling for technology professionals. Content is generated weekly via Perplexity Computer Skills and published automatically.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **Styling**: Tailwind CSS 4
-- **Database**: Supabase
-- **Newsletter**: Beehiiv
-- **Hosting**: Vercel
-- **CI/CD**: GitHub Actions
+- **Next.js 15** (App Router, static export)
+- **React 19**
+- **TypeScript 5**
+- **Tailwind CSS 4**
+- **pnpm** (package manager)
 
-## Design
+## Project Structure
 
-- Dark theme: `#0d1117` background, `#00b4ff` electric blue accent
-- Typography: Inter (body), JetBrains Mono (code/data)
-- Card surfaces: `#161b22` with `#30363d` borders
-
-## Pages
-
-- `/` — Homepage with hero, latest articles, tools preview
-- `/blog` — Article listing
-- `/blog/[slug]` — Individual article pages
-- `/tools` — Affiliate tools directory (VPNs, password managers, endpoint protection)
-- `/newsletter` — Newsletter signup with Beehiiv integration
-
-## Content Pipeline
-
-Automated via 5 Perplexity Computer Skills + Zapier:
-
-1. **Weekly Harvest** — Researches top AI security developments
-2. **Article Factory** — Writes 2 SEO articles from harvest findings
-3. **Newsletter Compiler** — Compiles weekly newsletter draft
-4. **SEO + Affiliate Optimizer** — Adds metadata and affiliate links
-5. **Performance Logger** — Tracks newsletter metrics weekly
-
-See `skills.md` and `zapier-setup.md` for full automation details.
+```
+├── app/                    # Next.js App Router pages
+│   ├── blog/               # Blog listing and article pages
+│   │   └── [slug]/         # Dynamic article routes
+│   ├── tools/              # AI security tools directory
+│   ├── newsletter/         # Newsletter subscription page
+│   └── api/subscribe/      # Newsletter subscription API
+├── blog/                   # Markdown article files
+├── components/             # Shared React components
+├── lib/                    # Utility functions and site config
+├── scripts/                # Build and content scripts
+├── tests/                  # Unit tests
+└── skills.md               # Perplexity Computer Skills definitions
+```
 
 ## Getting Started
 
 ```bash
-git clone https://github.com/joshcabana/ai-security-brief.git
-cd ai-security-brief
-npm install
-cp .env.example .env.local
-# Fill in your Supabase and Beehiiv keys
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-## Repository Structure
+## Content Pipeline
 
-```
-ai-security-brief/
-├── app/                    # Next.js 15 App Router pages
-│   ├── blog/              # Blog listing + dynamic article pages
-│   ├── tools/             # Affiliate tools directory
-│   └── newsletter/        # Newsletter signup page
-├── blog/                  # Markdown article files
-├── components/            # Reusable React components
-├── lib/                   # Supabase client + utilities
-├── harvests/              # Weekly AI security research harvests
-├── drafts/                # Newsletter drafts (pre-publish)
-├── logs/                  # Performance tracking logs
-├── .github/workflows/     # GitHub Actions CI/CD
-├── affiliate-programs.md  # Affiliate program database
-├── beehiiv-setup.md      # Newsletter platform setup guide
-├── newsletter-issue-001.md # Issue #1 template
-├── skills.md             # 5 Perplexity Computer Skills
-├── zapier-setup.md       # Automation setup guide
-└── launch-checklist.md   # Step-by-step launch guide
-```
+Articles are Markdown files in `/blog` with YAML frontmatter. The content pipeline is:
 
-## License
+1. **Weekly Harvest** — Perplexity Computer Skill researches top AI security developments
+2. **Article Factory** — Converts research into publication-ready Markdown articles
+3. **Newsletter Compiler** — Drafts weekly email for Beehiiv distribution
+4. **SEO + Affiliate Optimizer** — Adds schema markup, internal links, affiliate links
+5. **Performance Logger** — Tracks weekly metrics and optimisation opportunities
 
-© 2026 AI Security Brief. All rights reserved.
+See `skills.md` for full skill definitions and `zapier-setup.md` for automation configuration.
 
----
+## Deployment
 
-Created with [Perplexity Computer](https://www.perplexity.ai/computer)
+The site deploys automatically to Vercel on push to `main` via GitHub Actions. See `.github/workflows/deploy.yml`.
+
+## Newsletter
+
+Newsletter subscriptions are handled via [Beehiiv](https://beehiiv.com). See `beehiiv-setup.md` for configuration.
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SITE_NAME` | Site display name (default: AI Security Brief) |
+| `NEXT_PUBLIC_SITE_URL` | Production URL (default: http://localhost:3000) |
+| `BEEHIIV_PUBLICATION_ID` | Beehiiv publication identifier |
+| `BEEHIIV_API_KEY` | Beehiiv API key for subscription endpoint |
