@@ -4,6 +4,8 @@ slug: "ai-model-prompt-injection-attacks-explained"
 date: "2026-03-08"
 author: "AI Security Brief"
 excerpt: "Prompt injection is the #1 vulnerability in deployed AI systems — and unlike traditional software flaws, it cannot be patched. Here's how direct and indirect attacks work, real-world exploits from 2024–2026, and the defence strategies that actually reduce risk."
+category: "AI Threats"
+featured: false
 meta_title: "Prompt Injection Attacks Explained: Direct vs Indirect"
 meta_description: "Understand prompt injection attacks in AI models: direct vs indirect types, real-world CVEs, jailbreaking techniques, and proven defence strategies for 2025-2026."
 keywords:
