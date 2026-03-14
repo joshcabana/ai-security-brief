@@ -204,7 +204,10 @@ async function main() {
   assert.ok(privacyArticle, 'Expected one Privacy article in content-manifest.json.');
 
   const coldStartPort = await findFreePort();
-  const coldStartApp = startApp(coldStartPort);
+  const coldStartApp = startApp(coldStartPort, {
+    BEEHIIV_API_KEY: '',
+    BEEHIIV_PUBLICATION_ID: '',
+  });
 
   try {
     await waitForServer(`http://127.0.0.1:${coldStartPort}/`, 'cold-start production server');
