@@ -1,53 +1,122 @@
 import { NextResponse } from 'next/server';
 
-const BEEHIIV_API_URL = 'https://api.beehiiv.com/v2';
-const BEEHIIV_PUBLICATION_ID = process.env.BEEHIIV_PUBLICATION_ID;
-const BEEHIIV_API_KEY = process.env.BEEHIIV_API_KEY;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function POST(request: Request): Promise<NextResponse> {
-  const body = await request.json().catch(() => null);
+function getBeehiivConfig() {
+  const apiKey = process.env.BEEHIIV_API_KEY?.trim();
+  const publicationId = process.env.BEEHIIV_PUBLICATION_ID?.trim();
+  const apiBaseUrl = (process.env.BEEHIIV_API_BASE_URL?.trim() || 'https://api.beehiiv.com').replace(/\/$/, '');
 
-  if (!body || typeof body.email !== 'string') {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  return {
+    apiKey,
+    publicationId,
+    apiBaseUrl,
+    configured: Boolean(apiKey && publicationId),
+  };
+}
+
+export async function POST(request: Request) {
+  const { apiKey, publicationId, apiBaseUrl, configured } = getBeehiivConfig();
+
+  if (!configured || !apiKey || !publicationId) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
+      },
+      { status: 503 },
+    );
   }
 
-  const email = body.email.trim().toLowerCase();
-
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
-  }
-
-  if (!BEEHIIV_PUBLICATION_ID || !BEEHIIV_API_KEY) {
-    console.error('Beehiiv environment variables not configured');
-    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-  }
+  let payload: { email?: string } | null = null;
 
   try {
-    const response = await fetch(
-      `${BEEHIIV_API_URL}/publications/${BEEHIIV_PUBLICATION_ID}/subscriptions`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${BEEHIIV_API_KEY}`,
-        },
-        body: JSON.stringify({
-          email,
-          reactivate_existing: false,
-          send_welcome_email: true,
-        }),
-      },
+    payload = (await request.json()) as { email?: string };
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: 'The signup request body was invalid JSON.' },
+      { status: 400 },
     );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Beehiiv API error:', response.status, errorText);
-      return NextResponse.json({ error: 'Subscription failed' }, { status: 502 });
-    }
-
-    return NextResponse.json({ success: true }, { status: 201 });
-  } catch (error) {
-    console.error('Subscribe route error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
+
+  const email = payload?.email?.trim().toLowerCase();
+
+  if (!email || !EMAIL_REGEX.test(email)) {
+    return NextResponse.json(
+      { ok: false, message: 'Enter a valid email address to subscribe.' },
+      { status: 400 },
+    );
+  }
+
+  const referringSite = request.headers.get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL ?? '';
+  const upstreamBody = {
+    email,
+    reactivate_existing: false,
+    send_welcome_email: true,
+    utm_source: 'website',
+    utm_medium: 'organic',
+    utm_campaign: 'site-signup',
+    ...(referringSite ? { referring_site: referringSite } : {}),
+  };
+
+  let upstreamResponse: Response;
+
+  try {
+    upstreamResponse = await fetch(`${apiBaseUrl}/v2/publications/${publicationId}/subscriptions`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(upstreamBody),
+    });
+  } catch {
+    return NextResponse.json(
+      {
+        ok: false,
+        message: 'Beehiiv could not be reached. Check network access and publication settings, then try again.',
+      },
+      { status: 502 },
+    );
+  }
+
+  let upstreamPayload: unknown = null;
+
+  try {
+    upstreamPayload = await upstreamResponse.json();
+  } catch {
+    upstreamPayload = null;
+  }
+
+  if (!upstreamResponse.ok) {
+    const upstreamMessage =
+      typeof upstreamPayload === 'object' &&
+      upstreamPayload !== null &&
+      'errors' in upstreamPayload &&
+      Array.isArray((upstreamPayload as { errors?: Array<{ message?: string }> }).errors)
+        ? (upstreamPayload as { errors: Array<{ message?: string }> }).errors
+            .map((error) => error.message)
+            .filter(Boolean)
+            .join(' ')
+        : '';
+
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          upstreamMessage ||
+          'Beehiiv rejected the signup request. Double-check the publication settings and try again.',
+      },
+      { status: upstreamResponse.status },
+    );
+  }
+
+  return NextResponse.json(
+    {
+      ok: true,
+      message: "You're in. Check your inbox for Beehiiv's confirmation email.",
+    },
+    { status: 200 },
+  );
 }
