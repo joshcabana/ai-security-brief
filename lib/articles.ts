@@ -156,4 +156,3 @@ export async function getArticleCategories(): Promise<string[]> {
     left.localeCompare(right),
   );
 }
-
