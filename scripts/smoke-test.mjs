@@ -81,7 +81,22 @@ function startApp(port, extraEnv = {}) {
       }
 
       child.kill('SIGINT');
-      await new Promise((resolve) => child.once('exit', resolve));
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          if (child.exitCode === null) {
+            child.kill('SIGKILL');
+          }
+        }, 5_000);
+
+        child.once('exit', () => {
+          clearTimeout(timeout);
+          resolve();
+        });
+        child.once('error', (error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+      });
     },
   };
 }
