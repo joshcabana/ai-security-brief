@@ -24,6 +24,9 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
+      - name: Verify env contract (warn only)
+        run: pnpm verify:ops:contract
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
