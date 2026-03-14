@@ -305,14 +305,14 @@ Use this skill weekly to ensure all blog posts have complete SEO metadata and re
 
 **Name:** `performance-logger`
 
-**Description:** Pull Beehiiv API stats (subscribers, open rate, click rate) using the API key stored in the repo .env as BEEHIIV_API_KEY. Append a weekly row to /logs/performance-log.md in the GitHub repo. Flag if open rate drops below 35%.
+**Description:** Pull Beehiiv API stats (subscribers, open rate, click rate) using runtime environment variables for `BEEHIIV_API_KEY` and `BEEHIIV_PUBLICATION_ID`. Append a weekly row to /logs/performance-log.md in the GitHub repo. Flag if open rate drops below 35%.
 
 **Instructions:**
 
 ```
 ---
 name: performance-logger
-description: Pull Beehiiv API stats (subscribers, open rate, click rate) using the API key stored in the repo .env as BEEHIIV_API_KEY. Append a weekly row to /logs/performance-log.md in the GitHub repo. Flag if open rate drops below 35%.
+description: Pull Beehiiv API stats (subscribers, open rate, click rate) using runtime environment variables for BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID. Append a weekly row to /logs/performance-log.md in the GitHub repo. Flag if open rate drops below 35%.
 metadata:
   author: ai-security-brief
   version: '1.0'
@@ -327,8 +327,8 @@ Use this skill weekly (Sunday evening) to log newsletter performance metrics and
 ## Instructions
 
 1. **Retrieve API credentials:**
-   - Read the `.env` file from the `ai-security-brief` GitHub repo (or use environment variables if available)
-   - Extract `BEEHIIV_API_KEY` and `BEEHIIV_PUBLICATION_ID`
+   - Read `BEEHIIV_API_KEY` and `BEEHIIV_PUBLICATION_ID` from runtime environment variables or a secure secret store
+   - Do not commit or persist Beehiiv secrets back into the GitHub repo
    - If not available, report that API keys are not configured and stop
 
 2. **Pull Beehiiv stats via API:**

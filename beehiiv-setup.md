@@ -74,38 +74,29 @@ THE BRIEF — [DATE]
 - Social links
 - © 2026 AI Security Brief
 
-## Step 4: Set Up Web Embed
+## Step 4: Connect the Site Signup Route
 
-1. In Beehiiv dashboard → **Grow** → **Subscribe Forms**
-2. Create embedded form
-3. Copy the embed code
-4. Replace the placeholder in your site's `NewsletterForm.tsx` component:
-   - Replace `YOUR_BEEHIIV_PUBLICATION_ID` with your actual publication ID
-   - The component already has Beehiiv API integration scaffolded
+1. Generate a Beehiiv API key with subscriber write access
+2. Add these values to your local or hosted runtime environment:
+   - `BEEHIIV_API_KEY`
+   - `BEEHIIV_PUBLICATION_ID`
+3. Keep the site form pointing at `/api/subscribe`
+4. Submit a test signup from `/newsletter` and verify Beehiiv records the subscriber
+5. Confirm the form shows a real success or failure message instead of a silent fallback
 
-### Embed Code Template
-```html
-<iframe 
-  src="https://embeds.beehiiv.com/YOUR_PUBLICATION_ID?slim=true" 
-  data-test-id="beehiiv-embed" 
-  height="52" 
-  frameborder="0" 
-  scrolling="no" 
-  style="margin: 0; border-radius: 0px !important; background-color: transparent;"
-></iframe>
-```
+Optional: create an embedded Beehiiv form later if you want a hosted fallback, but the site no longer depends on iframe embed code.
 
 ## Step 5: Enable API Access
 
 1. Go to **Settings** → **Integrations** → **API**
 2. Generate API key
-3. Copy API key to your `.env` file as `BEEHIIV_API_KEY`
+3. Copy API key to your `.env.local` or hosted environment as `BEEHIIV_API_KEY`
 4. Note your Publication ID for the Performance Logger skill
 
 ### API Endpoints You'll Use
-- `GET /publications/{pub_id}/subscriptions` — subscriber count
-- `GET /publications/{pub_id}/stats` — open rate, click rate
-- `POST /publications/{pub_id}/subscriptions` — add subscriber
+- `GET /v2/publications/{pub_id}/subscriptions` — subscriber count
+- `GET /v2/publications/{pub_id}/stats` — open rate, click rate
+- `POST /v2/publications/{pub_id}/subscriptions` — add subscriber
 
 ## Step 6: Configure Automations
 
@@ -127,10 +118,10 @@ THE BRIEF — [DATE]
 
 ## API Key Storage
 
-Add to your `.env` file:
+Add to your `.env.local` file or hosting provider environment:
 ```
 BEEHIIV_API_KEY=your_api_key_here
 BEEHIIV_PUBLICATION_ID=your_pub_id_here
 ```
 
-These are used by Skill 5 (Performance Logger) to pull newsletter stats automatically.
+These are used by the site subscribe route and by Skill 5 (Performance Logger) to pull newsletter stats automatically. Do not commit them to Git.

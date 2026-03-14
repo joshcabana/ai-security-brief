@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 
 interface NewsletterFormProps {
   variant?: 'default' | 'hero' | 'footer' | 'page';
@@ -8,17 +8,20 @@ interface NewsletterFormProps {
   buttonText?: string;
 }
 
+type FormStatus = 'idle' | 'loading' | 'success' | 'error';
+
 export default function NewsletterForm({
   variant = 'default',
   placeholder = 'Enter your email address',
-  buttonText = 'Subscribe Free',
+  buttonText = 'Subscribe free',
 }: NewsletterFormProps) {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<FormStatus>('idle');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (!email || !email.includes('@')) {
       setStatus('error');
       setMessage('Please enter a valid email address.');
@@ -26,32 +29,29 @@ export default function NewsletterForm({
     }
 
     setStatus('loading');
+    setMessage('');
 
     try {
-      const BEEHIIV_PUBLICATION_ID = process.env.NEXT_PUBLIC_BEEHIIV_PUBLICATION_ID || 'pub_placeholder';
-      const response = await fetch(`https://app.beehiiv.com/api/subscribes`, {
+      const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          publication_id: BEEHIIV_PUBLICATION_ID,
-          referring_site: typeof window !== 'undefined' ? window.location.hostname : '',
-        }),
+        body: JSON.stringify({ email }),
       });
 
-      if (response.ok) {
-        setStatus('success');
-        setMessage("You're in. Check your inbox for a confirmation email.");
-        setEmail('');
-      } else {
-        setStatus('success');
-        setMessage("You're in. Check your inbox for a confirmation email.");
-        setEmail('');
+      const payload = (await response.json()) as { ok?: boolean; message?: string };
+
+      if (!response.ok || !payload.ok) {
+        setStatus('error');
+        setMessage(payload.message || 'The signup request failed. Please try again later.');
+        return;
       }
-    } catch {
+
       setStatus('success');
-      setMessage("You're in. Check your inbox for a confirmation email.");
+      setMessage(payload.message || "You're in. Check your inbox for the confirmation email.");
       setEmail('');
+    } catch {
+      setStatus('error');
+      setMessage('The signup request could not reach the server. Please try again later.');
     }
   };
 
@@ -86,7 +86,7 @@ export default function NewsletterForm({
             id={`email-${variant}`}
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
             placeholder={placeholder}
             required
             disabled={status === 'loading'}
@@ -98,16 +98,16 @@ export default function NewsletterForm({
               outline: 'none',
               padding: isHero || isPage ? '0.875rem 1rem' : '0.625rem 1rem',
             }}
-            onFocus={(e) => {
+            onFocus={(event) => {
               if (status !== 'error') {
-                e.currentTarget.style.borderColor = '#00b4ff';
-                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,180,255,0.1)';
+                event.currentTarget.style.borderColor = '#00b4ff';
+                event.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,180,255,0.1)';
               }
             }}
-            onBlur={(e) => {
+            onBlur={(event) => {
               if (status !== 'error') {
-                e.currentTarget.style.borderColor = '#30363d';
-                e.currentTarget.style.boxShadow = 'none';
+                event.currentTarget.style.borderColor = '#30363d';
+                event.currentTarget.style.boxShadow = 'none';
               }
             }}
           />
@@ -122,15 +122,15 @@ export default function NewsletterForm({
             padding: isHero || isPage ? '0.875rem 1.5rem' : '0.625rem 1.25rem',
             whiteSpace: 'nowrap',
           }}
-          onMouseEnter={(e) => {
+          onMouseEnter={(event) => {
             if (status !== 'loading') {
-              (e.currentTarget as HTMLButtonElement).style.background = '#33c3ff';
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 16px rgba(0,180,255,0.35)';
+              event.currentTarget.style.background = '#33c3ff';
+              event.currentTarget.style.boxShadow = '0 0 16px rgba(0,180,255,0.35)';
             }
           }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = '#00b4ff';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+          onMouseLeave={(event) => {
+            event.currentTarget.style.background = '#00b4ff';
+            event.currentTarget.style.boxShadow = 'none';
           }}
           aria-label={status === 'loading' ? 'Subscribing...' : buttonText}
         >
@@ -147,9 +147,9 @@ export default function NewsletterForm({
         </button>
       </div>
 
-      {status === 'error' && (
+      {status === 'error' ? (
         <p className="mt-2 text-xs" style={{ color: '#f85149' }} role="alert" aria-live="polite">{message}</p>
-      )}
+      ) : null}
 
       <p className="mt-2 text-xs" style={{ color: '#484f58' }}>
         No spam. Unsubscribe anytime. Powered by{' '}

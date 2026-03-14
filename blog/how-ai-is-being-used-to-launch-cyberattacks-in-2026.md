@@ -4,6 +4,8 @@ slug: "how-ai-is-being-used-to-launch-cyberattacks-in-2026"
 date: "2026-03-10"
 author: "AI Security Brief"
 excerpt: "AI has crossed a threshold in 2026 — adversaries are no longer just using it to write phishing emails. Autonomous attack agents, AI-generated malware, and deepfake social engineering are redefining the threat landscape at machine speed."
+category: "AI Threats"
+featured: true
 meta_title: "How AI Is Used to Launch Cyberattacks in 2026"
 meta_description: "AI-powered cyberattacks surged in 2025–2026. Learn how threat actors use AI phishing, deepfakes, autonomous agents, and AI malware — with real stats and examples."
 keywords:

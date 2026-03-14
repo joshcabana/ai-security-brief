@@ -4,6 +4,8 @@ slug: "australias-privacy-act-reforms-2026"
 date: "2026-03-14"
 author: "AI Security Brief"
 excerpt: "Australia's Privacy Act has undergone its most significant overhaul since 1988 — with new penalties reaching $50 million, mandatory disclosure of AI decision-making systems, and a new statutory tort for serious privacy invasions. Here's what changed and what it means for your organisation."
+category: "Privacy"
+featured: false
 meta_title: "Australia's Privacy Act Reforms 2026: Full Breakdown"
 meta_description: "Australia's Privacy Act reforms 2025-2026 explained: $50M penalties, AI automated decision-making rules, new individual rights, GDPR comparison, and compliance deadlines."
 keywords:

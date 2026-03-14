@@ -7,8 +7,7 @@ AI Security Brief is an authority publication covering AI-powered cybersecurity 
 ## Tech Stack
 
 - **Framework**: Next.js 15 (App Router)
-- **Styling**: Tailwind CSS 4
-- **Database**: Supabase
+- **Styling**: Tailwind CSS 3
 - **Newsletter**: Beehiiv
 - **Hosting**: Vercel
 - **CI/CD**: GitHub Actions
@@ -21,11 +20,11 @@ AI Security Brief is an authority publication covering AI-powered cybersecurity 
 
 ## Pages
 
-- `/` — Homepage with hero, latest articles, tools preview
-- `/blog` — Article listing
-- `/blog/[slug]` — Individual article pages
-- `/tools` — Affiliate tools directory (VPNs, password managers, endpoint protection)
-- `/newsletter` — Newsletter signup with Beehiiv integration
+- `/` — Homepage driven by repo-backed markdown content
+- `/blog` — Article listing sourced from `/blog/*.md`
+- `/blog/[slug]` — Individual article pages rendered from markdown + frontmatter
+- `/tools` — Research-led tools directory with plain vendor links until affiliate approvals exist
+- `/newsletter` — Newsletter signup page using the server-side Beehiiv route
 
 ## Content Pipeline
 
@@ -44,11 +43,21 @@ See `skills.md` and `zapier-setup.md` for full automation details.
 ```bash
 git clone https://github.com/joshcabana/ai-security-brief.git
 cd ai-security-brief
-npm install
+pnpm install
 cp .env.example .env.local
-# Fill in your Supabase and Beehiiv keys
-npm run dev
+# Fill in your Beehiiv and site keys
+pnpm dev
 ```
+
+## Scripts
+
+- `pnpm content:manifest` — regenerate `content-manifest.json` from `/blog/*.md`
+- `pnpm check:content` — verify frontmatter and manifest stay in sync
+- `pnpm typecheck` — run TypeScript without emitting files
+- `pnpm test:unit` — run content and API regression tests with Node’s built-in test runner
+- `pnpm build` — run the production Next.js build
+- `pnpm test:smoke` — boot the production server and verify key routes plus subscribe API scenarios
+- `pnpm verify:release` — run the full pre-release verification pipeline
 
 ## Repository Structure
 
@@ -56,14 +65,18 @@ npm run dev
 ai-security-brief/
 ├── app/                    # Next.js 15 App Router pages
 │   ├── blog/              # Blog listing + dynamic article pages
+│   ├── api/subscribe/     # Beehiiv signup API route
 │   ├── tools/             # Affiliate tools directory
 │   └── newsletter/        # Newsletter signup page
 ├── blog/                  # Markdown article files
+├── content-manifest.json  # Generated article inventory
 ├── components/            # Reusable React components
-├── lib/                   # Supabase client + utilities
+├── lib/                   # Content loader and site metadata
 ├── harvests/              # Weekly AI security research harvests
 ├── drafts/                # Newsletter drafts (pre-publish)
 ├── logs/                  # Performance tracking logs
+├── scripts/               # Content verification + manifest tooling
+├── tests/                 # Unit-level regression coverage
 ├── .github/workflows/     # GitHub Actions CI/CD
 ├── affiliate-programs.md  # Affiliate program database
 ├── beehiiv-setup.md      # Newsletter platform setup guide
