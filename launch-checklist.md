@@ -36,7 +36,7 @@
    ```
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 3. Copy environment template:
    ```bash
@@ -45,7 +45,7 @@
 4. Fill in `.env.local` with your actual keys (see Step 5)
 5. Test locally:
    ```bash
-   npm run dev
+   pnpm dev
    ```
 6. Verify all pages load: `/`, `/blog`, `/tools`, `/newsletter`
 
@@ -58,9 +58,10 @@
 2. Click "New Project" → Import `ai-security-brief` repo
 3. Framework: Next.js (auto-detected)
 4. Set environment variables:
-   - `NEXT_PUBLIC_SUPABASE_URL` → your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` → your Supabase anon key
    - `BEEHIIV_API_KEY` → your Beehiiv API key (added in Step 4)
+   - `BEEHIIV_PUBLICATION_ID` → your Beehiiv publication ID
+   - `NEXT_PUBLIC_SITE_URL` → your production site URL
+   - `NEXT_PUBLIC_SITE_NAME` → `AI Security Brief`
 5. Deploy → Note your `.vercel.app` preview URL
 6. Add custom domain in Vercel → Project Settings → Domains → Add your purchased domain
 7. Set up GitHub Actions secrets:
@@ -81,33 +82,34 @@
 6. Generate API key: Settings → Integrations → API
 7. Copy API key to `.env.local` as `BEEHIIV_API_KEY`
 8. Copy Publication ID to `.env.local` as `BEEHIIV_PUBLICATION_ID`
-9. Get embed code: Grow → Subscribe Forms → Create embedded form
-10. Update `NewsletterForm.tsx` with your Beehiiv publication ID
-11. Create Issue #1 using content from `newsletter-issue-001.md`
-12. Preview → Test send to yourself
-13. Publish or schedule Issue #1
+9. Verify `/newsletter` can create a real signup through `/api/subscribe`
+10. Create Issue #1 using content from `newsletter-issue-001.md`
+11. Preview → Test send to yourself
+12. Publish or schedule Issue #1
 
 ---
 
 ## 5. .env Setup (~10 min)
 
-**Create a Supabase project** (if not already done):
-1. Go to [supabase.com](https://supabase.com) → New project
-2. Copy Project URL and Anon Key
-
 **Fill in `.env.local`:**
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 BEEHIIV_API_KEY=your-beehiiv-api-key
 BEEHIIV_PUBLICATION_ID=your-publication-id
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_NAME=AI Security Brief
+```
+
+**Run the local release checks before you publish anything:**
+```bash
+pnpm verify:release
 ```
 
 **Push env vars to Vercel:**
 ```bash
-vercel env add NEXT_PUBLIC_SUPABASE_URL
-vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
 vercel env add BEEHIIV_API_KEY
+vercel env add BEEHIIV_PUBLICATION_ID
+vercel env add NEXT_PUBLIC_SITE_URL
+vercel env add NEXT_PUBLIC_SITE_NAME
 ```
 
 ---
@@ -117,7 +119,7 @@ vercel env add BEEHIIV_API_KEY
 Sign up in order of highest commission rate:
 
 | # | Program | Commission | Signup URL | Est. Time |
-|---|---------|-----------|-----------|-----------|
+|---|---------|-----------|-----------|----------|
 | 1 | NordVPN | Up to 100% | [nordvpn.com/affiliate](https://nordvpn.com/affiliate/) | 5 min |
 | 2 | Proton | Up to 100% | [proton.me/partners/affiliates](https://proton.me/partners/affiliates) | 5 min |
 | 3 | PureVPN | 100% monthly | [purevpn.com/affiliates](https://www.purevpn.com/affiliates) | 5 min |
@@ -227,4 +229,4 @@ Activate in this exact sequence order:
 
 ---
 
-*After completing all steps, the AI Security Brief content pipeline is fully operational. New content will be researched, written, optimised, and drafted for newsletter distribution every Monday automatically.*
+*After completing all steps, the AI Security Brief pipeline is ready for manual approval and then weekly automated content preparation every Monday.*
