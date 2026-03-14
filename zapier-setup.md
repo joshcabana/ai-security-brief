@@ -193,7 +193,7 @@ Each Zap fires in sequence with enough buffer time (4 hours between harvest → 
 **Request Body:**
 ```json
 {
-  "task": "Use the 'performance-logger' skill. Pull Beehiiv API stats using the API key from the .env file in the ai-security-brief GitHub repo (BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID). Get subscriber count, open rate, click rate, and top clicked link. Append a new row to /logs/performance-log.md in the repo. If open rate is below 35%, flag it with a warning and suggest improvements. Commit the updated log.",
+  "task": "Use the 'performance-logger' skill. Pull Beehiiv API stats using runtime environment variables or a secure secret store for BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID. Get subscriber count, open rate, click rate, and top clicked link. Append a new row to /logs/performance-log.md in the repo. If open rate is below 35%, flag it with a warning and suggest improvements. Commit the updated log.",
   "skill": "performance-logger"
 }
 ```
@@ -222,7 +222,7 @@ Each Zap fires in sequence with enough buffer time (4 hours between harvest → 
 | Computer API returns 401 | Verify API key is correct and has not expired |
 | Harvest file not found by Article Factory | Increase buffer time between Zaps (try 6 hours instead of 4) |
 | Articles not appearing in repo | Check GitHub MCP connection in Computer is active |
-| Performance Logger can't read .env | Ensure BEEHIIV_API_KEY is committed to repo or passed as environment variable |
+| Performance Logger can't access Beehiiv secrets | Provide BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID through a secure environment or secret store; do not commit them to Git |
 
 ## Cost Estimate
 
