@@ -1,37 +1,32 @@
 {
   "name": "ai-security-brief",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@10.23.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "check:content": "tsx scripts/check-content.ts",
-    "test:unit": "vitest run",
-    "test:smoke": "tsx scripts/smoke-test.ts",
-    "verify:release": "pnpm check:content && pnpm typecheck && pnpm test:unit && pnpm build && pnpm test:smoke"
+    "content:manifest": "node scripts/content-manifest.mjs --write",
+    "check:content": "node scripts/content-manifest.mjs --check",
+    "typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
+    "test:unit": "node --import tsx --test tests/*.test.ts",
+    "test:smoke": "node scripts/smoke-test.mjs",
+    "verify:release": "pnpm check:content && pnpm typecheck && pnpm test:unit && pnpm test:smoke"
   },
   "dependencies": {
-    "next": "15.5.12",
+    "gray-matter": "^4.0.3",
+    "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "gray-matter": "^4.0.3"
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-html": "^16.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "typescript": "^5.7.0",
-    "tsx": "^4.19.0",
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0",
-    "postcss": "^8.5.0",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "15.5.12",
-    "vitest": "^3.0.0",
-    "happy-dom": "^16.0.0"
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
   }
 }
