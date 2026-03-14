@@ -1,73 +1,124 @@
-#!/usr/bin/env node
-/**
- * content-manifest.mjs
- *
- * Generates or validates content-manifest.json, which lists all article slugs
- * in the blog directory. Used by CI to detect uncommitted content changes.
- *
- * Usage:
- *   node scripts/content-manifest.mjs --write   # write manifest
- *   node scripts/content-manifest.mjs --check   # exit 1 if manifest is stale
- */
-
-import { promises as fs } from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import matter from 'gray-matter';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(__dirname, '..');
-const BLOG_DIR = path.join(ROOT, 'blog');
-const MANIFEST_PATH = path.join(ROOT, 'content-manifest.json');
+const root = process.cwd();
+const blogDir = path.join(root, 'blog');
+const manifestPath = path.join(root, 'content-manifest.json');
+const requiredFields = [
+  'title',
+  'slug',
+  'date',
+  'author',
+  'excerpt',
+  'category',
+  'featured',
+  'meta_title',
+  'meta_description',
+  'keywords',
+  'read_time',
+];
+const readTimePattern = /^\d+\s+min$/;
 
-async function getSlugs(): Promise<string[]> {
-  let files: string[];
-  try {
-    files = await fs.readdir(BLOG_DIR);
-  } catch {
-    files = [];
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message);
   }
-  return files
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => f.replace(/\.md$/, ''))
+}
+
+function assertNonEmptyString(value, field, fileName) {
+  assert(typeof value === 'string' && value.trim().length > 0, `Expected "${field}" to be a non-empty string in ${fileName}.`);
+  return value.trim();
+}
+
+function assertValidDate(value, field, fileName) {
+  const normalisedValue = assertNonEmptyString(value, field, fileName);
+  assert(!Number.isNaN(Date.parse(normalisedValue)), `Expected "${field}" to be a valid date in ${fileName}.`);
+  return normalisedValue;
+}
+
+async function buildManifest() {
+  const entries = (await fs.readdir(blogDir))
+    .filter((entry) => entry.endsWith('.md'))
     .sort();
-}
 
-async function writeManifest(): Promise<void> {
-  const slugs = await getSlugs();
-  const manifest = { slugs };
-  await fs.writeFile(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
-  console.log(`Manifest written with ${slugs.length} slug(s): ${slugs.join(', ')}`);
-}
+  const articles = [];
+  const seenSlugs = new Set();
 
-async function checkManifest(): Promise<void> {
-  const slugs = await getSlugs();
-  let existing: { slugs: string[] };
-  try {
-    const raw = await fs.readFile(MANIFEST_PATH, 'utf-8');
-    existing = JSON.parse(raw);
-  } catch {
-    console.error('Manifest file not found or invalid. Run --write first.');
-    process.exit(1);
+  for (const fileName of entries) {
+    const source = await fs.readFile(path.join(blogDir, fileName), 'utf8');
+    const { data, content } = matter(source);
+
+    for (const field of requiredFields) {
+      assert(field in data, `Missing "${field}" in ${fileName}.`);
+    }
+
+    const slug = assertNonEmptyString(data.slug, 'slug', fileName);
+    assert(!seenSlugs.has(slug), `Duplicate slug "${slug}" detected in ${fileName}.`);
+    seenSlugs.add(slug);
+    assert(typeof data.featured === 'boolean', `Expected featured to be a boolean in ${fileName}.`);
+    assert(
+      Array.isArray(data.keywords) && data.keywords.length === 5 && data.keywords.every((item) => typeof item === 'string' && item.trim().length > 0),
+      `Expected exactly 5 keywords in ${fileName}.`,
+    );
+    assert(readTimePattern.test(assertNonEmptyString(data.read_time, 'read_time', fileName)), `Expected "read_time" to match "<minutes> min" in ${fileName}.`);
+    assert(content.trim().length > 0, `Expected markdown body content in ${fileName}.`);
+
+    articles.push({
+      title: assertNonEmptyString(data.title, 'title', fileName),
+      slug,
+      date: assertValidDate(data.date, 'date', fileName),
+      author: assertNonEmptyString(data.author, 'author', fileName),
+      excerpt: assertNonEmptyString(data.excerpt, 'excerpt', fileName),
+      category: assertNonEmptyString(data.category, 'category', fileName),
+      featured: data.featured,
+      metaTitle: assertNonEmptyString(data.meta_title, 'meta_title', fileName),
+      metaDescription: assertNonEmptyString(data.meta_description, 'meta_description', fileName),
+      keywords: data.keywords.map((item) => item.trim()),
+      readTime: data.read_time.trim(),
+      fileName,
+    });
   }
-  const currentSet = new Set(slugs);
-  const existingSet = new Set(existing.slugs);
-  const added = slugs.filter((s) => !existingSet.has(s));
-  const removed = existing.slugs.filter((s) => !currentSet.has(s));
-  if (added.length > 0 || removed.length > 0) {
-    if (added.length > 0) console.error(`Added slugs not in manifest: ${added.join(', ')}`);
-    if (removed.length > 0) console.error(`Removed slugs still in manifest: ${removed.join(', ')}`);
-    console.error('Run `pnpm content:manifest` to update the manifest.');
-    process.exit(1);
+
+  articles.sort((left, right) => {
+    const dateDiff = new Date(right.date).getTime() - new Date(left.date).getTime();
+    return dateDiff !== 0 ? dateDiff : left.slug.localeCompare(right.slug);
+  });
+
+  for (const requiredDir of ['harvests', 'drafts']) {
+    const stats = await fs.stat(path.join(root, requiredDir));
+    assert(stats.isDirectory(), `Expected ${requiredDir}/ to exist.`);
   }
-  console.log('Manifest is up to date.');
+
+  return {
+    articleCount: articles.length,
+    categories: Array.from(new Set(articles.map((article) => article.category))).sort(),
+    articles,
+  };
 }
 
-const arg = process.argv[2];
-if (arg === '--write') {
-  writeManifest();
-} else if (arg === '--check') {
-  checkManifest();
-} else {
-  console.error('Usage: content-manifest.mjs --write | --check');
+async function main() {
+  const mode = process.argv[2];
+  const manifest = await buildManifest();
+  const manifestJson = `${JSON.stringify(manifest, null, 2)}\n`;
+
+  if (mode === '--write') {
+    await fs.writeFile(manifestPath, manifestJson, 'utf8');
+    console.log(`Wrote ${path.relative(root, manifestPath)}.`);
+    return;
+  }
+
+  if (mode === '--check') {
+    const existing = await fs.readFile(manifestPath, 'utf8');
+    assert(existing === manifestJson, 'content-manifest.json is out of date. Run `pnpm content:manifest`.');
+    console.log('Content manifest is in sync.');
+    return;
+  }
+
+  throw new Error('Usage: node scripts/content-manifest.mjs --write|--check');
+}
+
+main().catch((error) => {
+  console.error(error.message);
   process.exit(1);
-}
+});

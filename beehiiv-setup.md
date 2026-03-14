@@ -1,106 +1,127 @@
-# Beehiiv Setup Guide — AI Security Brief
+# Beehiiv Setup Guide — AI Security Brief Newsletter
 
-> Configure Beehiiv as the newsletter platform for AI Security Brief. This guide covers publication creation, API key generation, environment variable configuration, and subscriber list management.
+## Step 1: Create Beehiiv Account
 
-## Step 1: Create a Beehiiv Account
+1. Go to [beehiiv.com](https://www.beehiiv.com/) and sign up for a free account (or Scale plan for full features)
+2. Choose publication name: **AI Security Brief**
+3. Set publication URL: `aisecuritybrief.beehiiv.com` (or custom domain later)
 
-1. Go to [beehiiv.com](https://beehiiv.com) and click **Get Started Free**
-2. Enter your email and create a password
-3. Verify your email address
-4. Complete the onboarding: choose **Newsletter** as your publication type
+## Step 2: Configure Publication Settings
 
-## Step 2: Create Your Publication
+### Branding
+- **Publication Name**: AI Security Brief
+- **Tagline**: Intelligence on AI-Powered Threats & Privacy Defence
+- **Logo**: Upload the shield logo SVG from the website `/public/` folder
+- **Colors**: 
+  - Primary: `#00b4ff` (electric blue)
+  - Background: `#0d1117` (dark)
+  - Text: `#e6edf3` (light gray)
+  - Card background: `#161b22`
 
-1. Publication name: **AI Security Brief**
-2. Description: *Independent intelligence on AI-powered cyber threats, privacy defence strategies, and security tooling for technology professionals.*
-3. Category: **Technology / Cybersecurity**
-4. Posting frequency: **Weekly**
-5. Click **Create Publication**
+### Sender Settings
+- **From Name**: AI Security Brief
+- **From Email**: `newsletter@yourdomain.com` (set up after domain purchase)
+- **Reply-to**: `editor@yourdomain.com`
 
-## Step 3: Get Your Publication ID
+## Step 3: Configure Email Template
 
-1. Go to **Settings → Publication**
-2. Scroll to **Publication ID** — it looks like `pub_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
-3. Copy this value — you will need it for `BEEHIIV_PUBLICATION_ID`
+### Header
+- Shield logo (centered or left-aligned)
+- Publication name in Inter Bold, #ffffff
+- Tagline in Inter Regular, #8b949e
 
-## Step 4: Generate an API Key
+### Body Template Structure
+```
+[LOGO]
+[PUBLICATION NAME]
 
-1. Go to **Settings → Integrations → API**
-2. Click **New API Key**
-3. Name it: `AI Security Brief — Production`
-4. Permissions required:
-   - **Subscriptions: Write** (to create new subscribers)
-5. Click **Generate**
-6. Copy the key immediately — it will not be shown again
-7. This value goes into `BEEHIIV_API_KEY`
+THE BRIEF — [DATE]
 
-## Step 5: Configure Environment Variables
+[INTRO PARAGRAPH]
 
-### Local Development
+---
 
-Create `.env.local` in the project root:
+📡 SIGNAL 1: [HEADLINE]
+[2-3 sentence summary]
+[Read more →]
 
-```env
-BEEHIIV_PUBLICATION_ID=pub_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+---
+
+📡 SIGNAL 2: [HEADLINE]
+[2-3 sentence summary]
+[Read more →]
+
+---
+
+📡 SIGNAL 3: [HEADLINE]
+[2-3 sentence summary]
+[Read more →]
+
+---
+
+🛡️ TOOL OF THE WEEK
+[Tool name + description + affiliate link]
+
+---
+
+[NEWSLETTER CTA / SHARE PROMPT]
+[FOOTER WITH UNSUBSCRIBE]
+```
+
+### Footer
+- "You're receiving this because you subscribed to AI Security Brief"
+- Unsubscribe link (Beehiiv handles this automatically)
+- Social links
+- © 2026 AI Security Brief
+
+## Step 4: Connect the Site Signup Route
+
+1. Generate a Beehiiv API key with subscriber write access
+2. Add these values to your local or hosted runtime environment:
+   - `BEEHIIV_API_KEY`
+   - `BEEHIIV_PUBLICATION_ID`
+3. Keep the site form pointing at `/api/subscribe`
+4. Submit a test signup from `/newsletter` and verify Beehiiv records the subscriber
+5. Confirm the form shows a real success or failure message instead of a silent fallback
+
+Optional: create an embedded Beehiiv form later if you want a hosted fallback, but the site no longer depends on iframe embed code.
+
+## Step 5: Enable API Access
+
+1. Go to **Settings** → **Integrations** → **API**
+2. Generate API key
+3. Copy API key to your `.env.local` or hosted environment as `BEEHIIV_API_KEY`
+4. Note your Publication ID for the Performance Logger skill
+
+### API Endpoints You'll Use
+- `GET /v2/publications/{pub_id}/subscriptions` — subscriber count
+- `GET /v2/publications/{pub_id}/stats` — open rate, click rate
+- `POST /v2/publications/{pub_id}/subscriptions` — add subscriber
+
+## Step 6: Configure Automations
+
+### Welcome Sequence
+1. **Email 1** (Immediate): Welcome + what to expect + link to best articles
+2. **Email 2** (Day 3): "The AI Threat Landscape in 2026" — curated from your top article
+3. **Email 3** (Day 7): "Your Security Stack" — tool recommendations with affiliate links
+
+### Referral Program (Optional)
+- Enable Beehiiv's built-in referral program
+- Milestones: 3 referrals → exclusive report, 10 referrals → tool discount code
+
+## Step 7: Publish Issue #1
+
+1. Use the content from `newsletter-issue-001.md` in this repo
+2. Preview → Test send to yourself
+3. Schedule or publish
+4. Verify tracking is working in Beehiiv analytics
+
+## API Key Storage
+
+Add to your `.env.local` file or hosting provider environment:
+```
 BEEHIIV_API_KEY=your_api_key_here
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_SITE_NAME=AI Security Brief
+BEEHIIV_PUBLICATION_ID=your_pub_id_here
 ```
 
-### Vercel Production
-
-1. Go to your Vercel project dashboard
-2. **Settings → Environment Variables**
-3. Add each variable:
-   - `BEEHIIV_PUBLICATION_ID` — your publication ID
-   - `BEEHIIV_API_KEY` — your API key
-   - `NEXT_PUBLIC_SITE_URL` — your production domain (e.g. `https://aisecuritybrief.com`)
-   - `NEXT_PUBLIC_SITE_NAME` — `AI Security Brief`
-4. Set environment to **Production** (and optionally Preview)
-5. Click **Save**
-
-## Step 6: Test the Integration
-
-### Using cURL
-
-```bash
-curl -X POST https://your-site.vercel.app/api/subscribe \
-  -H 'Content-Type: application/json' \
-  -d '{"email": "test@example.com"}'
-```
-
-Expected response:
-```json
-{"success": true}
-```
-
-### Using the Site
-
-1. Visit your deployed site
-2. Enter a test email in the newsletter form
-3. Click **Subscribe**
-4. Check Beehiiv dashboard → **Subscribers** to confirm the subscription was created
-
-## Subscriber Management
-
-### Viewing Subscribers
-
-- Dashboard → **Audience → Subscribers**
-- Filter by status: Active, Inactive, Unsubscribed
-- Export CSV for backup
-
-### Sending Your First Newsletter
-
-1. Dashboard → **Posts → New Post**
-2. Write your newsletter content
-3. Schedule or send immediately
-4. Monitor opens/clicks in **Analytics**
-
-## Troubleshooting
-
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| `500 Server configuration error` | Missing env vars | Check Vercel env vars are set |
-| `502 Subscription failed` | Invalid API key or publication ID | Regenerate API key, verify publication ID |
-| `400 Invalid email address` | Malformed email | Validate client-side before submitting |
-| Subscriber not appearing | Beehiiv processing delay | Wait 60 seconds, refresh dashboard |
+These are used by the site subscribe route and by Skill 5 (Performance Logger) to pull newsletter stats automatically. Do not commit them to Git.
