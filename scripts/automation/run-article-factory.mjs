@@ -117,7 +117,7 @@ async function main() {
   const articlePlan = buildExpectedArticlePlan(findings, existingSlugs, context.effectiveDate);
   const existingTargets = await Promise.all(articlePlan.map(async (item) => fileExists(item.filePath)));
 
-  if (existingTargets.every(Boolean)) {
+  if (existingTargets.every(Boolean) && !context.options.force) {
     await finishAutomationRun({
       context,
       commitMessage: `automation: refresh articles ${context.effectiveDate}`,
@@ -204,6 +204,7 @@ async function main() {
     commitMessage: `automation: add weekly articles ${context.effectiveDate}`,
     model,
     outputs: writtenFiles.map((filePath) => `Article generated: \`${filePath}\``),
+    notes: context.options.force ? ['Forced regeneration requested. Existing article drafts were overwritten.'] : [],
   });
 }
 

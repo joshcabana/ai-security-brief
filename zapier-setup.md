@@ -35,6 +35,7 @@ Operational rules:
 - Each workflow also supports `workflow_dispatch` with:
   - `run_date` → Australia/Sydney date override in `YYYY-MM-DD`
   - `dry_run` → generate output without pushing a branch or opening a PR
+  - `force` → overwrite the dated output when you need to regenerate a weekly asset
 - Scheduled workflows run hourly around the UTC day boundary and self-gate to the exact Australia/Sydney time window before any dependency install or API call
 - AI-generated content always lands in a **draft PR**, never directly on `main`
 
@@ -89,7 +90,7 @@ Operational rules:
 
 ## Manual Backfill
 
-Use `workflow_dispatch` and provide a `run_date` in Australia/Sydney local date format. Set `dry_run=true` if you want to validate generation without pushing a branch or opening a PR.
+Use `workflow_dispatch` and provide a `run_date` in Australia/Sydney local date format. Set `dry_run=true` if you want to validate generation without pushing a branch or opening a PR. Set `force=true` if you need to regenerate a dated output that already exists.
 
 Suggested first backfill order:
 

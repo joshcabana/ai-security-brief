@@ -100,7 +100,7 @@ async function main() {
     throw new Error(`Missing prerequisite harvest file: harvests/harvest-${context.effectiveDate}.md`);
   }
 
-  if (await fileExists(draftPath)) {
+  if ((await fileExists(draftPath)) && !context.options.force) {
     await finishAutomationRun({
       context,
       commitMessage: `automation: refresh newsletter draft ${context.effectiveDate}`,
@@ -199,6 +199,7 @@ async function main() {
     commitMessage: `automation: add newsletter draft ${context.effectiveDate}`,
     model,
     outputs: [`Newsletter draft generated: \`drafts/newsletter-${context.effectiveDate}.md\``],
+    notes: context.options.force ? ['Forced regeneration requested. Existing newsletter draft was overwritten.'] : [],
   });
 }
 

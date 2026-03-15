@@ -73,7 +73,7 @@ async function main() {
     const existing = await readText(harvestPath);
     const findings = parseHarvestMarkdown(existing);
 
-    if (findings.length >= 5) {
+    if (findings.length >= 5 && !context.options.force) {
       await finishAutomationRun({
         context,
         commitMessage: `automation: refresh harvest ${context.effectiveDate}`,
@@ -137,6 +137,7 @@ async function main() {
     ],
     notes: [
       `Curated feed candidates reviewed: ${candidateSet.items.length}`,
+      ...(context.options.force ? ['Forced regeneration requested. Existing harvest output was replaced.'] : []),
       ...candidateSet.notes,
     ],
   });

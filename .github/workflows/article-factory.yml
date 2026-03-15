@@ -12,6 +12,11 @@ on:
         required: false
         default: false
         type: boolean
+      force:
+        description: Regenerate the output even if the dated files already exist
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '0 * * * 0,1'
 
@@ -63,4 +68,5 @@ jobs:
           GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL || 'openai/gpt-4.1' }}
           AUTOMATION_RUN_DATE: ${{ github.event.inputs.run_date }}
           AUTOMATION_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          AUTOMATION_FORCE: ${{ github.event.inputs.force }}
         run: node scripts/automation/run-article-factory.mjs

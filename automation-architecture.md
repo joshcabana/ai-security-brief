@@ -82,5 +82,6 @@ Optional GitHub Actions variable:
 ## Operator rules
 
 - First live validation should be `workflow_dispatch` on `weekly-harvest.yml`.
+- Use the `force` input on backfills when a dated file already exists and needs regeneration.
 - Merge only after reviewing generated markdown in the draft PR.
 - Keep model outputs bounded to the supplied source pack. If harvest quality degrades, fix feed selection before changing model prompts.

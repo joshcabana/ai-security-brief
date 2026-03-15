@@ -34,6 +34,7 @@ const WEEKDAY_LOOKUP = {
 export function parseCliOptions(argv = process.argv.slice(2), env = process.env) {
   const options = {
     dryRun: false,
+    force: false,
     skipScheduleGate: false,
     date: null,
   };
@@ -43,6 +44,11 @@ export function parseCliOptions(argv = process.argv.slice(2), env = process.env)
 
     if (value === '--dry-run') {
       options.dryRun = true;
+      continue;
+    }
+
+    if (value === '--force') {
+      options.force = true;
       continue;
     }
 
@@ -63,6 +69,10 @@ export function parseCliOptions(argv = process.argv.slice(2), env = process.env)
 
   if (!options.dryRun && env.AUTOMATION_DRY_RUN) {
     options.dryRun = env.AUTOMATION_DRY_RUN === 'true';
+  }
+
+  if (!options.force && env.AUTOMATION_FORCE) {
+    options.force = env.AUTOMATION_FORCE === 'true';
   }
 
   if (!options.skipScheduleGate && env.AUTOMATION_SKIP_SCHEDULE_GATE) {
