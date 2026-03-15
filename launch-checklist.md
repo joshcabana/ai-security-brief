@@ -116,6 +116,8 @@ vercel env add NEXT_PUBLIC_SITE_NAME
 
 ## 6. Affiliate Signups (~45 min)
 
+**Status:** Ready to submit once forms are completed with the intake sheet in `ops/affiliate-intake.md`
+
 Sign up in order of highest commission rate:
 
 | # | Program | Commission | Signup URL | Est. Time |
@@ -136,6 +138,10 @@ Sign up in order of highest commission rate:
 ---
 
 ## 7. Perplexity Publisher Program Email (~5 min)
+
+**Status:** Complete
+
+Application email sent to [publishers@perplexity.ai](mailto:publishers@perplexity.ai).
 
 Send email to: [publishers@perplexity.ai](mailto:publishers@perplexity.ai)
 
@@ -212,8 +218,8 @@ Thanks,
 | Vercel project connect | 10 min | ☐ |
 | Beehiiv setup + Issue #1 | 30 min | ☐ |
 | .env configuration | 10 min | ☐ |
-| Affiliate signups (8 programs) | 45 min | ☐ |
-| Publisher program email | 5 min | ☐ |
+| Affiliate signups (8 programs) | 45 min | Ready to submit |
+| Publisher program email | 5 min | ✓ |
 | GitHub automation secrets | 15 min | ☐ |
 | First manual automation backfill | 20 min | ☐ |
 | **TOTAL** | **~2 hours 35 min** | |
