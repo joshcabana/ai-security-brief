@@ -200,6 +200,7 @@ async function main() {
     await readFile(path.join(repoDir, 'content-manifest.json'), 'utf8'),
   );
   const articleSlugs = manifest.articles.map((article) => article.slug);
+  const homepageSlugs = articleSlugs.slice(0, 4);
   const privacyArticle = manifest.articles.find((article) => article.category === 'Privacy');
   assert.ok(privacyArticle, 'Expected one Privacy article in content-manifest.json.');
 
@@ -213,9 +214,11 @@ async function main() {
     await waitForServer(`http://127.0.0.1:${coldStartPort}/`, 'cold-start production server');
 
     const homeHtml = await fetch(`http://127.0.0.1:${coldStartPort}/`).then((response) => response.text());
-    for (const slug of articleSlugs) {
-      assert.match(homeHtml, new RegExp(`/blog/${slug}`), `Expected homepage to link to ${slug}.`);
-    }
+    assert.deepEqual(
+      extractArticleLinks(homeHtml, articleSlugs),
+      homepageSlugs,
+      'Expected homepage to link to the latest four article slugs in content-manifest.json.',
+    );
 
     const privacyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog?category=Privacy`).then((response) => response.text());
     assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), [`${privacyArticle.slug}`]);
