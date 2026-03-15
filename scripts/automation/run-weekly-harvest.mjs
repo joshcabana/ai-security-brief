@@ -2,19 +2,19 @@
 
 import path from 'node:path';
 import {
-  DEFAULT_PERPLEXITY_MODEL,
+  DEFAULT_GITHUB_MODELS_MODEL,
   FINDING_CATEGORIES,
   REPO_ROOT,
-  buildWeekKey,
   fileExists,
   readText,
   writeText,
 } from './common.mjs';
-import { requestJsonFromPerplexity } from './perplexity.mjs';
+import { collectCandidateFeedItems, buildHarvestCandidateDigest } from './feeds.mjs';
+import { requestJsonFromGitHubModels } from './github-models.mjs';
 import { parseHarvestMarkdown, renderHarvestMarkdown } from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
-function validateHarvestPayload(payload) {
+function validateHarvestPayload(payload, allowedSources) {
   if (!payload || typeof payload !== 'object' || !Array.isArray(payload.findings)) {
     throw new Error('Harvest payload must include a findings array.');
   }
@@ -39,6 +39,15 @@ function validateHarvestPayload(payload) {
       throw new Error(`Harvest source URL is invalid: ${finding.source_url}`);
     }
 
+    const allowed = allowedSources.get(finding.source_url);
+    if (!allowed) {
+      throw new Error(`Harvest source URL was not provided in the curated feed set: ${finding.source_url}`);
+    }
+
+    if (allowed.source_name !== finding.source_name) {
+      throw new Error(`Harvest source_name must match the curated feed source for ${finding.source_url}`);
+    }
+
     if (!FINDING_CATEGORIES.includes(finding.category)) {
       throw new Error(`Harvest category is invalid: ${finding.category}`);
     }
@@ -46,7 +55,7 @@ function validateHarvestPayload(payload) {
 }
 
 async function main() {
-  requireEnvVars(['PERPLEXITY_API_KEY']);
+  requireEnvVars(['GITHUB_TOKEN']);
 
   const context = await prepareAutomationRun({
     kind: 'content',
@@ -57,7 +66,7 @@ async function main() {
     return;
   }
 
-  const model = process.env.PERPLEXITY_MODEL?.trim() || DEFAULT_PERPLEXITY_MODEL;
+  const model = process.env.GITHUB_MODELS_MODEL?.trim() || DEFAULT_GITHUB_MODELS_MODEL;
   const harvestPath = path.join(REPO_ROOT, 'harvests', `harvest-${context.effectiveDate}.md`);
 
   if (await fileExists(harvestPath)) {
@@ -76,42 +85,43 @@ async function main() {
     }
   }
 
-  const weekKey = buildWeekKey(context.effectiveDate);
-  const payload = await requestJsonFromPerplexity({
+  const candidateSet = await collectCandidateFeedItems({
+    effectiveDate: context.effectiveDate,
+    limit: 14,
+  });
+
+  if (candidateSet.items.length < 5) {
+    throw new Error(`Curated feeds returned only ${candidateSet.items.length} relevant AI security items for ${context.effectiveDate}.`);
+  }
+
+  const allowedSources = new Map(candidateSet.items.map((item) => [item.source_url, item]));
+  const payload = await requestJsonFromGitHubModels({
     model,
     maxTokens: 3500,
-    searchRecencyFilter: 'week',
     systemPrompt:
-      'You are the weekly research desk for AI Security Brief. Return strict JSON only. No markdown fences. Use only real, authoritative sources from the last 7 days.',
+      'You are the weekly research desk for AI Security Brief. Return strict JSON only. No markdown fences. You must only use the curated source items provided by the user prompt.',
     userPrompt: [
-      `Prepare the weekly AI security harvest for ${context.effectiveDate} (${weekKey}).`,
+      `Prepare the weekly AI security harvest for ${context.effectiveDate}.`,
       'Return JSON in this shape:',
       '{"findings":[{"headline":"string","summary":"string","implication":"string","source_name":"string","source_url":"https://...","category":"Attack|Vulnerability|Regulation|Defence|Incident|Framework"}]}',
       'Requirements:',
       '- 5 to 7 findings only.',
+      '- Only select from the curated source items listed below. Do not invent or rewrite source_name or source_url.',
       '- Focus on AI-powered cyberattacks, prompt injection, model vulnerabilities, privacy regulation, AI security tooling, enterprise incidents, and agentic AI security.',
       '- Rank findings by security impact.',
       '- Summary must be exactly 2 sentences.',
       '- Implication must be exactly 1 sentence.',
-      '- Every source URL must be directly usable and real.',
       '- Do not invent citations or placeholder URLs.',
+      '',
+      'Curated source items:',
+      buildHarvestCandidateDigest(candidateSet.items),
     ].join('\n'),
-    validate: validateHarvestPayload,
+    validate: (value) => validateHarvestPayload(value, allowedSources),
   });
-
-  const { isoWeek } = (() => {
-    const [year, month, day] = context.effectiveDate.split('-').map(Number);
-    const utcDate = new Date(Date.UTC(year, month - 1, day));
-    const dayNumber = utcDate.getUTCDay() || 7;
-    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNumber);
-    const isoYearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
-    const weekNumber = Math.ceil((((utcDate.getTime() - isoYearStart.getTime()) / 86400000) + 1) / 7);
-    return { isoWeek: weekNumber };
-  })();
 
   const markdown = renderHarvestMarkdown({
     date: context.effectiveDate,
-    weekNumber: isoWeek,
+    weekNumber: Number(context.identity.weekKey.split('-')[1]),
     findings: payload.findings,
   });
 
@@ -124,6 +134,10 @@ async function main() {
     outputs: [
       `Harvest generated: \`harvests/harvest-${context.effectiveDate}.md\``,
       `Finding count: ${payload.findings.length}`,
+    ],
+    notes: [
+      `Curated feed candidates reviewed: ${candidateSet.items.length}`,
+      ...candidateSet.notes,
     ],
   });
 }

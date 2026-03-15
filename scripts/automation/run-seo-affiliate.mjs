@@ -3,7 +3,7 @@
 import path from 'node:path';
 import matter from 'gray-matter';
 import {
-  DEFAULT_PERPLEXITY_MODEL,
+  DEFAULT_GITHUB_MODELS_MODEL,
   REPO_ROOT,
   listChangedBlogFilesAgainstMain,
   readText,
@@ -11,7 +11,7 @@ import {
   runContentManifestWrite,
   writeText,
 } from './common.mjs';
-import { requestJsonFromPerplexity } from './perplexity.mjs';
+import { requestJsonFromGitHubModels } from './github-models.mjs';
 import { injectAffiliatePlaceholders, parseAffiliatePlaceholderMap } from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
@@ -29,7 +29,7 @@ function validateSeoPayload(payload) {
 }
 
 async function main() {
-  requireEnvVars(['PERPLEXITY_API_KEY']);
+  requireEnvVars(['GITHUB_TOKEN']);
 
   const context = await prepareAutomationRun({
     kind: 'content',
@@ -40,7 +40,7 @@ async function main() {
     return;
   }
 
-  const model = process.env.PERPLEXITY_MODEL?.trim() || DEFAULT_PERPLEXITY_MODEL;
+  const model = process.env.GITHUB_MODELS_MODEL?.trim() || DEFAULT_GITHUB_MODELS_MODEL;
   const changedFiles = await listChangedBlogFilesAgainstMain();
 
   if (changedFiles.length === 0) {
@@ -63,10 +63,9 @@ async function main() {
       !Array.isArray(parsed.data.keywords) ||
       parsed.data.keywords.length !== 5
     ) {
-      const seo = await requestJsonFromPerplexity({
+      const seo = await requestJsonFromGitHubModels({
         model,
         maxTokens: 1500,
-        searchRecencyFilter: 'week',
         systemPrompt:
           'You are the SEO metadata optimiser for AI Security Brief. Return strict JSON only. No markdown fences.',
         userPrompt: [

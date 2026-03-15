@@ -4,13 +4,13 @@ import path from 'node:path';
 import { promises as fs } from 'node:fs';
 import matter from 'gray-matter';
 import {
-  DEFAULT_PERPLEXITY_MODEL,
+  DEFAULT_GITHUB_MODELS_MODEL,
   REPO_ROOT,
   fileExists,
   readText,
   writeText,
 } from './common.mjs';
-import { requestJsonFromPerplexity } from './perplexity.mjs';
+import { requestJsonFromGitHubModels } from './github-models.mjs';
 import {
   getNextNewsletterIssueNumber,
   parseAffiliatePrograms,
@@ -20,7 +20,7 @@ import {
 } from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
-function validateNewsletterPayload(payload) {
+function validateNewsletterPayload(payload, validArticleMap) {
   if (
     !payload ||
     typeof payload !== 'object' ||
@@ -36,10 +36,36 @@ function validateNewsletterPayload(payload) {
   ) {
     throw new Error('Newsletter payload is missing required fields.');
   }
+
+  if (!payload.tool_of_week || typeof payload.tool_of_week.description !== 'string') {
+    throw new Error('Newsletter payload must include a valid tool_of_week block.');
+  }
+
+  const firstTwoSignals = payload.signals.slice(0, 2);
+  const seenArticleSlugs = new Set();
+  for (const signal of firstTwoSignals) {
+    if (
+      typeof signal?.article_slug !== 'string' ||
+      typeof signal?.article_title !== 'string' ||
+      !validArticleMap.has(signal.article_slug)
+    ) {
+      throw new Error('The first two newsletter signals must reference the current weekly article drafts.');
+    }
+
+    if (seenArticleSlugs.has(signal.article_slug)) {
+      throw new Error('The first two newsletter signals must reference two distinct weekly article drafts.');
+    }
+    seenArticleSlugs.add(signal.article_slug);
+
+    const expectedTitle = validArticleMap.get(signal.article_slug)?.title;
+    if (expectedTitle && expectedTitle !== signal.article_title) {
+      throw new Error(`Newsletter signal title mismatch for ${signal.article_slug}.`);
+    }
+  }
 }
 
 async function main() {
-  requireEnvVars(['PERPLEXITY_API_KEY']);
+  requireEnvVars(['GITHUB_TOKEN']);
 
   const context = await prepareAutomationRun({
     kind: 'content',
@@ -50,7 +76,7 @@ async function main() {
     return;
   }
 
-  const model = process.env.PERPLEXITY_MODEL?.trim() || DEFAULT_PERPLEXITY_MODEL;
+  const model = process.env.GITHUB_MODELS_MODEL?.trim() || DEFAULT_GITHUB_MODELS_MODEL;
   const harvestPath = path.join(REPO_ROOT, 'harvests', `harvest-${context.effectiveDate}.md`);
   const draftPath = path.join(REPO_ROOT, 'drafts', `newsletter-${context.effectiveDate}.md`);
 
@@ -90,6 +116,8 @@ async function main() {
     throw new Error(`Newsletter compiler requires 2 dated article drafts for ${context.effectiveDate}.`);
   }
 
+  const articleMap = new Map(datedArticles.map((article) => [article.slug, article]));
+
   const harvestFindings = parseHarvestMarkdown(await readText(harvestPath));
   const affiliatePrograms = await readText(path.join(REPO_ROOT, 'affiliate-programs.md'));
   const placeholders = parseAffiliatePlaceholderMap(affiliatePrograms);
@@ -107,10 +135,9 @@ async function main() {
     draftCount: draftFiles.length,
   });
 
-  const payload = await requestJsonFromPerplexity({
+  const payload = await requestJsonFromGitHubModels({
     model,
     maxTokens: 4500,
-    searchRecencyFilter: 'week',
     systemPrompt:
       'You are the newsletter editor for AI Security Brief. Return strict JSON only. No markdown fences. Do not publish or reference any email platform UI.',
     userPrompt: [
@@ -128,7 +155,7 @@ async function main() {
       '- Keep the preview text under 150 characters.',
       '- Keep subject lines under 50 characters.',
     ].join('\n'),
-    validate: validateNewsletterPayload,
+    validate: (value) => validateNewsletterPayload(value, articleMap),
   });
 
   const draft = renderNewsletterDraft({

@@ -5,7 +5,8 @@ import {
   getLocalTimeParts,
   shouldRunInScheduledWindow,
 } from '../scripts/automation/common.mjs';
-import { requestJsonFromPerplexity } from '../scripts/automation/perplexity.mjs';
+import { parseFeedDocument, selectRelevantFeedItems } from '../scripts/automation/feeds.mjs';
+import { requestJsonFromGitHubModels } from '../scripts/automation/github-models.mjs';
 import {
   buildExpectedArticlePlan,
   injectAffiliatePlaceholders,
@@ -55,15 +56,15 @@ test('automation identity uses ISO week naming for content and performance branc
   });
 });
 
-test('Perplexity client retries once when the first response is invalid JSON', async () => {
-  process.env.PERPLEXITY_API_KEY = 'test-key';
+test('GitHub Models client retries once when the first response is invalid JSON', async () => {
+  process.env.GITHUB_TOKEN = 'test-token';
   const responses = [
     { choices: [{ message: { content: 'not valid json' } }] },
     { choices: [{ message: { content: '{"findings":[{"headline":"A","summary":"B","implication":"C","source_name":"D","source_url":"https://example.com","category":"Attack"}]}' } }] },
   ];
   let callCount = 0;
 
-  const payload = await requestJsonFromPerplexity({
+  const payload = await requestJsonFromGitHubModels({
     systemPrompt: 'test',
     userPrompt: 'test',
     validate(value: unknown) {
@@ -78,6 +79,50 @@ test('Perplexity client retries once when the first response is invalid JSON', a
 
   assert.equal(callCount, 2);
   assert.equal(payload.findings[0].source_url, 'https://example.com');
+});
+
+test('feed parser and selector keep AI security stories and drop low-signal items', () => {
+  const rss = `<?xml version="1.0"?>
+  <rss version="2.0">
+    <channel>
+      <title>Example Security</title>
+      <item>
+        <title>Prompt injection attacks hit enterprise copilots</title>
+        <link>https://example.com/copilot-attack?utm_source=test</link>
+        <description><![CDATA[Researchers documented prompt injection chains affecting AI assistants and enterprise data boundaries.]]></description>
+        <pubDate>Mon, 16 Mar 2026 02:00:00 GMT</pubDate>
+      </item>
+      <item>
+        <title>Podcast: Security trends this week</title>
+        <link>https://example.com/podcast</link>
+        <description>Not relevant to the pipeline.</description>
+        <pubDate>Mon, 16 Mar 2026 01:00:00 GMT</pubDate>
+      </item>
+    </channel>
+  </rss>`;
+
+  const atom = `<?xml version="1.0" encoding="utf-8"?>
+  <feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Example AI</title>
+    <entry>
+      <title>AI privacy rules tighten across Australia</title>
+      <link rel="alternate" href="https://example.com/privacy-update" />
+      <summary>Australian regulators updated privacy guidance for AI deployments.</summary>
+      <updated>2026-03-15T08:00:00Z</updated>
+      <id>tag:example.com,2026:privacy-update</id>
+    </entry>
+  </feed>`;
+
+  const parsed = [
+    ...parseFeedDocument(rss, { name: 'Example Security', url: 'https://example.com/rss' }),
+    ...parseFeedDocument(atom, { name: 'Example AI', url: 'https://example.com/atom' }),
+  ];
+  const selected = selectRelevantFeedItems(parsed, { limit: 5 });
+
+  assert.equal(parsed.length, 3);
+  assert.equal(selected.length, 2);
+  assert.equal(selected[0].source_url, 'https://example.com/copilot-attack');
+  assert.equal(selected[1].source_url, 'https://example.com/privacy-update');
 });
 
 test('harvest renderer round-trips structured findings', () => {

@@ -18,6 +18,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  models: read
 
 jobs:
   seo_affiliate:
@@ -58,9 +59,8 @@ jobs:
       - name: Run SEO and affiliate automation
         if: ${{ steps.gate.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
-          PERPLEXITY_MODEL: ${{ vars.PERPLEXITY_MODEL || 'sonar-pro' }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL || 'openai/gpt-4o-mini' }}
           AUTOMATION_RUN_DATE: ${{ github.event.inputs.run_date }}
           AUTOMATION_DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: node scripts/automation/run-seo-affiliate.mjs

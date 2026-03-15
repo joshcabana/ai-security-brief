@@ -28,7 +28,7 @@ AI Security Brief is an authority publication covering AI-powered cybersecurity 
 
 ## Content Pipeline
 
-Automated via 5 scheduled GitHub Actions workflows backed by the Perplexity API:
+Automated via 5 scheduled GitHub Actions workflows backed by GitHub Models and curated security feeds:
 
 1. **Weekly Harvest** — Researches the top AI security developments and writes `harvests/harvest-YYYY-MM-DD.md`
 2. **Article Factory** — Writes 2 SEO article drafts from that week’s harvest into `/blog`
@@ -40,15 +40,14 @@ Each workflow creates or updates a draft PR on a weekly branch (`codex/content-w
 
 Required GitHub automation secrets:
 
-- `PERPLEXITY_API_KEY`
 - `BEEHIIV_API_KEY`
 - `BEEHIIV_PUBLICATION_ID`
 
 Optional GitHub automation variable:
 
-- `PERPLEXITY_MODEL` — defaults to `sonar-pro`
+- `GITHUB_MODELS_MODEL` — defaults to `openai/gpt-4o-mini`
 
-See `zapier-setup.md` for the current automation runbook. `skills.md` remains as a legacy reference only.
+GitHub Actions uses the built-in `GITHUB_TOKEN` plus `models: read` permission for model inference. See `automation-architecture.md` and `zapier-setup.md` for the current runbook. `skills.md` remains as a legacy reference only.
 
 ## Getting Started
 
@@ -99,7 +98,8 @@ ai-security-brief/
 ├── beehiiv-setup.md      # Newsletter platform setup guide
 ├── newsletter-issue-001.md # Issue #1 template
 ├── skills.md             # Legacy Computer skill reference
-├── zapier-setup.md       # GitHub Actions + Perplexity API automation runbook
+├── automation-architecture.md # Canonical automation design
+├── zapier-setup.md       # GitHub Actions + GitHub Models automation runbook
 └── launch-checklist.md   # Step-by-step launch guide
 ```
 

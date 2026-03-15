@@ -171,11 +171,10 @@ Thanks,
 **Steps:**
 1. Go to GitHub → Repo → Settings → Secrets and variables → Actions
 2. Add repository secrets:
-   - `PERPLEXITY_API_KEY`
    - `BEEHIIV_API_KEY`
    - `BEEHIIV_PUBLICATION_ID`
 3. Add optional repository variable:
-   - `PERPLEXITY_MODEL=sonar-pro`
+   - `GITHUB_MODELS_MODEL=openai/gpt-4o-mini`
 4. Review `zapier-setup.md` — it now documents the production GitHub Actions pipeline
 5. Confirm the following workflows exist:
    - `weekly-harvest.yml`

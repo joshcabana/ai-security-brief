@@ -3,7 +3,7 @@
 import path from 'node:path';
 import { promises as fs } from 'node:fs';
 import {
-  DEFAULT_PERPLEXITY_MODEL,
+  DEFAULT_GITHUB_MODELS_MODEL,
   REPO_ROOT,
   countWords,
   fileExists,
@@ -12,11 +12,11 @@ import {
   runContentManifestWrite,
   writeText,
 } from './common.mjs';
-import { requestJsonFromPerplexity } from './perplexity.mjs';
+import { requestJsonFromGitHubModels } from './github-models.mjs';
 import { buildExpectedArticlePlan, parseHarvestMarkdown, renderArticleMarkdown } from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
-function validateArticlePayload(payload, expectedSlugs) {
+function validateArticlePayload(payload, expectedSlugs, allowedReferences) {
   if (!payload || typeof payload !== 'object' || !Array.isArray(payload.articles) || payload.articles.length !== 2) {
     throw new Error('Article payload must contain exactly 2 articles.');
   }
@@ -56,6 +56,16 @@ function validateArticlePayload(payload, expectedSlugs) {
       throw new Error(`Article ${article.slug} must include 4 or 5 sections.`);
     }
 
+    for (const section of article.sections) {
+      if (
+        typeof section?.heading !== 'string' ||
+        !Array.isArray(section?.paragraphs) ||
+        section.paragraphs.length < 2
+      ) {
+        throw new Error(`Article ${article.slug} must include sections with headings and at least 2 paragraphs.`);
+      }
+    }
+
     if (article.references.length < 4) {
       throw new Error(`Article ${article.slug} must include at least 4 references.`);
     }
@@ -69,12 +79,16 @@ function validateArticlePayload(payload, expectedSlugs) {
       ) {
         throw new Error(`Article ${article.slug} contains an invalid reference.`);
       }
+
+      if (!allowedReferences.has(reference.url)) {
+        throw new Error(`Article ${article.slug} cited a reference outside the current harvest: ${reference.url}`);
+      }
     }
   }
 }
 
 async function main() {
-  requireEnvVars(['PERPLEXITY_API_KEY']);
+  requireEnvVars(['GITHUB_TOKEN']);
 
   const context = await prepareAutomationRun({
     kind: 'content',
@@ -85,7 +99,7 @@ async function main() {
     return;
   }
 
-  const model = process.env.PERPLEXITY_MODEL?.trim() || DEFAULT_PERPLEXITY_MODEL;
+  const model = process.env.GITHUB_MODELS_MODEL?.trim() || DEFAULT_GITHUB_MODELS_MODEL;
   const harvestPath = path.join(REPO_ROOT, 'harvests', `harvest-${context.effectiveDate}.md`);
 
   if (!(await fileExists(harvestPath))) {
@@ -115,16 +129,33 @@ async function main() {
   }
 
   const expectedSlugs = new Set(articlePlan.map((item) => item.slug));
-  const payload = await requestJsonFromPerplexity({
+  const allowedReferences = new Set(findings.map((finding) => finding.source_url));
+  const harvestSourcePack = findings
+    .map(
+      (finding, index) => [
+        `${index + 1}. ${finding.headline}`,
+        `Category: ${finding.category}`,
+        `Summary: ${finding.summary}`,
+        `Implication: ${finding.implication}`,
+        `Source: ${finding.source_name}`,
+        `URL: ${finding.source_url}`,
+      ].join('\n'),
+    )
+    .join('\n\n');
+
+  const payload = await requestJsonFromGitHubModels({
     model,
     maxTokens: 7000,
-    searchRecencyFilter: 'week',
     systemPrompt:
-      'You are the article generation engine for AI Security Brief. Return strict JSON only. No markdown fences. Use only real and directly linkable authoritative sources.',
+      'You are the article generation engine for AI Security Brief. Return strict JSON only. No markdown fences. Use only the supplied weekly harvest source pack. Do not cite URLs that are not in the source pack.',
     userPrompt: [
       `Write 2 SEO-ready AI security articles for ${context.effectiveDate}.`,
       'Use these exact target slugs and topics:',
       ...articlePlan.map((item) => `- slug: ${item.slug} | category: ${item.category} | finding: ${item.headline}`),
+      '',
+      'Weekly harvest source pack:',
+      harvestSourcePack,
+      '',
       'Return JSON in this shape:',
       '{"articles":[{"slug":"string","title":"string","excerpt":"string","meta_title":"string","meta_description":"string","keywords":["a","b","c","d","e"],"intro":["paragraph"],"sections":[{"heading":"string","paragraphs":["paragraph","paragraph"]}],"key_takeaways":["item"],"references":[{"source_name":"string","title":"string","url":"https://..."}]}]}',
       'Requirements:',
@@ -132,11 +163,11 @@ async function main() {
       '- Each article should render to roughly 900-1100 words.',
       '- 4 or 5 H2 sections.',
       '- 4 to 5 key takeaways.',
-      '- At least 4 authoritative references with real URLs.',
+      '- At least 4 references, and every reference URL must come from the weekly harvest source pack.',
       '- Keep tone authoritative, data-driven, and written for tech professionals and IT decision-makers.',
-      '- Do not invent statistics or sources.',
+      '- Do not invent statistics or sources. When the source pack is sparse, prefer careful analysis and defensive guidance over unsupported claims.',
     ].join('\n'),
-    validate: (value) => validateArticlePayload(value, expectedSlugs),
+    validate: (value) => validateArticlePayload(value, expectedSlugs, allowedReferences),
   });
 
   const writtenFiles = [];

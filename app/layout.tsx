@@ -87,9 +87,9 @@ export default function RootLayout({
               url: siteUrl,
               description: siteDescription,
               creator: {
-                '@type': 'SoftwareApplication',
-                name: 'Perplexity Computer',
-                url: 'https://www.perplexity.ai/computer',
+                '@type': 'Organization',
+                name: siteName,
+                url: siteUrl,
               },
             }),
           }}

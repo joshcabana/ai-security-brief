@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { DEFAULT_PERPLEXITY_MODEL, PERPLEXITY_API_URL } from './common.mjs';
+import { DEFAULT_GITHUB_MODELS_MODEL, GITHUB_MODELS_API_URL } from './common.mjs';
 
 function extractJsonCandidate(content) {
   const trimmed = content.trim();
@@ -29,6 +29,16 @@ function extractJsonCandidate(content) {
   return trimmed;
 }
 
+function resolveToken() {
+  const token = process.env.GITHUB_MODELS_TOKEN?.trim() || process.env.GITHUB_TOKEN?.trim();
+
+  if (!token) {
+    throw new Error('GITHUB_TOKEN or GITHUB_MODELS_TOKEN is required for GitHub Models automation.');
+  }
+
+  return token;
+}
+
 /**
  * @param {{
  *   systemPrompt: string;
@@ -37,26 +47,19 @@ function extractJsonCandidate(content) {
  *   model?: string;
  *   maxTokens?: number;
  *   temperature?: number;
- *   searchRecencyFilter?: string;
  *   fetchImpl?: typeof fetch;
  * }} options
  */
-export async function requestJsonFromPerplexity({
+export async function requestJsonFromGitHubModels({
   systemPrompt,
   userPrompt,
   validate,
-  model = process.env.PERPLEXITY_MODEL || DEFAULT_PERPLEXITY_MODEL,
+  model = process.env.GITHUB_MODELS_MODEL || DEFAULT_GITHUB_MODELS_MODEL,
   maxTokens = 4000,
   temperature = 0.2,
-  searchRecencyFilter = undefined,
   fetchImpl = fetch,
 }) {
-  const apiKey = process.env.PERPLEXITY_API_KEY?.trim();
-
-  if (!apiKey) {
-    throw new Error('PERPLEXITY_API_KEY is required for automation workflows.');
-  }
-
+  const token = resolveToken();
   const attempts = [
     userPrompt,
     `${userPrompt}\n\nPrevious response was invalid. Return valid JSON only with no markdown fences, no commentary, and no omitted fields.`,
@@ -65,25 +68,19 @@ export async function requestJsonFromPerplexity({
   let lastError = null;
 
   for (const prompt of attempts) {
-    const response = await fetchImpl(PERPLEXITY_API_URL, {
+    const response = await fetchImpl(GITHUB_MODELS_API_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
         'Content-Type': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28',
       },
       body: JSON.stringify({
         model,
-        response_format: { type: 'json_object' },
         temperature,
         max_tokens: maxTokens,
-        search_mode: 'web',
-        search_language_filter: ['en'],
-        ...(searchRecencyFilter ? { search_recency_filter: searchRecencyFilter } : {}),
-        web_search_options: {
-          user_location: {
-            country: 'AU',
-          },
-        },
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt },
@@ -93,14 +90,14 @@ export async function requestJsonFromPerplexity({
 
     if (!response.ok) {
       const body = await response.text();
-      throw new Error(`Perplexity API request failed with ${response.status}: ${body}`);
+      throw new Error(`GitHub Models request failed with ${response.status}: ${body}`);
     }
 
     const payload = await response.json();
     const content = payload?.choices?.[0]?.message?.content;
 
     if (typeof content !== 'string' || content.trim().length === 0) {
-      lastError = new Error('Perplexity API returned an empty completion.');
+      lastError = new Error('GitHub Models returned an empty completion.');
       continue;
     }
 
@@ -113,5 +110,5 @@ export async function requestJsonFromPerplexity({
     }
   }
 
-  throw lastError ?? new Error('Perplexity API did not return valid JSON.');
+  throw lastError ?? new Error('GitHub Models did not return valid JSON.');
 }

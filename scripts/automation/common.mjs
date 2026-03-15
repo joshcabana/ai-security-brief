@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 const execFile = promisify(execFileCallback);
 
 export const TIME_ZONE = 'Australia/Sydney';
-export const DEFAULT_PERPLEXITY_MODEL = 'sonar-pro';
-export const PERPLEXITY_API_URL = 'https://api.perplexity.ai/v1/sonar';
+export const DEFAULT_GITHUB_MODELS_MODEL = 'openai/gpt-4o-mini';
+export const GITHUB_MODELS_API_URL = 'https://models.github.ai/inference/chat/completions';
 export const CONTENT_BRANCH_PREFIX = 'codex/content-week-';
 export const PERFORMANCE_BRANCH_PREFIX = 'codex/performance-week-';
 export const CONTENT_PR_PREFIX = 'Automation: content week ';
@@ -163,6 +163,14 @@ export function getIsoWeekInfo(dateString) {
 export function buildWeekKey(dateString) {
   const { isoYear, isoWeek } = getIsoWeekInfo(dateString);
   return `${isoYear}-${String(isoWeek).padStart(2, '0')}`;
+}
+
+export function shiftDateString(dateString, offsetDays) {
+  assertDateString(dateString, 'date');
+  const [year, month, day] = dateString.split('-').map(Number);
+  const shifted = new Date(Date.UTC(year, month - 1, day));
+  shifted.setUTCDate(shifted.getUTCDate() + offsetDays);
+  return shifted.toISOString().slice(0, 10);
 }
 
 export function buildAutomationIdentity(kind, dateString) {

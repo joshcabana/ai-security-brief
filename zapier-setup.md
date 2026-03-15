@@ -1,4 +1,4 @@
-# Automation Runbook — GitHub Actions + Perplexity API
+# Automation Runbook — GitHub Actions + GitHub Models
 
 > This is the production automation path. Zapier and Perplexity Computer are deprecated for live operation.
 
@@ -6,14 +6,13 @@
 
 - GitHub repository admin access for `joshcabana/ai-security-brief`
 - GitHub Actions enabled
-- Perplexity API key stored as GitHub secret: `PERPLEXITY_API_KEY`
 - Beehiiv secrets stored as GitHub secrets:
   - `BEEHIIV_API_KEY`
   - `BEEHIIV_PUBLICATION_ID`
 - Optional GitHub Actions variable:
-  - `PERPLEXITY_MODEL` → defaults to `sonar-pro`
+  - `GITHUB_MODELS_MODEL` → defaults to `openai/gpt-4o-mini`
 
-`GITHUB_TOKEN` is provided automatically by GitHub Actions and is used to push weekly branches and open draft PRs.
+`GITHUB_TOKEN` is provided automatically by GitHub Actions and is used for GitHub Models inference, pushing weekly branches, and opening draft PRs. Model workflows need `models: read`.
 
 ## Architecture Overview
 
@@ -77,10 +76,9 @@ Operational rules:
 
 ## Initial Setup Checklist
 
-- [ ] Add GitHub secret `PERPLEXITY_API_KEY`
 - [ ] Add GitHub secret `BEEHIIV_API_KEY`
 - [ ] Add GitHub secret `BEEHIIV_PUBLICATION_ID`
-- [ ] Optionally add GitHub variable `PERPLEXITY_MODEL=sonar-pro`
+- [ ] Optionally add GitHub variable `GITHUB_MODELS_MODEL=openai/gpt-4o-mini`
 - [ ] Manually run `weekly-harvest.yml` via `workflow_dispatch`
 - [ ] Manually run `article-factory.yml` against the same `run_date`
 - [ ] Manually run `newsletter-compiler.yml` against the same `run_date`
@@ -110,6 +108,7 @@ Suggested first backfill order:
 | SEO optimiser no-ops | Current weekly branch already has complete metadata and affiliate placeholders | Review the PR and merge |
 | Performance logger fails | Beehiiv secrets missing or API response changed | Check `BEEHIIV_API_KEY`, `BEEHIIV_PUBLICATION_ID`, and Beehiiv API availability |
 | PR not created | Missing `GITHUB_TOKEN` permissions or branch push failed | Confirm workflow permissions are `contents: write` and `pull-requests: write` |
+| Model call fails | Workflow is missing `models: read` or model access is unavailable | Confirm workflow permissions include `models: read` and retry with the default model |
 
 ## Deprecated Paths
 

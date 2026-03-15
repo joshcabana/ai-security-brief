@@ -1,6 +1,6 @@
 # Perplexity Computer Skills — AI Security Brief
 
-> Legacy reference only. Production automation now runs through GitHub Actions + the Perplexity API. Do not use these Computer skills as the live weekly pipeline.
+> Legacy reference only. Production automation now runs through GitHub Actions + GitHub Models. Do not use these Computer skills as the live weekly pipeline.
 >
 > 5 reusable skills for the AI Security Brief content pipeline.  
 > Copy each skill's text block and paste it into **Computer → Skills → Create Skill**.
