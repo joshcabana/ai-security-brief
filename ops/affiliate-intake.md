@@ -2,6 +2,15 @@
 
 This file is the canonical source for affiliate application details for AI Security Brief.
 
+## Current application status
+
+Updated: 16 March 2026
+
+- NordVPN: Submitted, under review
+- Proton: Submitted, under review
+- 1Password / CJ: Account signup submitted, awaiting email verification
+- Remaining programs in `launch-checklist.md`: Not started
+
 ## Canonical business details
 
 - Legal name: Joshua Cabana
