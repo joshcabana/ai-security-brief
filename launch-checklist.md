@@ -166,48 +166,41 @@ Thanks,
 
 ---
 
-## 8. Zapier Account Setup + 5 Zaps Activation (~30 min)
+## 8. GitHub Automation Secrets + Schedule (~15 min)
 
 **Steps:**
-1. Create Zapier account at [zapier.com](https://zapier.com)
-2. Follow `zapier-setup.md` to create all 5 Zaps
-3. Replace `[INSERT COMPUTER API KEY]` in each Zap with your actual key
-4. Create Zaps in this order:
-   - Zap 1: Weekly Harvest (Monday 5:00 AM AEDT)
-   - Zap 2: Article Factory (Monday 9:00 AM AEDT)
-   - Zap 3: Newsletter Compiler (Monday 1:00 PM AEDT)
-   - Zap 4: SEO Optimizer (Monday 3:00 PM AEDT)
-   - Zap 5: Performance Logger (Sunday 8:00 PM AEDT)
-5. Test each Zap with "Run" button
-6. Turn on all Zaps
+1. Go to GitHub → Repo → Settings → Secrets and variables → Actions
+2. Add repository secrets:
+   - `PERPLEXITY_API_KEY`
+   - `BEEHIIV_API_KEY`
+   - `BEEHIIV_PUBLICATION_ID`
+3. Add optional repository variable:
+   - `PERPLEXITY_MODEL=sonar-pro`
+4. Review `zapier-setup.md` — it now documents the production GitHub Actions pipeline
+5. Confirm the following workflows exist:
+   - `weekly-harvest.yml`
+   - `article-factory.yml`
+   - `newsletter-compiler.yml`
+   - `seo-affiliate.yml`
+   - `performance-logger.yml`
 
 ---
 
-## 9. Skills Activation in Computer (~15 min)
+## 9. First Manual Automation Backfill (~20 min)
 
-Activate in this exact sequence order:
+**Validate the full pipeline with `workflow_dispatch`:**
 
-1. **weekly-ai-security-harvest** — Go to Computer → Skills → Create Skill → paste from `skills.md` Skill 1
-2. **article-factory** — Paste from `skills.md` Skill 2
-3. **newsletter-compiler** — Paste from `skills.md` Skill 3
-4. **seo-affiliate-optimizer** — Paste from `skills.md` Skill 4
-5. **performance-logger** — Paste from `skills.md` Skill 5
+1. Run `weekly-harvest.yml` with an optional `run_date` override
+2. Verify `harvest-[DATE].md` appears on a draft PR branch
+3. Run `article-factory.yml` for the same `run_date`
+4. Verify 2 new article drafts appear in `/blog/`
+5. Run `newsletter-compiler.yml` for the same `run_date`
+6. Verify a draft appears in `/drafts/`
+7. Run `seo-affiliate.yml`
+8. Run `performance-logger.yml`
+9. Review the generated draft PRs and merge only after editorial review
 
----
-
-## 10. First Manual Test Run (~15 min)
-
-**Validate the full pipeline manually:**
-
-1. Open Perplexity Computer
-2. Type: "Use the weekly-ai-security-harvest skill"
-3. Verify a `harvest-[DATE].md` file appears in `/harvests/` on GitHub
-4. Then type: "Use the article-factory skill"
-5. Verify 2 new articles appear in `/blog/` on GitHub
-6. Check the live site to confirm articles render correctly
-7. Run the newsletter compiler and check `/drafts/`
-
-**If all passes:** The automated pipeline is ready. Zaps will handle everything from next Monday.
+**If all passes:** The weekly automated pipeline is ready. Scheduled workflows will maintain it from there.
 
 ---
 
@@ -222,10 +215,9 @@ Activate in this exact sequence order:
 | .env configuration | 10 min | ☐ |
 | Affiliate signups (8 programs) | 45 min | ☐ |
 | Publisher program email | 5 min | ☐ |
-| Zapier setup (5 Zaps) | 30 min | ☐ |
-| Skills activation (5 skills) | 15 min | ☐ |
-| First manual test run | 15 min | ☐ |
-| **TOTAL** | **~3 hours 10 min** | |
+| GitHub automation secrets | 15 min | ☐ |
+| First manual automation backfill | 20 min | ☐ |
+| **TOTAL** | **~2 hours 35 min** | |
 
 ---
 

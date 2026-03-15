@@ -28,15 +28,27 @@ AI Security Brief is an authority publication covering AI-powered cybersecurity 
 
 ## Content Pipeline
 
-Automated via 5 Perplexity Computer Skills + Zapier:
+Automated via 5 scheduled GitHub Actions workflows backed by the Perplexity API:
 
-1. **Weekly Harvest** — Researches top AI security developments
-2. **Article Factory** — Writes 2 SEO articles from harvest findings
-3. **Newsletter Compiler** — Compiles weekly newsletter draft
-4. **SEO + Affiliate Optimizer** — Adds metadata and affiliate links
-5. **Performance Logger** — Tracks newsletter metrics weekly
+1. **Weekly Harvest** — Researches the top AI security developments and writes `harvests/harvest-YYYY-MM-DD.md`
+2. **Article Factory** — Writes 2 SEO article drafts from that week’s harvest into `/blog`
+3. **Newsletter Compiler** — Compiles a review-only newsletter draft in `/drafts`
+4. **SEO + Affiliate Optimiser** — Fills missing metadata and injects approved affiliate placeholders on the weekly branch
+5. **Performance Logger** — Pulls Beehiiv metrics and upserts `logs/performance-log.md`
 
-See `skills.md` and `zapier-setup.md` for full automation details.
+Each workflow creates or updates a draft PR on a weekly branch (`codex/content-week-YYYY-WW` or `codex/performance-week-YYYY-WW`) so AI-generated content never lands directly on `main`.
+
+Required GitHub automation secrets:
+
+- `PERPLEXITY_API_KEY`
+- `BEEHIIV_API_KEY`
+- `BEEHIIV_PUBLICATION_ID`
+
+Optional GitHub automation variable:
+
+- `PERPLEXITY_MODEL` — defaults to `sonar-pro`
+
+See `zapier-setup.md` for the current automation runbook. `skills.md` remains as a legacy reference only.
 
 ## Getting Started
 
@@ -58,6 +70,11 @@ pnpm dev
 - `pnpm build` — run the production Next.js build
 - `pnpm test:smoke` — boot the production server and verify key routes plus subscribe API scenarios
 - `pnpm verify:release` — run the full pre-release verification pipeline
+- `pnpm automation:weekly-harvest` — run the weekly harvest job from a clean local checkout
+- `pnpm automation:article-factory` — generate weekly article drafts from the current harvest
+- `pnpm automation:newsletter-compiler` — generate the weekly newsletter draft
+- `pnpm automation:seo-affiliate` — fill SEO metadata gaps and inject affiliate placeholders
+- `pnpm automation:performance-logger` — upsert the weekly Beehiiv metrics log
 
 ## Repository Structure
 
@@ -75,21 +92,17 @@ ai-security-brief/
 ├── harvests/              # Weekly AI security research harvests
 ├── drafts/                # Newsletter drafts (pre-publish)
 ├── logs/                  # Performance tracking logs
-├── scripts/               # Content verification + manifest tooling
+├── scripts/               # Content verification + automation tooling
 ├── tests/                 # Unit-level regression coverage
 ├── .github/workflows/     # GitHub Actions CI/CD
 ├── affiliate-programs.md  # Affiliate program database
 ├── beehiiv-setup.md      # Newsletter platform setup guide
 ├── newsletter-issue-001.md # Issue #1 template
-├── skills.md             # 5 Perplexity Computer Skills
-├── zapier-setup.md       # Automation setup guide
+├── skills.md             # Legacy Computer skill reference
+├── zapier-setup.md       # GitHub Actions + Perplexity API automation runbook
 └── launch-checklist.md   # Step-by-step launch guide
 ```
 
 ## License
 
 © 2026 AI Security Brief. All rights reserved.
-
----
-
-Created with [Perplexity Computer](https://www.perplexity.ai/computer)
