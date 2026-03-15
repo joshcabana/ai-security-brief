@@ -7,6 +7,7 @@ import {
 } from '../scripts/automation/common.mjs';
 import { parseFeedDocument, selectRelevantFeedItems } from '../scripts/automation/feeds.mjs';
 import { requestJsonFromGitHubModels } from '../scripts/automation/github-models.mjs';
+import { countActiveSubscriptions, derivePerformanceSnapshot } from '../scripts/automation/run-performance-logger.mjs';
 import {
   buildExpectedArticlePlan,
   injectAffiliatePlaceholders,
@@ -220,4 +221,30 @@ test('performance log upsert replaces placeholder row and updates same-date entr
 
   assert.doesNotMatch(first, /Awaiting first issue/);
   assert.match(second, /\| 2026-03-15 \| 125 \| 44% \| 7% \| https:\/\/aithreatbrief.com\/blog\/example \| OK \|/);
+});
+
+test('performance helpers count active subscribers and gracefully handle empty post stats', () => {
+  assert.equal(
+    countActiveSubscriptions([
+      { status: 'active' },
+      { status: 'unsubscribed' },
+      { status: 'confirmed' },
+      { status: 'validating' },
+    ]),
+    3,
+  );
+
+  assert.deepEqual(derivePerformanceSnapshot({ aggregateStats: null, hasPosts: false }), {
+    openRate: '—',
+    clickRate: '—',
+    topLink: '—',
+    alerts: 'Awaiting first published Beehiiv issue.',
+  });
+
+  assert.deepEqual(derivePerformanceSnapshot({ aggregateStats: null, hasPosts: true }), {
+    openRate: '—',
+    clickRate: '—',
+    topLink: '—',
+    alerts: 'Warning: Beehiiv post stats are unavailable — review API health before relying on metrics.',
+  });
 });

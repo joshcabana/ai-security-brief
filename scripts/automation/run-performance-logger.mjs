@@ -1,17 +1,12 @@
 #!/usr/bin/env node
 
 import path from 'node:path';
-import {
-  REPO_ROOT,
-  fileExists,
-  readText,
-  toPercent,
-  writeText,
-} from './common.mjs';
+import { pathToFileURL } from 'node:url';
+import { REPO_ROOT, fileExists, readText, toPercent, writeText } from './common.mjs';
 import { upsertPerformanceLog } from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
-async function beehiivRequest(endpoint) {
+async function beehiivRequest(endpoint, { allowServerError = false } = {}) {
   const apiKey = process.env.BEEHIIV_API_KEY?.trim();
   const publicationId = process.env.BEEHIIV_PUBLICATION_ID?.trim();
 
@@ -28,24 +23,47 @@ async function beehiivRequest(endpoint) {
 
   if (!response.ok) {
     const body = await response.text();
+    if (allowServerError && response.status >= 500) {
+      return null;
+    }
     throw new Error(`Beehiiv API request failed with ${response.status}: ${body}`);
   }
 
   return response.json();
 }
 
-function extractSubscribers(payload) {
-  const value =
-    payload?.data?.stats?.active_subscriptions ??
-    payload?.data?.stats?.active_subscription_count ??
-    payload?.data?.stats?.subscriptions ??
-    null;
-
-  if (typeof value !== 'number') {
-    throw new Error('Beehiiv publication payload did not include an active subscription count.');
+export function countActiveSubscriptions(items) {
+  if (!Array.isArray(items)) {
+    return 0;
   }
 
-  return value;
+  return items.filter((item) => {
+    const status = String(item?.status ?? '').toLowerCase();
+    return ['active', 'confirmed', 'validating'].includes(status);
+  }).length;
+}
+
+async function fetchActiveSubscriberCount() {
+  let cursor = null;
+  let total = 0;
+
+  while (true) {
+    const params = new URLSearchParams({ limit: '100' });
+    if (cursor) {
+      params.set('cursor', cursor);
+    }
+
+    const payload = await beehiivRequest(`/subscriptions?${params.toString()}`);
+    total += countActiveSubscriptions(payload?.data);
+
+    const hasMore = payload?.pagination?.has_more ?? payload?.has_more ?? false;
+    const nextCursor = payload?.pagination?.next_cursor ?? payload?.next_cursor ?? null;
+    if (!hasMore || !nextCursor) {
+      return total;
+    }
+
+    cursor = nextCursor;
+  }
 }
 
 function extractTopLink(payload) {
@@ -65,6 +83,39 @@ function extractRate(value) {
   return toPercent(value);
 }
 
+export function derivePerformanceSnapshot({ aggregateStats, hasPosts }) {
+  if (!aggregateStats?.data) {
+    return {
+      openRate: '—',
+      clickRate: '—',
+      topLink: '—',
+      alerts: hasPosts
+        ? 'Warning: Beehiiv post stats are unavailable — review API health before relying on metrics.'
+        : 'Awaiting first published Beehiiv issue.',
+    };
+  }
+
+  const openRateRaw = aggregateStats?.data?.email?.open_rate ?? null;
+  const clickRateRaw = aggregateStats?.data?.email?.click_rate ?? null;
+  const openRate = extractRate(openRateRaw);
+  const clickRate = extractRate(clickRateRaw);
+  const topLink = extractTopLink(aggregateStats);
+  const numericOpenRate =
+    typeof openRateRaw === 'number'
+      ? (openRateRaw <= 1 ? openRateRaw * 100 : openRateRaw)
+      : null;
+
+  return {
+    openRate,
+    clickRate,
+    topLink,
+    alerts:
+      typeof numericOpenRate === 'number' && numericOpenRate < 35
+        ? 'Warning: open rate below 35% — refresh subject lines and intro hooks.'
+        : 'OK',
+  };
+}
+
 async function main() {
   requireEnvVars(['BEEHIIV_API_KEY', 'BEEHIIV_PUBLICATION_ID']);
 
@@ -77,25 +128,14 @@ async function main() {
     return;
   }
 
-  const publication = await beehiivRequest('');
-  const aggregateStats = await beehiivRequest('/posts/aggregate_stats');
-  const subscribers = extractSubscribers(publication);
-  const openRateRaw =
-    aggregateStats?.data?.email?.open_rate ??
-    publication?.data?.stats?.average_open_rate ??
-    null;
-  const clickRateRaw =
-    aggregateStats?.data?.email?.click_rate ??
-    publication?.data?.stats?.average_click_rate ??
-    null;
-  const openRate = extractRate(openRateRaw);
-  const clickRate = extractRate(clickRateRaw);
-  const topLink = extractTopLink(aggregateStats);
-  const numericOpenRate = typeof openRateRaw === 'number' ? (openRateRaw <= 1 ? openRateRaw * 100 : openRateRaw) : null;
-  const alerts =
-    typeof numericOpenRate === 'number' && numericOpenRate < 35
-      ? 'Warning: open rate below 35% — refresh subject lines and intro hooks.'
-      : 'OK';
+  const subscribers = await fetchActiveSubscriberCount();
+  const latestPosts = await beehiivRequest('/posts?limit=1', { allowServerError: true });
+  const hasPosts = Array.isArray(latestPosts?.data) && latestPosts.data.length > 0;
+  const aggregateStats = await beehiivRequest('/posts/aggregate_stats', { allowServerError: true });
+  const { openRate, clickRate, topLink, alerts } = derivePerformanceSnapshot({
+    aggregateStats,
+    hasPosts,
+  });
 
   const performanceLogPath = path.join(REPO_ROOT, 'logs', 'performance-log.md');
   const existing = (await fileExists(performanceLogPath))
@@ -138,7 +178,9 @@ async function main() {
   });
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  });
+}
