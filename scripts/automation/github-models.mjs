@@ -60,14 +60,12 @@ export async function requestJsonFromGitHubModels({
   fetchImpl = fetch,
 }) {
   const token = resolveToken();
-  const attempts = [
-    userPrompt,
-    `${userPrompt}\n\nPrevious response was invalid. Return valid JSON only with no markdown fences, no commentary, and no omitted fields.`,
-  ];
+  const maxAttempts = 3;
 
   let lastError = null;
+  let prompt = userPrompt;
 
-  for (const prompt of attempts) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const response = await fetchImpl(GITHUB_MODELS_API_URL, {
       method: 'POST',
       headers: {
@@ -107,6 +105,12 @@ export async function requestJsonFromGitHubModels({
       return parsed;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown JSON validation error.');
+      prompt = [
+        userPrompt,
+        '',
+        `Previous response failed validation: ${lastError.message}`,
+        'Return valid JSON only with no markdown fences, no commentary, and no omitted required fields.',
+      ].join('\n');
     }
   }
 

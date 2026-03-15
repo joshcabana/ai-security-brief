@@ -7,6 +7,7 @@
 - Scheduler: GitHub Actions cron plus `workflow_dispatch`
 - Model runtime: GitHub Models via `GITHUB_TOKEN`
 - Default model: `openai/gpt-4o-mini`
+- Article factory default: `openai/gpt-4.1`
 - Content safety rail: draft PRs only, never direct `main` commits
 
 ## Why this architecture

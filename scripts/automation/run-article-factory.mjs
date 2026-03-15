@@ -99,7 +99,7 @@ async function main() {
     return;
   }
 
-  const model = process.env.GITHUB_MODELS_MODEL?.trim() || DEFAULT_GITHUB_MODELS_MODEL;
+  const model = process.env.GITHUB_MODELS_MODEL?.trim() || 'openai/gpt-4.1';
   const harvestPath = path.join(REPO_ROOT, 'harvests', `harvest-${context.effectiveDate}.md`);
 
   if (!(await fileExists(harvestPath))) {
@@ -160,10 +160,12 @@ async function main() {
       '{"articles":[{"slug":"string","title":"string","excerpt":"string","meta_title":"string","meta_description":"string","keywords":["a","b","c","d","e"],"intro":["paragraph"],"sections":[{"heading":"string","paragraphs":["paragraph","paragraph"]}],"key_takeaways":["item"],"references":[{"source_name":"string","title":"string","url":"https://..."}]}]}',
       'Requirements:',
       '- Exactly 2 articles.',
-      '- Each article should render to roughly 900-1100 words.',
+      '- Each article should render to roughly 950-1200 words after markdown rendering.',
+      '- Intro must contain exactly 2 substantial paragraphs.',
       '- 4 or 5 H2 sections.',
+      '- Every section must contain exactly 2 substantial paragraphs.',
       '- 4 to 5 key takeaways.',
-      '- At least 4 references, and every reference URL must come from the weekly harvest source pack.',
+      '- Include 4 or 5 references, and every reference URL must come from the weekly harvest source pack.',
       '- Keep tone authoritative, data-driven, and written for tech professionals and IT decision-makers.',
       '- Do not invent statistics or sources. When the source pack is sparse, prefer careful analysis and defensive guidance over unsupported claims.',
     ].join('\n'),
