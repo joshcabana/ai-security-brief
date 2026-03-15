@@ -1,6 +1,11 @@
 # Affiliate Intake — AI Security Brief
 
-This file is the canonical source for affiliate application details for AI Security Brief.
+This file is the canonical source for affiliate application copy for AI Security Brief.
+
+> ⚠️ **Security:** Real personal and business details are stored locally only — never in this repo.
+> Fill placeholders from your local `~/.ai-security-brief/intake-private.md` before submitting any application.
+
+---
 
 ## Current application status
 
@@ -9,28 +14,43 @@ Updated: 16 March 2026
 - NordVPN: Submitted, under review
 - Proton: Submitted, under review
 - 1Password / CJ: Account signup submitted, awaiting email verification
-- Remaining programs in `launch-checklist.md`: Not started
+- Surfshark: Not started
+- Malwarebytes: Not started
+- PureVPN: Not started
+- CyberGhost: Not started
+- Jasper AI: Not started
 
-## Canonical business details
+---
 
-- Legal name: Joshua Cabana
-- Business / ABN: 91302503433
-- Business address: 189 Narrabundah Lane, Symonston ACT 2609, Australia
-- Phone: 0452377495
-- Contact email: cabana.collections2025@gmail.com
+## Canonical business details (placeholders)
+
+- Legal name: `[YOUR_LEGAL_NAME]`
+- Business name: CABANA COLLECTIONS
+- ABN: `[YOUR_ABN]`
+- Business address: `[YOUR_STREET], [SUBURB] [STATE] [POSTCODE], Australia`
+- Phone: `[YOUR_PHONE]`
+- Contact email: `[YOUR_CONTACT_EMAIL]`
 - Website: https://aithreatbrief.com
+
+> Real values live in `~/.ai-security-brief/intake-private.md` on your local machine only.
+
+---
 
 ## Business description
 
 AI Security Brief is an independent publisher covering AI-powered cybersecurity threats, privacy tools, prompt-injection risk, agent security, and defensive controls for technology professionals and IT decision-makers. The site publishes practical analysis, tool roundups, and weekly intelligence digests with an Australia/APAC-aware angle where relevant. Coverage focuses on security outcomes, privacy risk reduction, and trustworthy tooling rather than generic technology news.
 
+---
+
 ## Traffic / audience statement
 
-AI Security Brief launched in March 2026 and is in the early growth phase. The site is building its audience through weekly editorial publishing, a Beehiiv newsletter, organic search, and direct referral traffic from security and privacy content distribution. Traffic is currently modest because the publication is new, but it is growing from a live production site with a working content pipeline and a defined editorial niche in AI security and privacy.
+AI Security Brief launched in March 2026 and is in the early growth phase. The site is building its audience through weekly editorial publishing, a Beehiiv newsletter, organic search, and direct referral traffic from security and privacy content distribution.
 
 Use this wording when a form asks about current traffic, size, or maturity:
 
 > AI Security Brief launched in March 2026 and is an early-stage but live publication. Traffic is currently modest because the site is new, but it is growing through weekly publishing, newsletter distribution, search visibility, and security/privacy-focused editorial content.
+
+---
 
 ## Promotional methods
 
@@ -38,21 +58,23 @@ Use this wording when a form asks how the products will be promoted:
 
 > Products will be promoted through editorial reviews, comparison articles, weekly AI security and privacy briefings, newsletter placements, and curated tool/resource pages on aithreatbrief.com. Promotion is content-led and audience-aligned, with a focus on transparent recommendations for security-conscious readers rather than coupon or incentive traffic.
 
-Additional short-form version:
+Short-form version:
 
 > Editorial reviews, comparison articles, newsletter placements, and curated security-tools pages.
 
+---
+
 ## Application answer blocks
+
+Replace all `[PLACEHOLDER]` values from your local private intake file before submitting.
 
 ### NordVPN
 
-Use these answers where the form asks for account or business details:
-
 - Account type: Company
 - Company / business name: AI Security Brief
-- First name: Joshua
-- Last name: Cabana
-- Email: cabana.collections2025@gmail.com
+- First name: `[YOUR_FIRST_NAME]`
+- Last name: `[YOUR_LAST_NAME]`
+- Email: `[YOUR_CONTACT_EMAIL]`
 - Website: https://aithreatbrief.com
 - Business description:
 
@@ -60,26 +82,26 @@ Use these answers where the form asks for account or business details:
 
 - Traffic / audience:
 
-> The site launched in March 2026 and is in active growth. Audience development is currently driven by weekly publishing, newsletter distribution, search visibility, and direct referral traffic from AI security and privacy content.
+> The site launched in March 2026 and is in active growth. Audience development is driven by weekly publishing, newsletter distribution, search visibility, and direct referral traffic from AI security and privacy content.
 
 - Promotional methods:
 
 > Editorial reviews, comparison pieces, newsletter placements, and curated tool pages for a security-focused audience.
 
+---
+
 ### Proton
 
-Use these answers for the Proton partner form:
-
-- Company / Name: Joshua Cabana / AI Security Brief
+- Company / Name: `[YOUR_NAME]` / AI Security Brief
 - Website: https://aithreatbrief.com
-- Address 1: 189 Narrabundah Lane
+- Address 1: `[YOUR_STREET]`
 - Address 2: leave blank unless required
-- City: Symonston
+- City: `[YOUR_SUBURB]`
 - Country: Australia
 - State / territory: Australian Capital Territory
-- Postcode / ZIP: 2609
-- Phone: 0452377495
-- Contact email: cabana.collections2025@gmail.com
+- Postcode / ZIP: `[YOUR_POSTCODE]`
+- Phone: `[YOUR_PHONE]`
+- Contact email: `[YOUR_CONTACT_EMAIL]`
 - Business description:
 
 > AI Security Brief is an independent AI security and privacy publication focused on cybersecurity threats, privacy regulation, secure communications, and practical defensive tooling.
@@ -92,15 +114,15 @@ Use these answers for the Proton partner form:
 
 > Proton products would be promoted through privacy tool reviews, Australia/APAC privacy regulation coverage, newsletter recommendations, and curated tools pages relevant to readers seeking encrypted communication and secure identity tooling.
 
+---
+
 ### 1Password / CJ
 
-Use these answers for CJ publisher signup and the 1Password program application:
-
-- Company / account name: Joshua Cabana / AI Security Brief
+- Company / account name: `[YOUR_NAME]` / AI Security Brief
 - Country: Australia
-- Email: cabana.collections2025@gmail.com
+- Email: `[YOUR_CONTACT_EMAIL]`
 - Website: https://aithreatbrief.com
-- Business / ABN: 91302503433
+- ABN: `[YOUR_ABN]`
 - Business description:
 
 > AI Security Brief publishes independent analysis for readers who care about AI-enabled threats, password hygiene, identity security, privacy tooling, and practical defensive controls.
@@ -113,6 +135,38 @@ Use these answers for CJ publisher signup and the 1Password program application:
 
 > 1Password would be promoted through password-manager comparisons, security best-practice content, tool roundups, and newsletter placements aimed at technical readers and security-conscious professionals.
 
+---
+
+## Local private intake file
+
+Create this file on your local machine only — never push it to git:
+
+**Path:** `~/.ai-security-brief/intake-private.md`
+
+```
+# Private intake — AI Security Brief (DO NOT COMMIT)
+# Store real values here. Never push this file.
+
+Legal name:
+Business name: CABANA COLLECTIONS
+ABN:
+Address line 1:
+Suburb:
+State: Australian Capital Territory
+Postcode:
+Phone:
+Contact email:
+```
+
+Add to your global gitignore as a safeguard:
+
+```bash
+echo "$HOME/.ai-security-brief/" >> ~/.gitignore_global
+git config --global core.excludesfile ~/.gitignore_global
+```
+
+---
+
 ## Repo handling note
 
-No credentials, passwords, API keys, login links, or recovery secrets are stored in this repo. This file is strictly for reusable application profile data and safe copy for affiliate forms.
+No credentials, passwords, API keys, login links, recovery secrets, or real personal/business contact details are stored in this repo. This file contains only reusable copy templates and safe placeholder wording for affiliate forms.
