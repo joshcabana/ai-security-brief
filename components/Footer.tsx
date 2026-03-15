@@ -113,14 +113,9 @@ export default function Footer() {
             <span className="mx-2">·</span>
             <span style={{ fontFamily: '"JetBrains Mono", monospace', color: '#30363d' }}>Launch state: honest and repo-backed</span>
           </p>
-          <a
-            href="https://www.perplexity.ai/computer"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-[#484f58] transition-colors duration-200 hover:text-[#00b4ff]"
-          >
-            Created with Perplexity Computer
-          </a>
+          <span className="text-xs text-[#484f58]">
+            Automated with GitHub Actions
+          </span>
         </div>
       </div>
     </footer>
