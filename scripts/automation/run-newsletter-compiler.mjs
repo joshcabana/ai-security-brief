@@ -20,7 +20,7 @@ import {
 } from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
-function validateNewsletterPayload(payload, validArticleMap) {
+function validateNewsletterPayload(payload, validArticleMap, validHarvestSourceMap) {
   if (
     !payload ||
     typeof payload !== 'object' ||
@@ -60,6 +60,22 @@ function validateNewsletterPayload(payload, validArticleMap) {
     const expectedTitle = validArticleMap.get(signal.article_slug)?.title;
     if (expectedTitle && expectedTitle !== signal.article_title) {
       throw new Error(`Newsletter signal title mismatch for ${signal.article_slug}.`);
+    }
+  }
+
+  const thirdSignal = payload.signals[2];
+  if (thirdSignal?.source_url !== null && thirdSignal?.source_url !== undefined) {
+    if (
+      typeof thirdSignal.source_url !== 'string' ||
+      typeof thirdSignal.source_name !== 'string' ||
+      !validHarvestSourceMap.has(thirdSignal.source_url)
+    ) {
+      throw new Error('Signal 3 may only cite a source URL from the current weekly harvest.');
+    }
+
+    const expectedSourceName = validHarvestSourceMap.get(thirdSignal.source_url)?.source_name;
+    if (expectedSourceName && expectedSourceName !== thirdSignal.source_name) {
+      throw new Error(`Signal 3 source_name mismatch for ${thirdSignal.source_url}.`);
     }
   }
 }
@@ -119,6 +135,7 @@ async function main() {
   const articleMap = new Map(datedArticles.map((article) => [article.slug, article]));
 
   const harvestFindings = parseHarvestMarkdown(await readText(harvestPath));
+  const harvestSourceMap = new Map(harvestFindings.map((finding) => [finding.source_url, finding]));
   const affiliatePrograms = await readText(path.join(REPO_ROOT, 'affiliate-programs.md'));
   const placeholders = parseAffiliatePlaceholderMap(affiliatePrograms);
   const programs = parseAffiliatePrograms(affiliatePrograms);
@@ -146,17 +163,18 @@ async function main() {
       `Top three weekly findings:\n${harvestFindings.slice(0, 3).map((finding, index) => `${index + 1}. ${finding.headline} — ${finding.summary}`).join('\n')}`,
       `Article drafts:\n${datedArticles.slice(0, 2).map((article) => `- ${article.title} (/blog/${article.slug}) — ${article.excerpt}`).join('\n')}`,
       `Signals 1 and 2 must use these exact article fields in this order:\n1. article_slug=${datedArticles[0].slug} | article_title=${datedArticles[0].title}\n2. article_slug=${datedArticles[1].slug} | article_title=${datedArticles[1].title}`,
+      `If Signal 3 cites a source instead of an article, it must use one of these exact source pairs:\n${harvestFindings.slice(0, 3).map((finding) => `- source_name=${finding.source_name} | source_url=${finding.source_url}`).join('\n')}`,
       `Tool of the week: ${selectedProgram.name} with placeholder ${toolPlaceholder}`,
       'Return JSON in this shape:',
       '{"subject_lines":["string","string"],"preview_text":"string","intro":["paragraph","paragraph"],"signals":[{"headline":"string","summary":"string","article_slug":"string|null","article_title":"string|null","source_name":"string|null","source_url":"https://...|null"}],"tool_of_week":{"program_name":"string","description":"string","placeholder":"[AFFILIATE:KEY]"},"next_week":["item","item","item"]}',
       'Requirements:',
       '- Exactly 3 signals.',
       '- Signals 1 and 2 must link to the two current article drafts using the exact slug and title pairs listed above.',
-      '- Signal 3 may link to a source URL if there is no draft article.',
+      '- Signal 3 may link to a source URL if there is no draft article, but the source_name and source_url must be copied exactly from the allowed harvest source pairs above.',
       '- Keep the preview text under 150 characters.',
       '- Keep subject lines under 50 characters.',
     ].join('\n'),
-    validate: (value) => validateNewsletterPayload(value, articleMap),
+    validate: (value) => validateNewsletterPayload(value, articleMap, harvestSourceMap),
   });
 
   const draft = renderNewsletterDraft({
