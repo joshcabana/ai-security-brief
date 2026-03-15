@@ -1,10 +1,50 @@
 {
-  "articleCount": 4,
+  "articleCount": 6,
   "categories": [
     "AI Threats",
     "Privacy"
   ],
   "articles": [
+    {
+      "title": "Hive0163 Deploys AI-Assisted Slopoly Malware for Persistent Access in Ransomware Attacks",
+      "slug": "hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks",
+      "date": "2026-03-16",
+      "author": "AI Security Brief",
+      "excerpt": "Hive0163's use of AI-generated Slopoly malware marks a new escalation in ransomware tactics, enabling persistent access and demanding advanced defensive strategies.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "Hive0163 Uses AI-Assisted Slopoly Malware for Persistent Access in Ransomware Attacks",
+      "metaDescription": "Discover how Hive0163 leverages AI-assisted Slopoly malware for persistent access in ransomware attacks, signaling a new era of cyber threat sophistication.",
+      "keywords": [
+        "Hive0163",
+        "AI-assisted malware",
+        "Slopoly",
+        "ransomware",
+        "persistent access"
+      ],
+      "readTime": "5 min",
+      "fileName": "hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks.md"
+    },
+    {
+      "title": "OpenClaw AI Agent Flaws Expose Risks of Prompt Injection and Data Exfiltration",
+      "slug": "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration",
+      "date": "2026-03-16",
+      "author": "AI Security Brief",
+      "excerpt": "Security vulnerabilities in the OpenClaw AI agent could allow prompt injection and unauthorized data exfiltration, highlighting urgent gaps in AI agent security protocols.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration",
+      "metaDescription": "Explore the security flaws in OpenClaw AI agents that could lead to prompt injection attacks and data exfiltration, and learn how to mitigate these risks.",
+      "keywords": [
+        "OpenClaw",
+        "AI agent vulnerabilities",
+        "prompt injection",
+        "data exfiltration",
+        "security protocols"
+      ],
+      "readTime": "5 min",
+      "fileName": "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration.md"
+    },
     {
       "title": "Australia's Privacy Act Reforms 2026: What You Need to Know",
       "slug": "australias-privacy-act-reforms-2026",
