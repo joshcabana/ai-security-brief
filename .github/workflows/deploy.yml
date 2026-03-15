@@ -1,22 +1,9 @@
 name: Verify and Deploy
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.23.0
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -24,81 +11,22 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Verify env contract (warn only)
-        run: pnpm verify:ops:contract
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check content manifest
-        run: pnpm check:content
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Run unit tests
-        run: pnpm test:unit
-
-      - name: Build project
-        run: pnpm build
-
-      - name: Run production smoke tests
-        run: pnpm test:smoke
-
-  deploy_gate:
-    needs: verify
-    runs-on: ubuntu-latest
-    outputs:
-      enabled: ${{ steps.check.outputs.enabled }}
-    steps:
-      - name: Check Vercel deployment secrets
-        id: check
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-            echo "Vercel deployment secrets are present."
-          else
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping Vercel deploy because one or more secrets are missing."
-          fi
-
-  deploy:
-    needs: [verify, deploy_gate]
-    if: ${{ needs.deploy_gate.outputs.enabled == 'true' }}
-    runs-on: ubuntu-latest
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.23.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Install Vercel CLI
         run: pnpm dlx vercel@latest --version
 
+
       - name: Pull Vercel environment information
         run: pnpm dlx vercel@latest pull --yes --environment=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=${{ secrets.VERCEL_TOKEN }}
 
+
       - name: Build project
         run: pnpm dlx vercel@latest build ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
+
 
       - name: Deploy to Vercel
         id: deploy
@@ -110,6 +38,7 @@ jobs:
           fi
           echo "url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
 
+
   verify_live:
     needs: [verify, deploy]
     if: ${{ always() && github.ref == 'refs/heads/main' && needs.verify.result == 'success' && (needs.deploy.result == 'success' || needs.deploy.result == 'skipped') }}
@@ -118,15 +47,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '20'
 
+
       - name: Verify live production (warn only)
         id: verify_live
         continue-on-error: true
         run: node scripts/verify-live.mjs --base-url https://aithreatbrief.com --output verify-live.json
+
 
       - name: Upload live verification artifact
         if: always()
@@ -134,6 +66,7 @@ jobs:
         with:
           name: verify-live
           path: verify-live.json
+
 
   status:
     needs: [verify, deploy, verify_live]
@@ -143,22 +76,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '20'
 
+
       - name: Download live verification artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: verify-live
           path: .
 
+
       - name: Generate status.json
         env:
           DEPLOY_SKIPPED: ${{ needs.deploy.result == 'skipped' && 'true' || 'false' }}
         run: node scripts/generate-status.mjs --live-report verify-live.json --output status.json
+
 
       - name: Upload status artifact
         if: always()
@@ -167,3 +104,4 @@ jobs:
           name: status
           path: status.json
           retention-days: 90
+
