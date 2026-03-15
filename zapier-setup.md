@@ -1,241 +1,119 @@
-# Zapier Automation Setup Guide — AI Security Brief
+# Automation Runbook — GitHub Actions + GitHub Models
 
-> This guide configures 5 Zaps to trigger Perplexity Computer Skills on a weekly schedule, automating the entire content pipeline.
+> This is the production automation path. Zapier and Perplexity Computer are deprecated for live operation.
 
 ## Prerequisites
 
-- Zapier account (Free tier supports 5 Zaps with limited tasks; **Starter plan recommended** for reliable scheduling)
-- Perplexity Computer API access and API key
-- All 5 Computer Skills activated (see `skills.md` for activation sequence)
+- GitHub repository admin access for `joshcabana/ai-security-brief`
+- GitHub Actions enabled
+- Beehiiv secrets stored as GitHub secrets:
+  - `BEEHIIV_API_KEY`
+  - `BEEHIIV_PUBLICATION_ID`
+- Optional GitHub Actions variable:
+  - `GITHUB_MODELS_MODEL` → defaults to `openai/gpt-4o-mini`
+
+`GITHUB_TOKEN` is provided automatically by GitHub Actions and is used for GitHub Models inference, pushing weekly branches, and opening draft PRs. Model workflows need `models: read`.
+The article factory and newsletter compiler workflows fall back to `openai/gpt-4.1` when no override is provided, because long-form drafting needs a stronger default than harvest ranking.
 
 ## Architecture Overview
 
 ```
-MONDAY PIPELINE (AEDT):
-  5:00 AM  → Zap 1 → Skill 1: Weekly Harvest
-  9:00 AM  → Zap 2 → Skill 2: Article Factory
-  1:00 PM  → Zap 3 → Skill 3: Newsletter Compiler
-  3:00 PM  → Zap 4 → Skill 4: SEO + Affiliate Optimizer
+MONDAY PIPELINE (Australia/Sydney):
+  05:00 → weekly-harvest.yml
+  09:00 → article-factory.yml
+  13:00 → newsletter-compiler.yml
+  15:00 → seo-affiliate.yml
 
 SUNDAY:
-  8:00 PM  → Zap 5 → Skill 5: Performance Logger
+  20:00 → performance-logger.yml
 ```
 
-Each Zap fires in sequence with enough buffer time (4 hours between harvest → articles, 4 hours between articles → newsletter) to ensure the previous skill has completed before the next one starts.
+Operational rules:
 
----
+- Monday jobs share one weekly branch: `codex/content-week-YYYY-WW`
+- Sunday metrics use `codex/performance-week-YYYY-WW`
+- Each workflow also supports `workflow_dispatch` with:
+  - `run_date` → Australia/Sydney date override in `YYYY-MM-DD`
+  - `dry_run` → generate output without pushing a branch or opening a PR
+  - `force` → overwrite the dated output when you need to regenerate a weekly asset
+- Scheduled workflows run hourly around the UTC day boundary and self-gate to the exact Australia/Sydney time window before any dependency install or API call
+- AI-generated content always lands in a **draft PR**, never directly on `main`
 
-## Zap 1 — Weekly AI Security Harvest
+## Workflow Inventory
 
-**Schedule:** Every Monday at 5:00 AM AEDT
+### 1. Weekly Harvest
 
-### Step 1: Schedule by Zapier
+- Workflow: `.github/workflows/weekly-harvest.yml`
+- Script: `scripts/automation/run-weekly-harvest.mjs`
+- Output: `harvests/harvest-YYYY-MM-DD.md`
+- PR: `Automation: content week YYYY-WW`
 
-| Setting | Value |
-|---------|-------|
-| Trigger | Schedule by Zapier |
-| Frequency | Every Week |
-| Day of Week | Monday |
-| Time of Day | 5:00 AM |
-| Timezone | Australia/Canberra |
+### 2. Article Factory
 
-### Step 2: Webhooks by Zapier (POST)
+- Workflow: `.github/workflows/article-factory.yml`
+- Script: `scripts/automation/run-article-factory.mjs`
+- Output: two dated blog drafts in `/blog`
+- Validation: regenerates and checks `content-manifest.json`
 
-| Setting | Value |
-|---------|-------|
-| Action | POST |
-| URL | `https://api.perplexity.ai/computer/v1/tasks` |
-| Payload Type | JSON |
-| Headers | `Authorization: Bearer [INSERT COMPUTER API KEY]` |
-| Headers | `Content-Type: application/json` |
-| Body | See below |
+### 3. Newsletter Compiler
 
-**Request Body:**
-```json
-{
-  "task": "Use the 'weekly-ai-security-harvest' skill. Deep research the top 5-7 AI security and privacy developments from the past 7 days. Structure each finding with headline, 2-sentence summary, key implication, source URL, and category. Save as harvest-[TODAY'S DATE].md to the GitHub repo ai-security-brief in the /harvests/ folder.",
-  "skill": "weekly-ai-security-harvest"
-}
-```
+- Workflow: `.github/workflows/newsletter-compiler.yml`
+- Script: `scripts/automation/run-newsletter-compiler.mjs`
+- Output: `drafts/newsletter-YYYY-MM-DD.md`
+- Constraint: review-only draft; never publishes to Beehiiv
 
----
+### 4. SEO + Affiliate Optimiser
 
-## Zap 2 — Article Factory
+- Workflow: `.github/workflows/seo-affiliate.yml`
+- Script: `scripts/automation/run-seo-affiliate.mjs`
+- Scope: only blog files changed on the current weekly branch
+- Constraint: injects existing affiliate placeholders only; never invents live affiliate URLs
 
-**Schedule:** Every Monday at 9:00 AM AEDT
+### 5. Performance Logger
 
-### Step 1: Schedule by Zapier
+- Workflow: `.github/workflows/performance-logger.yml`
+- Script: `scripts/automation/run-performance-logger.mjs`
+- Output: upserts the weekly row in `logs/performance-log.md`
+- Constraint: deterministic Beehiiv metrics update with no model generation
 
-| Setting | Value |
-|---------|-------|
-| Trigger | Schedule by Zapier |
-| Frequency | Every Week |
-| Day of Week | Monday |
-| Time of Day | 9:00 AM |
-| Timezone | Australia/Canberra |
+## Initial Setup Checklist
 
-### Step 2: Webhooks by Zapier (POST)
+- [ ] Add GitHub secret `BEEHIIV_API_KEY`
+- [ ] Add GitHub secret `BEEHIIV_PUBLICATION_ID`
+- [ ] Optionally add GitHub variable `GITHUB_MODELS_MODEL=openai/gpt-4o-mini`
+- [ ] Manually run `weekly-harvest.yml` via `workflow_dispatch`
+- [ ] Manually run `article-factory.yml` against the same `run_date`
+- [ ] Manually run `newsletter-compiler.yml` against the same `run_date`
+- [ ] Manually run `seo-affiliate.yml` against the same `run_date`
+- [ ] Manually run `performance-logger.yml`
+- [ ] Review the draft PRs and merge only after editorial review
 
-| Setting | Value |
-|---------|-------|
-| Action | POST |
-| URL | `https://api.perplexity.ai/computer/v1/tasks` |
-| Payload Type | JSON |
-| Headers | `Authorization: Bearer [INSERT COMPUTER API KEY]` |
-| Headers | `Content-Type: application/json` |
-| Body | See below |
+## Manual Backfill
 
-**Request Body:**
-```json
-{
-  "task": "Use the 'article-factory' skill. Read the latest harvest file from /harvests/ in the ai-security-brief GitHub repo. Write 2 x 950-word SEO articles on the top 2 findings. Format as markdown with YAML frontmatter (title, slug, date, author, excerpt, meta_title, meta_description, keywords, read_time), 4 real verified citations, Key Takeaways, and newsletter CTA. Push both articles to /blog/ in the GitHub repo.",
-  "skill": "article-factory"
-}
-```
+Use `workflow_dispatch` and provide a `run_date` in Australia/Sydney local date format. Set `dry_run=true` if you want to validate generation without pushing a branch or opening a PR. Set `force=true` if you need to regenerate a dated output that already exists.
 
----
+Suggested first backfill order:
 
-## Zap 3 — Newsletter Compiler
-
-**Schedule:** Every Monday at 1:00 PM AEDT
-
-### Step 1: Schedule by Zapier
-
-| Setting | Value |
-|---------|-------|
-| Trigger | Schedule by Zapier |
-| Frequency | Every Week |
-| Day of Week | Monday |
-| Time of Day | 1:00 PM |
-| Timezone | Australia/Canberra |
-
-### Step 2: Webhooks by Zapier (POST)
-
-| Setting | Value |
-|---------|-------|
-| Action | POST |
-| URL | `https://api.perplexity.ai/computer/v1/tasks` |
-| Payload Type | JSON |
-| Headers | `Authorization: Bearer [INSERT COMPUTER API KEY]` |
-| Headers | `Content-Type: application/json` |
-| Body | See below |
-
-**Request Body:**
-```json
-{
-  "task": "Use the 'newsletter-compiler' skill. Read the latest /harvests/ file and the 2 newest /blog/ posts from the ai-security-brief GitHub repo. Read newsletter-issue-001.md as a template and affiliate-programs.md for affiliate placeholders. Compile a newsletter draft with 2 A/B subject lines, preview text, 3 story summaries, and a Tool of the Week with affiliate placeholder. Save as /drafts/newsletter-[TODAY'S DATE].md in the GitHub repo. Do NOT publish.",
-  "skill": "newsletter-compiler"
-}
-```
-
----
-
-## Zap 4 — SEO + Affiliate Optimizer
-
-**Schedule:** Every Monday at 3:00 PM AEDT
-
-### Step 1: Schedule by Zapier
-
-| Setting | Value |
-|---------|-------|
-| Trigger | Schedule by Zapier |
-| Frequency | Every Week |
-| Day of Week | Monday |
-| Time of Day | 3:00 PM |
-| Timezone | Australia/Canberra |
-
-### Step 2: Webhooks by Zapier (POST)
-
-| Setting | Value |
-|---------|-------|
-| Action | POST |
-| URL | `https://api.perplexity.ai/computer/v1/tasks` |
-| Payload Type | JSON |
-| Headers | `Authorization: Bearer [INSERT COMPUTER API KEY]` |
-| Headers | `Content-Type: application/json` |
-| Body | See below |
-
-**Request Body:**
-```json
-{
-  "task": "Use the 'seo-affiliate-optimizer' skill. Scan all /blog/ markdown files in the ai-security-brief GitHub repo. For any files missing meta_title, meta_description, or keywords in their YAML frontmatter, generate and add these fields. Then scan article bodies for mentions of NordVPN, Proton, Surfshark, 1Password, Malwarebytes, PureVPN, CyberGhost, or Jasper — and inject affiliate link placeholders from affiliate-programs.md where tools are mentioned but not yet linked. Commit all changes.",
-  "skill": "seo-affiliate-optimizer"
-}
-```
-
----
-
-## Zap 5 — Performance Logger
-
-**Schedule:** Every Sunday at 8:00 PM AEDT
-
-### Step 1: Schedule by Zapier
-
-| Setting | Value |
-|---------|-------|
-| Trigger | Schedule by Zapier |
-| Frequency | Every Week |
-| Day of Week | Sunday |
-| Time of Day | 8:00 PM |
-| Timezone | Australia/Canberra |
-
-### Step 2: Webhooks by Zapier (POST)
-
-| Setting | Value |
-|---------|-------|
-| Action | POST |
-| URL | `https://api.perplexity.ai/computer/v1/tasks` |
-| Payload Type | JSON |
-| Headers | `Authorization: Bearer [INSERT COMPUTER API KEY]` |
-| Headers | `Content-Type: application/json` |
-| Body | See below |
-
-**Request Body:**
-```json
-{
-  "task": "Use the 'performance-logger' skill. Pull Beehiiv API stats using runtime environment variables or a secure secret store for BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID. Get subscriber count, open rate, click rate, and top clicked link. Append a new row to /logs/performance-log.md in the repo. If open rate is below 35%, flag it with a warning and suggest improvements. Commit the updated log.",
-  "skill": "performance-logger"
-}
-```
-
----
-
-## Setup Checklist
-
-- [ ] Create Zapier account (or upgrade to Starter plan)
-- [ ] Obtain Perplexity Computer API key
-- [ ] Create Zap 1 (Weekly Harvest — Monday 5:00 AM AEDT)
-- [ ] Create Zap 2 (Article Factory — Monday 9:00 AM AEDT)
-- [ ] Create Zap 3 (Newsletter Compiler — Monday 1:00 PM AEDT)
-- [ ] Create Zap 4 (SEO Optimizer — Monday 3:00 PM AEDT)
-- [ ] Create Zap 5 (Performance Logger — Sunday 8:00 PM AEDT)
-- [ ] Replace `[INSERT COMPUTER API KEY]` in all 5 Zaps
-- [ ] Test each Zap manually using "Test step" in Zapier
-- [ ] Turn on all 5 Zaps
-- [ ] Verify first Monday run completes the full pipeline
+1. `weekly-harvest.yml`
+2. `article-factory.yml`
+3. `newsletter-compiler.yml`
+4. `seo-affiliate.yml`
+5. `performance-logger.yml`
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Zap doesn't fire | Check timezone is set to Australia/Canberra, not UTC |
-| Computer API returns 401 | Verify API key is correct and has not expired |
-| Harvest file not found by Article Factory | Increase buffer time between Zaps (try 6 hours instead of 4) |
-| Articles not appearing in repo | Check GitHub MCP connection in Computer is active |
-| Performance Logger can't access Beehiiv secrets | Provide BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID through a secure environment or secret store; do not commit them to Git |
+| Symptom | Likely Cause | Action |
+|---|---|---|
+| Workflow exits without doing work | Outside Australia/Sydney run window | Use `workflow_dispatch` with `run_date` for manual runs |
+| Harvest succeeds but article factory fails | Missing weekly harvest file on the weekly branch | Re-run harvest for the same `run_date` |
+| Newsletter compiler fails | No two article drafts exist for the weekly date | Complete article factory first |
+| SEO optimiser no-ops | Current weekly branch already has complete metadata and affiliate placeholders | Review the PR and merge |
+| Performance logger fails | Beehiiv secrets missing or API response changed | Check `BEEHIIV_API_KEY`, `BEEHIIV_PUBLICATION_ID`, and Beehiiv API availability |
+| PR not created | Missing `GITHUB_TOKEN` permissions or branch push failed | Confirm workflow permissions are `contents: write` and `pull-requests: write` |
+| Model call fails | Workflow is missing `models: read` or model access is unavailable | Confirm workflow permissions include `models: read` and retry with the default model |
 
-## Cost Estimate
+## Deprecated Paths
 
-Each Zap execution = 1 Zapier task. With 5 Zaps running weekly:
-- **5 tasks/week** = ~20 tasks/month
-- Zapier Free plan: 100 tasks/month (sufficient)
-- Perplexity Computer: Credits consumed per skill execution (varies by research depth)
-
-## API Endpoint Note
-
-The URL `https://api.perplexity.ai/computer/v1/tasks` is a placeholder. When the Perplexity Computer API becomes available:
-1. Replace with the actual endpoint URL
-2. Update the request body format to match the API specification
-3. You may also trigger skills via the Computer chat interface manually if the API is not yet available
-
-Alternative trigger method: Use Zapier's Email trigger to send a pre-formatted email to your Perplexity account, which can then be processed by Computer. This works as a bridge until direct API access is available.
+- Perplexity Computer credits are **not** part of the production automation path
+- `skills.md` is retained as legacy reference only
+- Zapier is no longer required and should not be wired to placeholder Perplexity endpoints

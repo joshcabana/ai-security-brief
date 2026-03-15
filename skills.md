@@ -1,5 +1,7 @@
 # Perplexity Computer Skills — AI Security Brief
 
+> Legacy reference only. Production automation now runs through GitHub Actions + GitHub Models. Do not use these Computer skills as the live weekly pipeline.
+>
 > 5 reusable skills for the AI Security Brief content pipeline.  
 > Copy each skill's text block and paste it into **Computer → Skills → Create Skill**.
 
@@ -381,21 +383,13 @@ Use this skill weekly (Sunday evening) to log newsletter performance metrics and
 
 ---
 
-## Activation Sequence
+## Legacy Order of Operations
 
-Activate skills in this order:
-1. **Weekly AI Security Harvest** (runs first — generates raw intelligence)
-2. **Article Factory** (runs second — produces articles from harvest)
-3. **Newsletter Compiler** (runs third — compiles newsletter from articles + harvest)
-4. **SEO + Affiliate Optimizer** (runs fourth — polishes all content)
-5. **Performance Logger** (runs weekly — tracks metrics independently)
+If you reuse these legacy Computer skills manually, run them in this order:
+1. **Weekly AI Security Harvest**
+2. **Article Factory**
+3. **Newsletter Compiler**
+4. **SEO + Affiliate Optimizer**
+5. **Performance Logger**
 
-## Trigger Schedule (AEDT)
-
-| Skill | When | Trigger |
-|-------|------|---------|
-| Weekly AI Security Harvest | Monday 5:00 AM AEDT | Zapier Schedule → Computer |
-| Article Factory | Monday 9:00 AM AEDT | Zapier Schedule → Computer |
-| Newsletter Compiler | Monday 1:00 PM AEDT | Zapier Schedule → Computer |
-| SEO + Affiliate Optimizer | Monday 3:00 PM AEDT | Zapier Schedule → Computer |
-| Performance Logger | Sunday 8:00 PM AEDT | Zapier Schedule → Computer |
+Production scheduling no longer uses Zapier or Perplexity Computer. The live automation schedule now lives in GitHub Actions and is documented in `zapier-setup.md`.
