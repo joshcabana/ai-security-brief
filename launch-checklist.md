@@ -116,7 +116,7 @@ vercel env add NEXT_PUBLIC_SITE_NAME
 
 ## 6. Affiliate Signups (~45 min)
 
-**Status:** Ready to submit once forms are completed with the intake sheet in `ops/affiliate-intake.md`
+**Status:** In progress — NordVPN and Proton submitted, 1Password/CJ awaiting email verification, remaining programs ready to submit from `ops/affiliate-intake.md`
 
 Sign up in order of highest commission rate:
 
@@ -134,6 +134,12 @@ Sign up in order of highest commission rate:
 **After approval** (may take 1-7 days per program):
 - Replace `[AFFILIATE:TOOLNAME]` placeholders in articles and newsletter with actual affiliate links
 - Update the `/tools` page with real affiliate URLs
+
+**Current state**
+- NordVPN: submitted, under review
+- Proton: submitted, under review
+- 1Password / CJ: signup submitted, awaiting email verification
+- Other affiliate programs: not started
 
 ---
 
@@ -218,7 +224,7 @@ Thanks,
 | Vercel project connect | 10 min | ☐ |
 | Beehiiv setup + Issue #1 | 30 min | ☐ |
 | .env configuration | 10 min | ☐ |
-| Affiliate signups (8 programs) | 45 min | Ready to submit |
+| Affiliate signups (8 programs) | 45 min | In progress |
 | Publisher program email | 5 min | ✓ |
 | GitHub automation secrets | 15 min | ☐ |
 | First manual automation backfill | 20 min | ☐ |
