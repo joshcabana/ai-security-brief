@@ -2,4 +2,4 @@
 
 | Date | Subscribers | Open Rate | Click Rate | Top Link | Alerts |
 |------|------------|-----------|------------|----------|--------|
-| — | — | — | — | — | Awaiting first issue |
+| 2026-03-15 | 1 | — | — | — | Awaiting first published Beehiiv issue. |
