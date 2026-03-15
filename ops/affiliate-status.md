@@ -15,15 +15,16 @@ Updated: 16 March 2026
 | Malwarebytes | Signup in progress, blocked on hCaptcha | Partnerize signup is filled but requires manual hCaptcha completion |
 | PureVPN | Submitted successfully, awaiting confirmation email | Signup form submitted successfully; confirmation page observed, but no confirmation email has landed yet |
 | CyberGhost | Submitted, rejected at login gate | Kape signup completed, but immediate login check returns `Cannot login. Account rejected.` |
-| Jasper AI | Not started | Ready to submit using the private intake file |
+| Jasper AI | No public affiliate signup available | Official affiliate host resolves to `Campaign not available` and no public conversion campaign is exposed |
 
 ## Next actions
 
 1. Watch Gmail for the CJ and PureVPN confirmation emails.
 2. Verify the CJ account immediately when the email arrives.
-3. Complete the Malwarebytes Partnerize hCaptcha challenge when practical.
-4. Contact `updates@cyberghost.ro` or retry the Kape/CyberGhost application path only if a rejection explanation arrives.
-5. Replace affiliate placeholders in content after approvals land.
+3. Complete the PureVPN confirmation step immediately when the email arrives, then test login once.
+4. Complete the Malwarebytes Partnerize hCaptcha challenge when practical.
+5. Contact `updates@cyberghost.ro` or retry the Kape/CyberGhost application path only if a rejection explanation arrives.
+6. Replace affiliate placeholders in content after approvals land.
 
 ## Security rules
 
