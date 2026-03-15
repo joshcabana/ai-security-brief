@@ -328,28 +328,77 @@ export function getNextNewsletterIssueNumber({ publishedIssueExists, draftCount 
   return (publishedIssueExists ? 1 : 0) + draftCount + 1;
 }
 
-export function resolveUniqueSlug(baseSlug, existingSlugs, dateString) {
-  if (!existingSlugs.has(baseSlug)) {
+function buildDatedSlug(baseSlug, dateString, index = null) {
+  return index ? `${baseSlug}-${dateString}-${index}` : `${baseSlug}-${dateString}`;
+}
+
+function sortCurrentWeekSlugCandidates(baseSlug, dateString, left, right) {
+  const datedSlug = buildDatedSlug(baseSlug, dateString);
+  const rank = (slug) => {
+    if (slug === baseSlug) {
+      return 0;
+    }
+
+    if (slug === datedSlug) {
+      return 1;
+    }
+
+    return 2;
+  };
+
+  const numericSuffix = (slug) => {
+    const match = slug.match(new RegExp(`^${escapeRegex(datedSlug)}-(\\d+)$`));
+    return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+  };
+
+  return rank(left.slug) - rank(right.slug) || numericSuffix(left.slug) - numericSuffix(right.slug) || left.slug.localeCompare(right.slug);
+}
+
+function listCurrentWeekSlugCandidates(baseSlug, existingArticles, dateString) {
+  const datedSlug = buildDatedSlug(baseSlug, dateString);
+  const datedPattern = new RegExp(`^${escapeRegex(datedSlug)}(?:-(\\d+))?$`);
+
+  return existingArticles
+    .filter((entry) => entry.date === dateString && (entry.slug === baseSlug || datedPattern.test(entry.slug)))
+    .sort((left, right) => sortCurrentWeekSlugCandidates(baseSlug, dateString, left, right));
+}
+
+function slugExists(slug, existingArticles, reservedSlugs) {
+  return reservedSlugs.has(slug) || existingArticles.some((entry) => entry.slug === slug);
+}
+
+export function resolveUniqueSlug(baseSlug, existingArticles, reservedSlugs, dateString) {
+  const currentWeekCandidate = listCurrentWeekSlugCandidates(baseSlug, existingArticles, dateString).find(
+    (entry) => !reservedSlugs.has(entry.slug),
+  );
+
+  if (currentWeekCandidate) {
+    return currentWeekCandidate.slug;
+  }
+
+  if (!slugExists(baseSlug, existingArticles, reservedSlugs)) {
     return baseSlug;
   }
 
-  const datedSlug = `${baseSlug}-${dateString}`;
-  if (!existingSlugs.has(datedSlug)) {
+  const datedSlug = buildDatedSlug(baseSlug, dateString);
+  if (!slugExists(datedSlug, existingArticles, reservedSlugs)) {
     return datedSlug;
   }
 
   let index = 2;
-  while (existingSlugs.has(`${datedSlug}-${index}`)) {
+  while (slugExists(buildDatedSlug(baseSlug, dateString, index), existingArticles, reservedSlugs)) {
     index += 1;
   }
-  return `${datedSlug}-${index}`;
+  return buildDatedSlug(baseSlug, dateString, index);
 }
 
-export function buildExpectedArticlePlan(findings, existingSlugs, dateString) {
+export function buildExpectedArticlePlan(findings, existingArticles, dateString) {
+  const reservedSlugs = new Set();
+
   return findings.slice(0, 2).map((finding) => {
     const baseSlug = slugify(finding.headline);
-    const slug = resolveUniqueSlug(baseSlug, existingSlugs, dateString);
-    existingSlugs.add(slug);
+    const slug = resolveUniqueSlug(baseSlug, existingArticles, reservedSlugs, dateString);
+    reservedSlugs.add(slug);
 
     return {
       slug,
@@ -359,6 +408,23 @@ export function buildExpectedArticlePlan(findings, existingSlugs, dateString) {
       filePath: path.join(REPO_ROOT, 'blog', `${slug}.md`),
     };
   });
+}
+
+export function findRedundantCurrentWeekArticleFiles(findings, existingArticles, plannedSlugs, dateString) {
+  const stalePaths = new Set();
+
+  for (const finding of findings.slice(0, 2)) {
+    const baseSlug = slugify(finding.headline);
+    const candidates = listCurrentWeekSlugCandidates(baseSlug, existingArticles, dateString);
+
+    for (const candidate of candidates) {
+      if (!plannedSlugs.has(candidate.slug)) {
+        stalePaths.add(candidate.filePath);
+      }
+    }
+  }
+
+  return Array.from(stalePaths).sort();
 }
 
 export function upsertPerformanceLog(existingMarkdown, row) {

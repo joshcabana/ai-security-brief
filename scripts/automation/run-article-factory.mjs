@@ -2,6 +2,7 @@
 
 import path from 'node:path';
 import { promises as fs } from 'node:fs';
+import matter from 'gray-matter';
 import {
   DEFAULT_GITHUB_MODELS_MODEL,
   REPO_ROOT,
@@ -13,7 +14,12 @@ import {
   writeText,
 } from './common.mjs';
 import { requestJsonFromGitHubModels } from './github-models.mjs';
-import { buildExpectedArticlePlan, parseHarvestMarkdown, renderArticleMarkdown } from './renderers.mjs';
+import {
+  buildExpectedArticlePlan,
+  findRedundantCurrentWeekArticleFiles,
+  parseHarvestMarkdown,
+  renderArticleMarkdown,
+} from './renderers.mjs';
 import { finishAutomationRun, prepareAutomationRun, requireEnvVars } from './workflow.mjs';
 
 function validateArticlePayload(payload, expectedSlugs, allowedReferences) {
@@ -113,11 +119,46 @@ async function main() {
   }
 
   const existingArticleFiles = (await fs.readdir(path.join(REPO_ROOT, 'blog'))).filter((entry) => entry.endsWith('.md'));
-  const existingSlugs = new Set(existingArticleFiles.map((entry) => entry.replace(/\.md$/, '')));
-  const articlePlan = buildExpectedArticlePlan(findings, existingSlugs, context.effectiveDate);
+  const existingArticles = await Promise.all(
+    existingArticleFiles.map(async (entry) => {
+      const filePath = path.join(REPO_ROOT, 'blog', entry);
+      const parsed = matter(await readText(filePath));
+
+      return {
+        slug: typeof parsed.data.slug === 'string' ? String(parsed.data.slug) : entry.replace(/\.md$/, ''),
+        date: typeof parsed.data.date === 'string' ? String(parsed.data.date) : '',
+        filePath,
+      };
+    }),
+  );
+  const articlePlan = buildExpectedArticlePlan(findings, existingArticles, context.effectiveDate);
+  const plannedSlugs = new Set(articlePlan.map((item) => item.slug));
+  const staleDuplicateFiles = findRedundantCurrentWeekArticleFiles(
+    findings,
+    existingArticles,
+    plannedSlugs,
+    context.effectiveDate,
+  );
   const existingTargets = await Promise.all(articlePlan.map(async (item) => fileExists(item.filePath)));
 
   if (existingTargets.every(Boolean) && !context.options.force) {
+    if (staleDuplicateFiles.length > 0) {
+      for (const stalePath of staleDuplicateFiles) {
+        await fs.unlink(stalePath);
+      }
+      await runContentManifestWrite();
+      await runContentManifestCheck();
+
+      await finishAutomationRun({
+        context,
+        commitMessage: `automation: refresh articles ${context.effectiveDate}`,
+        model,
+        outputs: staleDuplicateFiles.map((stalePath) => `Removed stale duplicate: \`${path.relative(REPO_ROOT, stalePath)}\``),
+        notes: ['Removed redundant same-week article drafts without regenerating content.'],
+      });
+      return;
+    }
+
     await finishAutomationRun({
       context,
       commitMessage: `automation: refresh articles ${context.effectiveDate}`,
@@ -128,7 +169,7 @@ async function main() {
     return;
   }
 
-  const expectedSlugs = new Set(articlePlan.map((item) => item.slug));
+  const expectedSlugs = plannedSlugs;
   const allowedReferences = new Set(findings.map((finding) => finding.source_url));
   const harvestSourcePack = findings
     .map(
@@ -172,7 +213,7 @@ async function main() {
     validate: (value) => validateArticlePayload(value, expectedSlugs, allowedReferences),
   });
 
-  const writtenFiles = [];
+  const outputs = [];
 
   for (const generated of payload.articles) {
     const planned = articlePlan.find((item) => item.slug === generated.slug);
@@ -193,7 +234,12 @@ async function main() {
     }
 
     await writeText(planned.filePath, markdown);
-    writtenFiles.push(`blog/${planned.slug}.md`);
+    outputs.push(`Article generated: \`blog/${planned.slug}.md\``);
+  }
+
+  for (const stalePath of staleDuplicateFiles) {
+    await fs.unlink(stalePath);
+    outputs.push(`Removed stale duplicate: \`${path.relative(REPO_ROOT, stalePath)}\``);
   }
 
   await runContentManifestWrite();
@@ -203,7 +249,7 @@ async function main() {
     context,
     commitMessage: `automation: add weekly articles ${context.effectiveDate}`,
     model,
-    outputs: writtenFiles.map((filePath) => `Article generated: \`${filePath}\``),
+    outputs,
     notes: context.options.force ? ['Forced regeneration requested. Existing article drafts were overwritten.'] : [],
   });
 }
