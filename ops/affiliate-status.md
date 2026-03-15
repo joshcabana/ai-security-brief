@@ -13,8 +13,8 @@ Updated: 16 March 2026
 | 1Password / CJ | Signup created, awaiting email verification | CJ account verification email has not landed yet |
 | Surfshark | Submitted, under review | Partner account created and application submitted |
 | Malwarebytes | Signup in progress, blocked on hCaptcha | Partnerize signup is filled but requires manual hCaptcha completion |
-| PureVPN | Submitted, awaiting confirmation email | Signup form submitted; no confirmation email has landed yet |
-| CyberGhost | Blocked on signup form mismatch | Kape signup shows only US state options after selecting Australia |
+| PureVPN | Submitted successfully, awaiting confirmation email | Signup form submitted successfully; confirmation page observed, but no confirmation email has landed yet |
+| CyberGhost | Submitted, under review | Kape signup completed successfully; application is under review |
 | Jasper AI | Not started | Ready to submit using the private intake file |
 
 ## Next actions
@@ -22,7 +22,7 @@ Updated: 16 March 2026
 1. Watch Gmail for the CJ and PureVPN confirmation emails.
 2. Verify the CJ account immediately when the email arrives.
 3. Complete the Malwarebytes Partnerize hCaptcha challenge when practical.
-4. Retry CyberGhost if the Kape country/region form starts handling Australia correctly.
+4. Watch Gmail for CyberGhost / Kape review or approval emails.
 5. Replace affiliate placeholders in content after approvals land.
 
 ## Security rules
