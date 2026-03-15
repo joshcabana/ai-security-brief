@@ -10,6 +10,7 @@ import { requestJsonFromGitHubModels } from '../scripts/automation/github-models
 import { countActiveSubscriptions, derivePerformanceSnapshot } from '../scripts/automation/run-performance-logger.mjs';
 import {
   buildExpectedArticlePlan,
+  findRedundantCurrentWeekArticleFiles,
   injectAffiliatePlaceholders,
   parseAffiliatePrograms,
   parseHarvestMarkdown,
@@ -161,12 +162,59 @@ test('article plan resolves duplicate slugs deterministically', () => {
       { headline: 'Agentic AI Security Risks', category: 'Attack' },
       { headline: 'Agentic AI Security Risks', category: 'Attack' },
     ],
-    new Set(['agentic-ai-security-risks']),
+    [{ slug: 'agentic-ai-security-risks', date: '2025-03-16', filePath: '/tmp/agentic-ai-security-risks.md' }],
     '2026-03-16',
   );
 
   assert.equal(plan[0].slug, 'agentic-ai-security-risks-2026-03-16');
   assert.equal(plan[1].slug, 'agentic-ai-security-risks-2026-03-16-2');
+});
+
+test('article plan reuses current-week slugs on rerun before creating new duplicates', () => {
+  const plan = buildExpectedArticlePlan(
+    [
+      { headline: 'Agentic AI Security Risks', category: 'Attack' },
+      { headline: 'Agentic AI Security Risks', category: 'Attack' },
+    ],
+    [
+      { slug: 'agentic-ai-security-risks', date: '2026-03-16', filePath: '/tmp/agentic-ai-security-risks.md' },
+      {
+        slug: 'agentic-ai-security-risks-2026-03-16',
+        date: '2026-03-16',
+        filePath: '/tmp/agentic-ai-security-risks-2026-03-16.md',
+      },
+    ],
+    '2026-03-16',
+  );
+
+  assert.equal(plan[0].slug, 'agentic-ai-security-risks');
+  assert.equal(plan[1].slug, 'agentic-ai-security-risks-2026-03-16');
+});
+
+test('current-week stale article duplicates are identified for cleanup', () => {
+  const staleFiles = findRedundantCurrentWeekArticleFiles(
+    [
+      { headline: 'Agentic AI Security Risks', category: 'Attack' },
+      { headline: 'Agentic AI Security Risks', category: 'Attack' },
+    ],
+    [
+      { slug: 'agentic-ai-security-risks', date: '2026-03-16', filePath: '/tmp/agentic-ai-security-risks.md' },
+      {
+        slug: 'agentic-ai-security-risks-2026-03-16',
+        date: '2026-03-16',
+        filePath: '/tmp/agentic-ai-security-risks-2026-03-16.md',
+      },
+      {
+        slug: 'agentic-ai-security-risks-2026-03-16-2',
+        date: '2026-03-16',
+        filePath: '/tmp/agentic-ai-security-risks-2026-03-16-2.md',
+      },
+    ],
+    new Set(['agentic-ai-security-risks', 'agentic-ai-security-risks-2026-03-16']),
+    '2026-03-16',
+  );
+
+  assert.deepEqual(staleFiles, ['/tmp/agentic-ai-security-risks-2026-03-16-2.md']);
 });
 
 test('affiliate placeholder injection only annotates the first matching vendor mention', () => {
