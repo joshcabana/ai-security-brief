@@ -1,20 +1,30 @@
 ---
-title: "OpenClaw AI Agent Vulnerabilities: Prompt Injection and Data Exfiltration Risks"
-slug: "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration-2026-03-16"
-date: "2026-03-16"
-author: "AI Security Brief"
-excerpt: "Security flaws in the OpenClaw AI agent expose users to prompt injection and data exfiltration attacks. This article analyzes the vulnerabilities, their implications, and the urgent need for robust security protocols in AI agent technologies."
-category: "AI Threats"
+title: >-
+  OpenClaw AI Agent Vulnerabilities: Prompt Injection and Data Exfiltration
+  Risks
+slug: >-
+  openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration-2026-03-16
+date: '2026-03-16'
+author: AI Security Brief
+excerpt: >-
+  Security flaws in the OpenClaw AI agent expose users to prompt injection and
+  data exfiltration attacks. This article analyzes the vulnerabilities, their
+  implications, and the urgent need for robust security protocols in AI agent
+  technologies.
+category: AI Threats
 featured: false
-meta_title: "OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration"
-meta_description: "Explore the security vulnerabilities in OpenClaw AI agents that could allow prompt injection and data exfiltration. Learn about mitigation strategies and the importance of secure AI development."
+meta_title: OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration
+meta_description: >-
+  Explore the security vulnerabilities in OpenClaw AI agents that could allow
+  prompt injection and data exfiltration. Learn about mitigation strategies and
+  the importance of secure AI development.
 keywords:
-  - "OpenClaw"
-  - "AI agent vulnerabilities"
-  - "prompt injection"
-  - "data exfiltration"
-  - "AI security"
-read_time: "5 min"
+  - OpenClaw
+  - AI agent vulnerabilities
+  - prompt injection
+  - data exfiltration
+  - AI security
+read_time: 5 min
 ---
 # OpenClaw AI Agent Vulnerabilities: Prompt Injection and Data Exfiltration Risks
 
