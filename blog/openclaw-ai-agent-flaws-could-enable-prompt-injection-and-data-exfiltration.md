@@ -1,20 +1,26 @@
 ---
-title: "OpenClaw AI Agent Flaws Expose Risks of Prompt Injection and Data Exfiltration"
-slug: "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration"
-date: "2026-03-16"
-author: "AI Security Brief"
-excerpt: "Security vulnerabilities in the OpenClaw AI agent could allow prompt injection and unauthorized data exfiltration, highlighting urgent gaps in AI agent security protocols."
-category: "AI Threats"
+title: OpenClaw AI Agent Flaws Expose Risks of Prompt Injection and Data Exfiltration
+slug: openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration
+date: '2026-03-16'
+author: AI Security Brief
+excerpt: >-
+  Security vulnerabilities in the OpenClaw AI agent could allow prompt injection
+  and unauthorized data exfiltration, highlighting urgent gaps in AI agent
+  security protocols.
+category: AI Threats
 featured: false
-meta_title: "OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration"
-meta_description: "Explore the security flaws in OpenClaw AI agents that could lead to prompt injection attacks and data exfiltration, and learn how to mitigate these risks."
+meta_title: OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration
+meta_description: >-
+  Explore the security flaws in OpenClaw AI agents that could lead to prompt
+  injection attacks and data exfiltration, and learn how to mitigate these
+  risks.
 keywords:
-  - "OpenClaw"
-  - "AI agent vulnerabilities"
-  - "prompt injection"
-  - "data exfiltration"
-  - "security protocols"
-read_time: "5 min"
+  - OpenClaw
+  - AI agent vulnerabilities
+  - prompt injection
+  - data exfiltration
+  - security protocols
+read_time: 5 min
 ---
 # OpenClaw AI Agent Flaws Expose Risks of Prompt Injection and Data Exfiltration
 
