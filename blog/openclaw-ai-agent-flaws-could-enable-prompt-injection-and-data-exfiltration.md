@@ -1,20 +1,29 @@
 ---
-title: "OpenClaw AI Agent Vulnerabilities: Prompt Injection and Data Exfiltration Risks"
-slug: "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration"
-date: "2026-03-16"
-author: "AI Security Brief"
-excerpt: "Security flaws in OpenClaw, an open-source autonomous AI agent, expose organizations to prompt injection and data exfiltration attacks. This article analyzes the vulnerabilities, their operational impact, and actionable mitigation strategies for enterprise environments."
-category: "AI Threats"
+title: >-
+  OpenClaw AI Agent Vulnerabilities: Prompt Injection and Data Exfiltration
+  Risks
+slug: openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration
+date: '2026-03-16'
+author: AI Security Brief
+excerpt: >-
+  Security flaws in OpenClaw, an open-source autonomous AI agent, expose
+  organizations to prompt injection and data exfiltration attacks. This article
+  analyzes the vulnerabilities, their operational impact, and actionable
+  mitigation strategies for enterprise environments.
+category: AI Threats
 featured: false
-meta_title: "OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration"
-meta_description: "Explore the security risks posed by OpenClaw AI agent vulnerabilities, including prompt injection and data exfiltration, and learn how to safeguard your organization against these emerging threats."
+meta_title: OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration
+meta_description: >-
+  Explore the security risks posed by OpenClaw AI agent vulnerabilities,
+  including prompt injection and data exfiltration, and learn how to safeguard
+  your organization against these emerging threats.
 keywords:
-  - "OpenClaw"
-  - "AI agent"
-  - "prompt injection"
-  - "data exfiltration"
-  - "vulnerability"
-read_time: "5 min"
+  - OpenClaw
+  - AI agent
+  - prompt injection
+  - data exfiltration
+  - vulnerability
+read_time: 5 min
 ---
 # OpenClaw AI Agent Vulnerabilities: Prompt Injection and Data Exfiltration Risks
 
