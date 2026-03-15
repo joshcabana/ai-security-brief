@@ -14,7 +14,7 @@ Updated: 16 March 2026
 | Surfshark | Submitted, under review | Partner account created and application submitted |
 | Malwarebytes | Signup in progress, blocked on hCaptcha | Partnerize signup is filled but requires manual hCaptcha completion |
 | PureVPN | Submitted successfully, awaiting confirmation email | Signup form submitted successfully; confirmation page observed, but no confirmation email has landed yet |
-| CyberGhost | Submitted, under review | Kape signup completed successfully; application is under review |
+| CyberGhost | Submitted, rejected at login gate | Kape signup completed, but immediate login check returns `Cannot login. Account rejected.` |
 | Jasper AI | Not started | Ready to submit using the private intake file |
 
 ## Next actions
@@ -22,7 +22,7 @@ Updated: 16 March 2026
 1. Watch Gmail for the CJ and PureVPN confirmation emails.
 2. Verify the CJ account immediately when the email arrives.
 3. Complete the Malwarebytes Partnerize hCaptcha challenge when practical.
-4. Watch Gmail for CyberGhost / Kape review or approval emails.
+4. Contact `updates@cyberghost.ro` or retry the Kape/CyberGhost application path only if a rejection explanation arrives.
 5. Replace affiliate placeholders in content after approvals land.
 
 ## Security rules
