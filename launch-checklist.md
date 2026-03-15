@@ -116,7 +116,7 @@ vercel env add NEXT_PUBLIC_SITE_NAME
 
 ## 6. Affiliate Signups (~45 min)
 
-**Status:** In progress — NordVPN and Proton submitted, 1Password/CJ awaiting email verification, remaining programs ready to submit from `ops/affiliate-intake.md`
+**Status:** In progress — see `ops/affiliate-status.md` for canonical public status and `ops/affiliate-intake.md` for reusable application copy
 
 Sign up in order of highest commission rate:
 
@@ -135,11 +135,7 @@ Sign up in order of highest commission rate:
 - Replace `[AFFILIATE:TOOLNAME]` placeholders in articles and newsletter with actual affiliate links
 - Update the `/tools` page with real affiliate URLs
 
-**Current state**
-- NordVPN: submitted, under review
-- Proton: submitted, under review
-- 1Password / CJ: signup submitted, awaiting email verification
-- Other affiliate programs: not started
+**Canonical public status:** `ops/affiliate-status.md`
 
 ---
 
