@@ -134,3 +134,36 @@ jobs:
         with:
           name: verify-live
           path: verify-live.json
+
+  status:
+    needs: [verify, deploy, verify_live]
+    if: ${{ always() && github.ref == 'refs/heads/main' && needs.verify.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Download live verification artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: verify-live
+          path: .
+
+      - name: Generate status.json
+        env:
+          DEPLOY_SKIPPED: ${{ needs.deploy.result == 'skipped' && 'true' || 'false' }}
+        run: node scripts/generate-status.mjs --live-report verify-live.json --output status.json
+
+      - name: Upload status artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: status
+          path: status.json
+          retention-days: 90
