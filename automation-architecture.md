@@ -8,6 +8,7 @@
 - Model runtime: GitHub Models via `GITHUB_TOKEN`
 - Default model: `openai/gpt-4o-mini`
 - Article factory default: `openai/gpt-4.1`
+- Newsletter compiler default: `openai/gpt-4.1`
 - Content safety rail: draft PRs only, never direct `main` commits
 
 ## Why this architecture

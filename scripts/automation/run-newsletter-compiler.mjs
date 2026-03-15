@@ -76,7 +76,7 @@ async function main() {
     return;
   }
 
-  const model = process.env.GITHUB_MODELS_MODEL?.trim() || DEFAULT_GITHUB_MODELS_MODEL;
+  const model = process.env.GITHUB_MODELS_MODEL?.trim() || 'openai/gpt-4.1';
   const harvestPath = path.join(REPO_ROOT, 'harvests', `harvest-${context.effectiveDate}.md`);
   const draftPath = path.join(REPO_ROOT, 'drafts', `newsletter-${context.effectiveDate}.md`);
 
@@ -145,12 +145,13 @@ async function main() {
       `Issue number: ${issueNumber}.`,
       `Top three weekly findings:\n${harvestFindings.slice(0, 3).map((finding, index) => `${index + 1}. ${finding.headline} — ${finding.summary}`).join('\n')}`,
       `Article drafts:\n${datedArticles.slice(0, 2).map((article) => `- ${article.title} (/blog/${article.slug}) — ${article.excerpt}`).join('\n')}`,
+      `Signals 1 and 2 must use these exact article fields in this order:\n1. article_slug=${datedArticles[0].slug} | article_title=${datedArticles[0].title}\n2. article_slug=${datedArticles[1].slug} | article_title=${datedArticles[1].title}`,
       `Tool of the week: ${selectedProgram.name} with placeholder ${toolPlaceholder}`,
       'Return JSON in this shape:',
       '{"subject_lines":["string","string"],"preview_text":"string","intro":["paragraph","paragraph"],"signals":[{"headline":"string","summary":"string","article_slug":"string|null","article_title":"string|null","source_name":"string|null","source_url":"https://...|null"}],"tool_of_week":{"program_name":"string","description":"string","placeholder":"[AFFILIATE:KEY]"},"next_week":["item","item","item"]}',
       'Requirements:',
       '- Exactly 3 signals.',
-      '- Signals 1 and 2 must link to the two current article drafts by slug.',
+      '- Signals 1 and 2 must link to the two current article drafts using the exact slug and title pairs listed above.',
       '- Signal 3 may link to a source URL if there is no draft article.',
       '- Keep the preview text under 150 characters.',
       '- Keep subject lines under 50 characters.',

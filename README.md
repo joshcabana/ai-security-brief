@@ -48,7 +48,7 @@ Optional GitHub automation variable:
 - `GITHUB_MODELS_MODEL` — defaults to `openai/gpt-4o-mini`
 
 GitHub Actions uses the built-in `GITHUB_TOKEN` plus `models: read` permission for model inference. See `automation-architecture.md` and `zapier-setup.md` for the current runbook. `skills.md` remains as a legacy reference only.
-The article factory workflow uses `openai/gpt-4.1` by default when no override is set, because long-form article drafting needs a stronger model than the weekly harvest ranking step.
+The article factory and newsletter compiler workflows use `openai/gpt-4.1` by default when no override is set, because long-form drafting needs a stronger model than the weekly harvest ranking and SEO steps.
 
 ## Getting Started
 

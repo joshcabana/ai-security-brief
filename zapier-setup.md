@@ -13,7 +13,7 @@
   - `GITHUB_MODELS_MODEL` → defaults to `openai/gpt-4o-mini`
 
 `GITHUB_TOKEN` is provided automatically by GitHub Actions and is used for GitHub Models inference, pushing weekly branches, and opening draft PRs. Model workflows need `models: read`.
-The article factory workflow falls back to `openai/gpt-4.1` when no override is provided, because long-form drafting needs a stronger default than harvest ranking.
+The article factory and newsletter compiler workflows fall back to `openai/gpt-4.1` when no override is provided, because long-form drafting needs a stronger default than harvest ranking.
 
 ## Architecture Overview
 
