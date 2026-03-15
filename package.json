@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
     "test:unit": "node --import tsx --test tests/*.test.ts",
     "test:smoke": "node scripts/smoke-test.mjs",
+    "verify:live": "node scripts/verify-live.mjs",
     "verify:ops": "node scripts/verify-ops.mjs",
     "verify:ops:contract": "node scripts/verify-ops.mjs --contract-only",
     "verify:release": "pnpm check:content && pnpm typecheck && pnpm test:unit && pnpm build && pnpm test:smoke",
