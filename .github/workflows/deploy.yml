@@ -109,3 +109,28 @@ jobs:
             DEPLOYMENT_URL=$(pnpm dlx vercel@latest deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           fi
           echo "url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+
+  verify_live:
+    needs: [verify, deploy]
+    if: ${{ always() && github.ref == 'refs/heads/main' && needs.verify.result == 'success' && (needs.deploy.result == 'success' || needs.deploy.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify live production (warn only)
+        id: verify_live
+        continue-on-error: true
+        run: node scripts/verify-live.mjs --base-url https://aithreatbrief.com --output verify-live.json
+
+      - name: Upload live verification artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-live
+          path: verify-live.json
