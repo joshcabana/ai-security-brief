@@ -63,8 +63,12 @@ pnpm dev
 
 ## Scripts
 
+- `pnpm affiliate:dry` — scan blog placeholders against the active affiliate link mapping without writing changes
+- `pnpm affiliate:apply` — replace blog placeholders using the active affiliate link mapping
+- `pnpm affiliate:dry:drafts` — extend the affiliate placeholder scan to newsletter drafts
 - `pnpm content:manifest` — regenerate `content-manifest.json` from `/blog/*.md`
 - `pnpm check:content` — verify frontmatter and manifest stay in sync
+- `pnpm ops:check-monday-pipeline -- --date YYYY-MM-DD` — confirm the Monday content PR, the prior-Sunday performance PR, and the expected workflow runs
 - `pnpm typecheck` — run TypeScript without emitting files
 - `pnpm test:unit` — run content and API regression tests with Node’s built-in test runner
 - `pnpm build` — run the production Next.js build
@@ -75,6 +79,13 @@ pnpm dev
 - `pnpm automation:newsletter-compiler` — generate the weekly newsletter draft
 - `pnpm automation:seo-affiliate` — fill SEO metadata gaps and inject affiliate placeholders
 - `pnpm automation:performance-logger` — upsert the weekly Beehiiv metrics log
+
+## Affiliate Ops
+
+- Store approved tracked URLs in `~/.ai-security-brief/affiliate-links.json`, or point `AFFILIATE_LINKS_PATH` at another local JSON file.
+- The repo copy at `ops/affiliate-links.json` is a scrubbed fallback template only.
+- Replacement order is: `AFFILIATE_LINKS_PATH` override, local private file, then repo template.
+- Current mainline blog content may still have zero affiliate placeholders. If `pnpm affiliate:dry` reports `0` blog tokens, keep the URL locally and wait for the next placeholder-bearing content branch.
 
 ## Repository Structure
 

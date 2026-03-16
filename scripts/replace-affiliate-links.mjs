@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 const root = process.cwd();
 const blogDir = path.join(root, 'blog');
 const draftsDir = path.join(root, 'drafts');
-const mappingPath = path.join(root, 'ops', 'affiliate-links.json');
 const tokenPattern = /\[AFFILIATE:([A-Z0-9]+)\]/g;
 const writeMode = process.argv.includes('--write');
 const includeDrafts = process.argv.includes('--include-drafts');
@@ -22,16 +22,65 @@ function formatList(items) {
   return items.length === 0 ? 'none' : items.join(', ');
 }
 
+function getMappingCandidates() {
+  const envPath = process.env.AFFILIATE_LINKS_PATH?.trim();
+  const candidates = [];
+
+  if (envPath) {
+    candidates.push({
+      absolutePath: path.isAbsolute(envPath) ? envPath : path.resolve(root, envPath),
+      displayPath: envPath,
+    });
+  }
+
+  candidates.push(
+    {
+      absolutePath: path.join(os.homedir(), '.ai-security-brief', 'affiliate-links.json'),
+      displayPath: '~/.ai-security-brief/affiliate-links.json',
+    },
+    {
+      absolutePath: path.join(root, 'ops', 'affiliate-links.json'),
+      displayPath: 'ops/affiliate-links.json',
+    },
+  );
+
+  return candidates;
+}
+
+async function fileExists(filePath) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+async function resolveMappingSource() {
+  const candidates = getMappingCandidates();
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate.absolutePath)) {
+      return candidate;
+    }
+  }
+
+  throw new Error(
+    `Missing affiliate link mapping. Checked ${candidates.map((candidate) => candidate.displayPath).join(', ')}.`,
+  );
+}
+
 async function loadMappings() {
+  const mappingSource = await resolveMappingSource();
   let raw;
 
   try {
-    raw = await fs.readFile(mappingPath, 'utf8');
+    raw = await fs.readFile(mappingSource.absolutePath, 'utf8');
   } catch (error) {
-    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
-      throw new Error('Missing ops/affiliate-links.json. Create it before running affiliate replacements.');
-    }
-
     throw error;
   }
 
@@ -40,16 +89,22 @@ async function loadMappings() {
     parsed = JSON.parse(raw);
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
-    throw new Error(`Invalid ops/affiliate-links.json: ${detail}`);
+    throw new Error(`Invalid ${mappingSource.displayPath}: ${detail}`);
   }
 
-  assert(parsed && typeof parsed === 'object' && !Array.isArray(parsed), 'Invalid ops/affiliate-links.json: expected a JSON object mapping affiliate codes to URLs.');
+  assert(
+    parsed && typeof parsed === 'object' && !Array.isArray(parsed),
+    `Invalid ${mappingSource.displayPath}: expected a JSON object mapping affiliate codes to URLs.`,
+  );
 
   for (const [key, value] of Object.entries(parsed)) {
-    assert(typeof value === 'string', `Invalid ops/affiliate-links.json: expected "${key}" to map to a string.`);
+    assert(typeof value === 'string', `Invalid ${mappingSource.displayPath}: expected "${key}" to map to a string.`);
   }
 
-  return parsed;
+  return {
+    mappings: parsed,
+    mappingSource,
+  };
 }
 
 async function loadMarkdownFiles(directoryPath, options = { required: false }) {
@@ -139,7 +194,7 @@ async function main() {
   const unsupportedFlags = process.argv.slice(2).filter((flag) => !supportedFlags.has(flag));
   assert(unsupportedFlags.length === 0, `Usage: node scripts/replace-affiliate-links.mjs [--write] [--include-drafts]\nUnsupported flag(s): ${unsupportedFlags.join(', ')}`);
 
-  const mappings = await loadMappings();
+  const { mappings, mappingSource } = await loadMappings();
   const files = await loadTargetFiles();
 
   let tokensFound = 0;
@@ -148,6 +203,7 @@ async function main() {
 
   console.log(writeMode ? 'Affiliate replacement mode: write' : 'Affiliate replacement mode: dry-run');
   console.log(`Affiliate replacement scope: ${includeDrafts ? 'blog + drafts' : 'blog only'}`);
+  console.log(`Affiliate mapping source: ${mappingSource.displayPath}`);
 
   for (const fileInfo of files) {
     const result = await processFile(fileInfo, mappings);

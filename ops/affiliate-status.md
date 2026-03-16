@@ -31,4 +31,5 @@ Updated: 16 March 2026
 
 - No personal address, phone, ABN, or contact email is stored in the public repo.
 - Private intake data remains only in `~/.ai-security-brief/intake-private.md`.
+- Private affiliate URLs remain only in `~/.ai-security-brief/affiliate-links.json` unless a public-safe exception is chosen deliberately.
 - The public repo stores only scrubbed placeholders and operational status.

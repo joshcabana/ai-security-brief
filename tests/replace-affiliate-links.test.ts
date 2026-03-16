@@ -27,10 +27,16 @@ async function createWorkspace(files: Record<string, string>) {
 function runReplaceAffiliateLinks(
   workspaceDir: string,
   args: string[] = [],
+  env: Record<string, string | undefined> = {},
 ) {
   return spawnSync(process.execPath, [replaceAffiliateLinksScript, ...args], {
     cwd: workspaceDir,
     encoding: 'utf8',
+    env: {
+      ...process.env,
+      HOME: workspaceDir,
+      ...env,
+    },
   });
 }
 
@@ -145,6 +151,60 @@ test('--include-drafts does not fail when drafts directory is missing', async ()
   }
 });
 
+test('local affiliate-links.json overrides the repo template when HOME is set', async () => {
+  const workspace = await createWorkspace({
+    'ops/affiliate-links.json': JSON.stringify({
+      NORDVPN: 'https://repo.example/nordvpn',
+    }, null, 2),
+    'blog/example.md': 'Blog [AFFILIATE:NORDVPN]\n',
+    '.ai-security-brief/affiliate-links.json': JSON.stringify({
+      NORDVPN: 'https://local.example/nordvpn',
+    }, null, 2),
+  });
+
+  try {
+    const result = runReplaceAffiliateLinks(workspace.workspaceDir, ['--write'], {
+      HOME: workspace.workspaceDir,
+    });
+    const updated = await readFile(path.join(workspace.workspaceDir, 'blog', 'example.md'), 'utf8');
+
+    assert.equal(result.status, 0);
+    assert.equal(updated, 'Blog https://local.example/nordvpn\n');
+    assert.match(result.stdout, /Affiliate mapping source: ~\/\.ai-security-brief\/affiliate-links\.json/);
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('AFFILIATE_LINKS_PATH takes precedence over local and repo mappings', async () => {
+  const workspace = await createWorkspace({
+    'ops/affiliate-links.json': JSON.stringify({
+      NORDVPN: 'https://repo.example/nordvpn',
+    }, null, 2),
+    '.ai-security-brief/affiliate-links.json': JSON.stringify({
+      NORDVPN: 'https://local.example/nordvpn',
+    }, null, 2),
+    'private/custom-links.json': JSON.stringify({
+      NORDVPN: 'https://env.example/nordvpn',
+    }, null, 2),
+    'blog/example.md': 'Blog [AFFILIATE:NORDVPN]\n',
+  });
+
+  try {
+    const result = runReplaceAffiliateLinks(workspace.workspaceDir, ['--write'], {
+      HOME: workspace.workspaceDir,
+      AFFILIATE_LINKS_PATH: 'private/custom-links.json',
+    });
+    const updated = await readFile(path.join(workspace.workspaceDir, 'blog', 'example.md'), 'utf8');
+
+    assert.equal(result.status, 0);
+    assert.equal(updated, 'Blog https://env.example/nordvpn\n');
+    assert.match(result.stdout, /Affiliate mapping source: private\/custom-links\.json/);
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
 test('tokens with empty mappings are skipped in write mode', async () => {
   const workspace = await createWorkspace({
     'ops/affiliate-links.json': JSON.stringify({
@@ -174,10 +234,14 @@ test('missing affiliate-links.json exits with a clear error', async () => {
   });
 
   try {
-    const result = runReplaceAffiliateLinks(workspace.workspaceDir);
+    const result = runReplaceAffiliateLinks(workspace.workspaceDir, [], {
+      HOME: path.join(workspace.workspaceDir, 'no-home'),
+    });
 
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /Missing ops\/affiliate-links\.json/);
+    assert.match(result.stderr, /Missing affiliate link mapping/);
+    assert.match(result.stderr, /~\/\.ai-security-brief\/affiliate-links\.json/);
+    assert.match(result.stderr, /ops\/affiliate-links\.json/);
   } finally {
     await workspace.cleanup();
   }
