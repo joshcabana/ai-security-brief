@@ -46,20 +46,54 @@ test('dry-run mode reports tokens without writing files', async () => {
       'Use [AFFILIATE:NORDVPN] and [AFFILIATE:PROTON] today.',
       '',
     ].join('\n'),
+    'drafts/newsletter.md': 'Draft token [AFFILIATE:NORDVPN]\n',
   });
 
   try {
     const before = await readFile(path.join(workspace.workspaceDir, 'blog', 'security-stack.md'), 'utf8');
+    const draftBefore = await readFile(path.join(workspace.workspaceDir, 'drafts', 'newsletter.md'), 'utf8');
     const result = runReplaceAffiliateLinks(workspace.workspaceDir);
     const after = await readFile(path.join(workspace.workspaceDir, 'blog', 'security-stack.md'), 'utf8');
+    const draftAfter = await readFile(path.join(workspace.workspaceDir, 'drafts', 'newsletter.md'), 'utf8');
 
     assert.equal(result.status, 0);
     assert.equal(after, before);
+    assert.equal(draftAfter, draftBefore);
     assert.match(result.stdout, /Affiliate replacement mode: dry-run/);
+    assert.match(result.stdout, /Affiliate replacement scope: blog only/);
     assert.match(result.stdout, /tokens found: 2/);
     assert.match(result.stdout, /tokens replaced: 1/);
     assert.match(result.stdout, /tokens skipped: 1/);
     assert.match(result.stdout, /wrote: dry-run/);
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('--include-drafts processes draft tokens when drafts are present', async () => {
+  const workspace = await createWorkspace({
+    'ops/affiliate-links.json': JSON.stringify({
+      NORDVPN: 'https://example.com/nordvpn',
+      PROTON: '',
+    }, null, 2),
+    'blog/security-stack.md': 'Blog [AFFILIATE:NORDVPN]\n',
+    'drafts/newsletter.md': 'Draft [AFFILIATE:NORDVPN] [AFFILIATE:PROTON]\n',
+  });
+
+  try {
+    const result = runReplaceAffiliateLinks(workspace.workspaceDir, ['--write', '--include-drafts']);
+    const blog = await readFile(path.join(workspace.workspaceDir, 'blog', 'security-stack.md'), 'utf8');
+    const draft = await readFile(path.join(workspace.workspaceDir, 'drafts', 'newsletter.md'), 'utf8');
+
+    assert.equal(result.status, 0);
+    assert.equal(blog, 'Blog https://example.com/nordvpn\n');
+    assert.equal(draft, 'Draft https://example.com/nordvpn [AFFILIATE:PROTON]\n');
+    assert.match(result.stdout, /Affiliate replacement scope: blog \+ drafts/);
+    assert.match(result.stdout, /blog\/security-stack\.md/);
+    assert.match(result.stdout, /drafts\/newsletter\.md/);
+    assert.match(result.stdout, /tokens found: 3/);
+    assert.match(result.stdout, /tokens replaced: 2/);
+    assert.match(result.stdout, /tokens skipped: 1/);
   } finally {
     await workspace.cleanup();
   }
@@ -86,6 +120,26 @@ test('--write mode replaces populated tokens across files and duplicates', async
     assert.match(result.stdout, /tokens found: 4/);
     assert.match(result.stdout, /tokens replaced: 4/);
     assert.match(result.stdout, /tokens skipped: 0/);
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
+test('--include-drafts does not fail when drafts directory is missing', async () => {
+  const workspace = await createWorkspace({
+    'ops/affiliate-links.json': JSON.stringify({
+      NORDVPN: 'https://example.com/nordvpn',
+    }, null, 2),
+    'blog/example.md': 'Blog [AFFILIATE:NORDVPN]\n',
+  });
+
+  try {
+    const result = runReplaceAffiliateLinks(workspace.workspaceDir, ['--include-drafts']);
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Affiliate replacement scope: blog \+ drafts/);
+    assert.match(result.stdout, /files scanned: 1/);
+    assert.match(result.stdout, /tokens found: 1/);
   } finally {
     await workspace.cleanup();
   }

@@ -5,10 +5,12 @@ import path from 'node:path';
 
 const root = process.cwd();
 const blogDir = path.join(root, 'blog');
+const draftsDir = path.join(root, 'drafts');
 const mappingPath = path.join(root, 'ops', 'affiliate-links.json');
 const tokenPattern = /\[AFFILIATE:([A-Z0-9]+)\]/g;
 const writeMode = process.argv.includes('--write');
-const supportedFlags = new Set(['--write']);
+const includeDrafts = process.argv.includes('--include-drafts');
+const supportedFlags = new Set(['--write', '--include-drafts']);
 
 function assert(condition, message) {
   if (!condition) {
@@ -50,36 +52,60 @@ async function loadMappings() {
   return parsed;
 }
 
-async function loadBlogFiles() {
+async function loadMarkdownFiles(directoryPath, options = { required: false }) {
   let stats;
   try {
-    stats = await fs.stat(blogDir);
+    stats = await fs.stat(directoryPath);
   } catch (error) {
     if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
-      throw new Error('Missing blog directory. Expected blog/*.md files under the current workspace.');
+      if (options.required) {
+        throw new Error('Missing blog directory. Expected blog/*.md files under the current workspace.');
+      }
+
+      return [];
     }
 
     throw error;
   }
 
-  assert(stats.isDirectory(), 'Missing blog directory. Expected blog/*.md files under the current workspace.');
+  if (!stats.isDirectory()) {
+    if (options.required) {
+      throw new Error('Missing blog directory. Expected blog/*.md files under the current workspace.');
+    }
 
-  const entries = await fs.readdir(blogDir);
-  return entries.filter((entry) => entry.endsWith('.md')).sort();
+    return [];
+  }
+
+  const entries = await fs.readdir(directoryPath);
+  const relativeDirectory = path.relative(root, directoryPath);
+
+  return entries
+    .filter((entry) => entry.endsWith('.md'))
+    .sort()
+    .map((entry) => ({
+      absolutePath: path.join(directoryPath, entry),
+      relativePath: path.join(relativeDirectory, entry),
+    }));
 }
 
-async function processFile(fileName, mappings) {
-  const filePath = path.join(blogDir, fileName);
-  const source = await fs.readFile(filePath, 'utf8');
+async function loadTargetFiles() {
+  const blogFiles = await loadMarkdownFiles(blogDir, { required: true });
+  const draftFiles = includeDrafts ? await loadMarkdownFiles(draftsDir, { required: false }) : [];
+  return [...blogFiles, ...draftFiles];
+}
+
+async function processFile(fileInfo, mappings) {
+  const source = await fs.readFile(fileInfo.absolutePath, 'utf8');
   const matches = Array.from(source.matchAll(tokenPattern));
 
   if (matches.length === 0) {
     return {
-      fileName,
+      ...fileInfo,
       found: 0,
       replaced: 0,
       skipped: 0,
       tokens: [],
+      source,
       nextSource: source,
     };
   }
@@ -99,30 +125,32 @@ async function processFile(fileName, mappings) {
   });
 
   return {
-    fileName,
+    ...fileInfo,
     found: matches.length,
     replaced,
     skipped,
     tokens,
+    source,
     nextSource,
   };
 }
 
 async function main() {
   const unsupportedFlags = process.argv.slice(2).filter((flag) => !supportedFlags.has(flag));
-  assert(unsupportedFlags.length === 0, `Usage: node scripts/replace-affiliate-links.mjs [--write]\nUnsupported flag(s): ${unsupportedFlags.join(', ')}`);
+  assert(unsupportedFlags.length === 0, `Usage: node scripts/replace-affiliate-links.mjs [--write] [--include-drafts]\nUnsupported flag(s): ${unsupportedFlags.join(', ')}`);
 
   const mappings = await loadMappings();
-  const files = await loadBlogFiles();
+  const files = await loadTargetFiles();
 
   let tokensFound = 0;
   let tokensReplaced = 0;
   let tokensSkipped = 0;
 
   console.log(writeMode ? 'Affiliate replacement mode: write' : 'Affiliate replacement mode: dry-run');
+  console.log(`Affiliate replacement scope: ${includeDrafts ? 'blog + drafts' : 'blog only'}`);
 
-  for (const fileName of files) {
-    const result = await processFile(fileName, mappings);
+  for (const fileInfo of files) {
+    const result = await processFile(fileInfo, mappings);
     tokensFound += result.found;
     tokensReplaced += result.replaced;
     tokensSkipped += result.skipped;
@@ -131,14 +159,14 @@ async function main() {
       continue;
     }
 
-    console.log(`\n${fileName}`);
+    console.log(`\n${result.relativePath}`);
     console.log(`  tokens: ${formatList(result.tokens)}`);
     console.log(`  found: ${result.found}`);
     console.log(`  replaceable: ${result.replaced}`);
     console.log(`  skipped: ${result.skipped}`);
 
-    if (writeMode && result.replaced > 0 && result.nextSource !== await fs.readFile(path.join(blogDir, fileName), 'utf8')) {
-      await fs.writeFile(path.join(blogDir, fileName), result.nextSource, 'utf8');
+    if (writeMode && result.replaced > 0 && result.nextSource !== result.source) {
+      await fs.writeFile(result.absolutePath, result.nextSource, 'utf8');
       console.log('  wrote: yes');
     } else {
       console.log(`  wrote: ${writeMode ? 'no' : 'dry-run'}`);
