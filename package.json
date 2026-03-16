@@ -11,6 +11,7 @@
     "automation:seo-affiliate": "node scripts/automation/run-seo-affiliate.mjs",
     "automation:performance-logger": "node scripts/automation/run-performance-logger.mjs",
     "affiliate:dry": "node scripts/replace-affiliate-links.mjs",
+    "affiliate:dry:drafts": "node scripts/replace-affiliate-links.mjs --include-drafts",
     "affiliate:apply": "node scripts/replace-affiliate-links.mjs --write",
     "content:manifest": "node scripts/content-manifest.mjs --write",
     "check:content": "node scripts/content-manifest.mjs --check",
