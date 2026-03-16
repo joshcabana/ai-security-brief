@@ -3,6 +3,8 @@
 > Complete these steps in order after all repo files are pushed to GitHub.  
 > Estimated total time: **3–4 hours**
 
+> Note: This is the original launch runbook, retained for reference. It is not the canonical live status source after launch. For current operational state, use `README.md`, `automation-architecture.md`, `ops/affiliate-status.md`, the latest `main` commit, and the latest green GitHub Actions runs.
+
 ---
 
 ## 1. Domain Purchase (~15 min)
