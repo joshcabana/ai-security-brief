@@ -15,6 +15,7 @@
     "affiliate:apply": "node scripts/replace-affiliate-links.mjs --write",
     "content:manifest": "node scripts/content-manifest.mjs --write",
     "check:content": "node scripts/content-manifest.mjs --check",
+    "ops:check-monday-pipeline": "node scripts/check-monday-pipeline.mjs",
     "typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
     "test:unit": "node --import tsx --test tests/*.test.ts",
     "test:smoke": "node scripts/smoke-test.mjs",
