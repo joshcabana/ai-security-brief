@@ -134,8 +134,10 @@ Sign up in order of highest commission rate:
 | 8 | 1Password | $2 + 25% | [1password.com/affiliate](https://1password.com/affiliate/) | 5 min |
 
 **After approval** (may take 1-7 days per program):
-- Replace `[AFFILIATE:TOOLNAME]` placeholders in articles and newsletter with actual affiliate links
-- Update the `/tools` page with real affiliate URLs
+- Store the tracked URL in `~/.ai-security-brief/affiliate-links.json` or another local file referenced by `AFFILIATE_LINKS_PATH`
+- Run `pnpm affiliate:dry`, `pnpm affiliate:apply`, and `pnpm affiliate:dry:drafts`
+- Commit only repo-tracked content changes. Never commit the local private affiliate-links file.
+- If `pnpm affiliate:dry` reports `0` blog tokens, keep the URL locally and wait for the next placeholder-bearing content branch.
 
 **Canonical public status:** `ops/affiliate-status.md`
 
