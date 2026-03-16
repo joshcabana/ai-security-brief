@@ -13,7 +13,8 @@ on:
         default: false
         type: boolean
   schedule:
-    - cron: '0 * * * 0,1'
+    # Monday 15:00 Australia/Sydney across AEDT/AEST.
+    - cron: '0 4,5 * * 1'
 
 permissions:
   contents: write
