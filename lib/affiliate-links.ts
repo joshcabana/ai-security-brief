@@ -17,6 +17,18 @@ export function getAffiliateUrl(code: string, env: AffiliateEnvironment): string
   return trimmedValue.length > 0 ? trimmedValue : null;
 }
 
+export function getAffiliateUrlByPriority(codes: readonly string[], env: AffiliateEnvironment): string | null {
+  for (const code of codes) {
+    const affiliateUrl = getAffiliateUrl(code, env);
+
+    if (affiliateUrl) {
+      return affiliateUrl;
+    }
+  }
+
+  return null;
+}
+
 /**
  * Resolves article affiliate placeholders from environment variables.
  * Markdown links degrade to plain text when the target URL is not configured.

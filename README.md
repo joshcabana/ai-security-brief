@@ -83,7 +83,8 @@ pnpm dev
 ## Affiliate Ops
 
 - Article markdown can use `[Tool Name]([AFFILIATE:CODE])`; article rendering resolves `AFFILIATE_<CODE>` from environment variables and degrades unresolved links to plain text.
-- Set affiliate URLs with environment variables such as `AFFILIATE_NORDVPN` and `AFFILIATE_PUREVPN` in Vercel for preview and production builds.
+- Set affiliate URLs with environment variables such as `AFFILIATE_NORDVPN`, `AFFILIATE_PUREVPN`, `AFFILIATE_PROTON_VPN`, and `AFFILIATE_PROTON_MAIL` in Vercel for preview and production builds.
+- `AFFILIATE_PROTON` remains supported as a legacy fallback for older generic Proton placements when product-specific variables are not set yet.
 - Store approved tracked URLs in `~/.ai-security-brief/affiliate-links.json`, or point `AFFILIATE_LINKS_PATH` at another local JSON file.
 - The repo copy at `ops/affiliate-links.json` is a scrubbed fallback template only.
 - Replacement order is: `AFFILIATE_LINKS_PATH` override, local private file, then repo template.
