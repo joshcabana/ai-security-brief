@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterForm from '@/components/NewsletterForm';
 import { getAllArticles, getArticleBySlug } from '@/lib/articles';
+import { siteUrl, siteName } from '@/lib/site';
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -35,16 +36,22 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     return { title: 'Article Not Found' };
   }
 
+  const articleUrl = `${siteUrl}/blog/${article.slug}`;
+
   return {
     title: article.metaTitle,
     description: article.metaDescription,
     keywords: article.keywords,
+    alternates: {
+      canonical: articleUrl,
+    },
     openGraph: {
       title: article.metaTitle,
       description: article.metaDescription,
       type: 'article',
       publishedTime: article.date,
       authors: [article.author],
+      url: articleUrl,
     },
     twitter: {
       card: 'summary_large_image',
@@ -77,8 +84,37 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const colors = categoryColors[article.category] || categoryColors.Privacy;
   const tags = [article.category, ...article.keywords.slice(0, 2)];
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.date,
+    author: {
+      '@type': 'Organization',
+      name: article.author,
+      url: siteUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+      url: siteUrl,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/blog/${article.slug}`,
+    },
+    keywords: article.keywords.join(', '),
+    articleSection: article.category,
+    wordCount: article.body.split(/\s+/).length,
+  };
+
   return (
     <div style={{ background: '#0d1117', minHeight: '100vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <header className="relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, #080c11, #0d1117)', borderBottom: '1px solid #21262d', paddingTop: '3.5rem', paddingBottom: '3.5rem' }}>
         <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" aria-hidden="true" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

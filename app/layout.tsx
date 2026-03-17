@@ -39,6 +39,12 @@ export const metadata: Metadata = {
   authors: [{ name: siteName }],
   creator: siteName,
   metadataBase: getSiteUrl(),
+  alternates: {
+    canonical: siteUrl,
+    types: {
+      'application/rss+xml': `${siteUrl}/feed.xml`,
+    },
+  },
   openGraph: {
     type: 'website',
     locale: 'en_AU',
@@ -76,6 +82,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="alternate" type="application/rss+xml" title={siteName} href={`${siteUrl}/feed.xml`} />
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
