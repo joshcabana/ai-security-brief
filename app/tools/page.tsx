@@ -67,6 +67,17 @@ const toolCategories: ToolCategory[] = [
         badge: 'Best free option',
         badgeColor: '#3fb950',
       },
+      {
+        name: 'PureVPN',
+        description:
+          'No-log audited VPN with 6,000+ servers in 65+ countries. Offers dedicated IP, port forwarding, and split tunnelling — useful for security researchers who need stable egress without exposing a home address.',
+        highlight: 'Dedicated IP, port forwarding, always-on audit',
+        price: 'From $2.14/mo',
+        affiliateKey: 'PUREVPN',
+        fallbackUrl: 'https://www.purevpn.com',
+        badge: 'Affiliate partner',
+        badgeColor: '#3fb950',
+      },
     ],
   },
   {
