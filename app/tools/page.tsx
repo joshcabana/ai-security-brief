@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getAffiliateUrl } from '@/lib/affiliate-links';
+import { getAffiliateUrlByPriority } from '@/lib/affiliate-links';
 
 export const metadata: Metadata = {
   title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
@@ -14,7 +14,7 @@ interface Tool {
   highlight: string;
   price: string;
   url?: string;
-  affiliateKey?: string;
+  affiliateKeys?: readonly string[];
   fallbackUrl?: string;
   badge?: string;
   badgeColor?: string;
@@ -42,7 +42,7 @@ const toolCategories: ToolCategory[] = [
           'Audited no-logs VPN with 6,000+ servers across 111 countries. Strong on threat protection features, including ad and malware blocking at the DNS layer.',
         highlight: 'Threat Protection Pro, RAM-only servers, WireGuard',
         price: 'From $3.09/mo',
-        affiliateKey: 'NORDVPN',
+        affiliateKeys: ['NORDVPN'],
         fallbackUrl: 'https://nordvpn.com',
         badge: 'Affiliate partner',
         badgeColor: '#3fb950',
@@ -63,7 +63,8 @@ const toolCategories: ToolCategory[] = [
           'Swiss-based, open-source VPN with a free tier. Built by the Proton ecosystem for encrypted communications and privacy-first workflows.',
         highlight: 'Free tier, open source, Swiss jurisdiction',
         price: 'Free – $9.99/mo',
-        url: 'https://protonvpn.com',
+        affiliateKeys: ['PROTON_VPN', 'PROTON'],
+        fallbackUrl: 'https://protonvpn.com',
         badge: 'Best free option',
         badgeColor: '#3fb950',
       },
@@ -73,7 +74,7 @@ const toolCategories: ToolCategory[] = [
           'No-log audited VPN with 6,000+ servers in 65+ countries. Offers dedicated IP, port forwarding, and split tunnelling — useful for security researchers who need stable egress without exposing a home address.',
         highlight: 'Dedicated IP, port forwarding, always-on audit',
         price: 'From $2.14/mo',
-        affiliateKey: 'PUREVPN',
+        affiliateKeys: ['PUREVPN'],
         fallbackUrl: 'https://www.purevpn.com',
         badge: 'Affiliate partner',
         badgeColor: '#3fb950',
@@ -122,7 +123,8 @@ const toolCategories: ToolCategory[] = [
           'End-to-end encrypted email from Switzerland. Zero-access encryption means even Proton cannot read your inbox.',
         highlight: 'E2E encryption, zero-access, Swiss law',
         price: 'Free – €9.99/mo',
-        url: 'https://proton.me/mail',
+        affiliateKeys: ['PROTON_MAIL', 'PROTON'],
+        fallbackUrl: 'https://proton.me/mail',
         badge: 'Editors’ pick',
         badgeColor: '#00b4ff',
       },
@@ -256,10 +258,10 @@ export default function ToolsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {category.tools.map((tool) => (
                 (() => {
-                  const href =
-                    tool.affiliateKey && tool.fallbackUrl
-                      ? getAffiliateUrl(tool.affiliateKey, process.env) ?? tool.fallbackUrl
-                      : tool.url;
+                  const affiliateUrl = tool.affiliateKeys
+                    ? getAffiliateUrlByPriority(tool.affiliateKeys, process.env)
+                    : null;
+                  const href = affiliateUrl ?? tool.url ?? tool.fallbackUrl;
 
                   if (!href) {
                     throw new Error(`Missing href for tool "${tool.name}".`);
