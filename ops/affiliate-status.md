@@ -2,30 +2,28 @@
 
 Public operational status for affiliate programme applications.
 
-Updated: 16 March 2026
+Updated: 17 March 2026
 
 ## Current status
 
 | Programme | Status | Notes |
 | --- | --- | --- |
-| NordVPN | Submitted, under review | Application submitted and awaiting approval outcome |
-| Proton | Submitted, under review | Application submitted and awaiting approval outcome |
-| 1Password / CJ | Account exists, password reset requested, awaiting email delivery | CJ login path confirms the account exists and a reset email has been requested to recover access |
-| Surfshark | Account exists, password reset requested, awaiting email delivery | The affiliate portal accepts the account email, the stored credential is stale, and a password reset email has been requested |
-| Malwarebytes | Requested in Partnerize, awaiting advertiser review | Existing Partnerize account was used successfully and the Malwarebytes campaign request was submitted from the authenticated console |
-| PureVPN | Submitted successfully, support follow-up sent, awaiting response | Signup confirmation page was observed, no confirmation email landed, and a support request was sent to `partners@purevpn.com` |
+| NordVPN | Approved and activated | Approval email landed on 16 March 2026, followed immediately by a welcome email with live tracking links and an assigned account manager |
+| Proton | Rejected | Rejection email landed on 16 March 2026; Proton offers re-evaluation via `partners@proton.me` if the rejection appears to be a mistake |
+| 1Password / CJ | Signup verification email landed, confirmation still pending | CJ publisher sign-up emails landed on 16 March 2026 and the publisher account still needs email confirmation before advertiser applications can continue |
+| Surfshark | Rejected | A password reset email landed first on 16 March 2026, but the programme later sent a rejection email with an appeal path via `affiliates@aff.surfshark.com` |
+| Malwarebytes | Partnerize account created, awaiting advertiser review | Partnerize onboarding emails landed on 16 March 2026 and the account username is confirmed, but no direct Malwarebytes advertiser decision has landed yet |
+| PureVPN | Approved | The approval email landed on 16 March 2026 with the affiliate link, commission schedule, and PAP login path |
 | CyberGhost | Rejected at login gate, support follow-up sent | Kape signup completed, immediate login failed with `Cannot login. Account rejected.`, and a follow-up was sent to `updates@cyberghost.ro` |
 | Jasper AI | No public signup path, enquiry sent | Public affiliate host is not usable and an availability enquiry was sent to `affiliates@jasper.ai` |
 
 ## Next actions
 
-1. Watch Gmail for the CJ password reset email and complete the account recovery flow as soon as it lands.
-2. Watch Gmail for the PureVPN support response or confirmation email, then complete activation or login immediately.
-3. Watch Partnerize and Gmail for the Malwarebytes advertiser decision.
-4. Watch Gmail for the Surfshark password reset email and complete account recovery as soon as it lands.
-5. Watch Gmail for NordVPN and Proton approval outcomes.
-6. Watch Gmail for replies from CyberGhost and Jasper, then act on any requested next step.
-7. Replace affiliate placeholders in content after approvals land.
+1. Complete the CJ publisher email-confirmation flow or request a fresh verification email, then apply to 1Password inside CJ.
+2. Recover Partnerize access, re-verify the account if required, and check the live Malwarebytes campaign request status from the console.
+3. Store the approved NordVPN and PureVPN tracked URLs in the private affiliate-link store, then replace the corresponding placeholders in content.
+4. Decide whether to request re-evaluation from Proton and Surfshark using the now-live site as evidence of topical fit and editorial quality.
+5. Watch Gmail for the first direct Malwarebytes advertiser decision and for any replies from CyberGhost or Jasper.
 
 ## Security rules
 
