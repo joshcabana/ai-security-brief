@@ -232,7 +232,8 @@ async function main() {
     }
 
     const toolsHtml = await fetch(`http://127.0.0.1:${coldStartPort}/tools`).then((response) => response.text());
-    assert.match(toolsHtml, /plain vendor URLs/);
+    assert.match(toolsHtml, /Affiliate disclosure:/);
+    assert.match(toolsHtml, /affiliate links/);
 
     const newsletterHtml = await fetch(`http://127.0.0.1:${coldStartPort}/newsletter`).then((response) => response.text());
     assert.match(newsletterHtml, /real status message either way/);

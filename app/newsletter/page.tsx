@@ -21,7 +21,7 @@ const benefits = [
     icon: '🔧',
     title: 'Tool Reviews & Comparisons',
     description:
-      'VPN, password manager, email, and endpoint tooling is reviewed with plain vendor links until affiliate approvals are live.',
+      'VPN, password manager, email, and endpoint tooling is reviewed with affiliate disclosures where applicable and clean vendor fallbacks where no approved program exists.',
   },
   {
     icon: '🧠',
