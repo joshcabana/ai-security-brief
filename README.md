@@ -23,7 +23,7 @@ AI Security Brief is an authority publication covering AI-powered cybersecurity 
 - `/` — Homepage driven by repo-backed markdown content
 - `/blog` — Article listing sourced from `/blog/*.md`
 - `/blog/[slug]` — Individual article pages rendered from markdown + frontmatter
-- `/tools` — Research-led tools directory with plain vendor links until affiliate approvals exist
+- `/tools` — Research-led tools directory with runtime-resolved affiliate links and clean vendor fallbacks
 - `/newsletter` — Newsletter signup page using the server-side Beehiiv route
 
 ## Content Pipeline
