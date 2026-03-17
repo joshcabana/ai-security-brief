@@ -23,7 +23,11 @@ const footerSections = [
     title: 'Project',
     links: [
       { label: 'Home', href: '/' },
+      { label: 'About', href: '/about' },
       { label: 'Newsletter', href: '/newsletter' },
+      { label: 'RSS feed', href: '/feed.xml', external: true },
+      { label: 'Privacy policy', href: '/privacy' },
+      { label: 'Terms of service', href: '/terms' },
       { label: 'GitHub repo', href: 'https://github.com/joshcabana/ai-security-brief', external: true },
     ],
   },
