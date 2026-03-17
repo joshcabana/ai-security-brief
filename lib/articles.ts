@@ -5,6 +5,7 @@ import matter from 'gray-matter';
 import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkHtml from 'remark-html';
+import { replaceAffiliateTokens } from './affiliate-links';
 
 export const BLOG_DIR = path.join(process.cwd(), 'blog');
 export const READ_TIME_PATTERN = /^\d+\s+min$/;
@@ -89,6 +90,7 @@ export async function parseArticleSource(fileName: string, source: string): Prom
   const { data, content } = matter(source);
   const title = assertString(data.title, 'title', fileName);
   const keywords = assertStringArray(data.keywords, 'keywords', fileName);
+  const resolvedBody = replaceAffiliateTokens(content.trim(), process.env);
   const slug = assertString(data.slug, 'slug', fileName);
   const article = {
     title,
@@ -103,8 +105,8 @@ export async function parseArticleSource(fileName: string, source: string): Prom
     keywords,
     readTime: assertReadTime(data.read_time, 'read_time', fileName),
     fileName,
-    body: content.trim(),
-    contentHtml: await renderMarkdown(content, title),
+    body: resolvedBody,
+    contentHtml: await renderMarkdown(resolvedBody, title),
   } satisfies ArticleDocument;
 
   return article;

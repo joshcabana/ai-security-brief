@@ -82,10 +82,12 @@ pnpm dev
 
 ## Affiliate Ops
 
+- Article markdown can use `[Tool Name]([AFFILIATE:CODE])`; article rendering resolves `AFFILIATE_<CODE>` from environment variables and degrades unresolved links to plain text.
+- Set affiliate URLs with environment variables such as `AFFILIATE_NORDVPN` and `AFFILIATE_PUREVPN` in Vercel for preview and production builds.
 - Store approved tracked URLs in `~/.ai-security-brief/affiliate-links.json`, or point `AFFILIATE_LINKS_PATH` at another local JSON file.
 - The repo copy at `ops/affiliate-links.json` is a scrubbed fallback template only.
 - Replacement order is: `AFFILIATE_LINKS_PATH` override, local private file, then repo template.
-- Current mainline blog content may still have zero affiliate placeholders. If `pnpm affiliate:dry` reports `0` blog tokens, keep the URL locally and wait for the next placeholder-bearing content branch.
+- `pnpm affiliate:apply` remains available for local or manual replacement flows that need fully expanded URLs on disk.
 
 ## Repository Structure
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { getAffiliateUrl } from '@/lib/affiliate-links';
 
 export const metadata: Metadata = {
   title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
@@ -12,7 +13,9 @@ interface Tool {
   description: string;
   highlight: string;
   price: string;
-  url: string;
+  url?: string;
+  affiliateKey?: string;
+  fallbackUrl?: string;
   badge?: string;
   badgeColor?: string;
 }
@@ -31,8 +34,19 @@ const toolCategories: ToolCategory[] = [
     icon: '🛡️',
     title: 'VPNs & Network Privacy',
     description:
-      'Encrypt traffic, reduce exposure, and keep remote work less observable. These links currently point straight to vendor sites.',
+      'Encrypt traffic, reduce exposure, and keep remote work less observable without turning your browsing habits into an intelligence feed for third parties.',
     tools: [
+      {
+        name: 'NordVPN',
+        description:
+          'Audited no-logs VPN with 6,000+ servers across 111 countries. Strong on threat protection features, including ad and malware blocking at the DNS layer.',
+        highlight: 'Threat Protection Pro, RAM-only servers, WireGuard',
+        price: 'From $3.09/mo',
+        affiliateKey: 'NORDVPN',
+        fallbackUrl: 'https://nordvpn.com',
+        badge: 'Affiliate partner',
+        badgeColor: '#3fb950',
+      },
       {
         name: 'Mullvad VPN',
         description:
@@ -181,7 +195,7 @@ export default function ToolsPage() {
               <path d="M8 4.5a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3A.75.75 0 018 4.5zm0 6.5a1 1 0 110-2 1 1 0 010 2z" fill="#d29922" />
             </svg>
             <span>
-              <strong style={{ color: '#d29922' }}>Commercial note:</strong> these buttons currently go to plain vendor URLs. Replace them with approved affiliate links only after each programme is live and disclosed.
+              <strong style={{ color: '#d29922' }}>Affiliate disclosure:</strong> some links on this page are affiliate links. We earn a small commission if you purchase — at no extra cost to you. We only list tools we'd recommend regardless.
             </span>
           </div>
         </div>
@@ -230,54 +244,67 @@ export default function ToolsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {category.tools.map((tool) => (
-                <div
-                  key={tool.name}
-                  className="relative rounded-xl border border-[#30363d] bg-[#161b22] p-6 transition-all duration-300 hover:border-[#00b4ff59] hover:shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
-                >
-                  {tool.badge ? (
-                    <div className="absolute top-4 right-4">
-                      <span
-                        className="text-xs font-mono font-semibold px-2 py-0.5 rounded"
-                        style={{
-                          background: `${tool.badgeColor}18`,
-                          color: tool.badgeColor,
-                          border: `1px solid ${tool.badgeColor}30`,
-                        }}
-                      >
-                        {tool.badge}
-                      </span>
-                    </div>
-                  ) : null}
+                (() => {
+                  const href =
+                    tool.affiliateKey && tool.fallbackUrl
+                      ? getAffiliateUrl(tool.affiliateKey, process.env) ?? tool.fallbackUrl
+                      : tool.url;
 
-                  <div className="mb-3 pr-20">
-                    <h3 className="text-lg font-bold text-white">{tool.name}</h3>
-                    <p className="text-xs font-mono mt-1" style={{ color: '#00b4ff' }}>
-                      {tool.highlight}
-                    </p>
-                  </div>
+                  if (!href) {
+                    throw new Error(`Missing href for tool "${tool.name}".`);
+                  }
 
-                  <p className="text-sm leading-relaxed mb-5" style={{ color: '#8b949e' }}>
-                    {tool.description}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid #21262d' }}>
-                    <span className="text-xs font-mono font-bold" style={{ color: '#3fb950' }}>
-                      {tool.price}
-                    </span>
-                    <a
-                      href={tool.url}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                      className="inline-flex items-center gap-2 rounded-md bg-[#00b4ff] px-4 py-2 text-xs font-bold text-[#0d1117] transition-all duration-200 hover:bg-[#33c3ff] hover:shadow-[0_0_14px_rgba(0,180,255,0.3)]"
-                      aria-label={`Visit ${tool.name} vendor site (opens in new tab)`}
+                  return (
+                    <div
+                      key={tool.name}
+                      className="relative rounded-xl border border-[#30363d] bg-[#161b22] p-6 transition-all duration-300 hover:border-[#00b4ff59] hover:shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
                     >
-                      Visit vendor site
-                      <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
-                        <path d="M3.5 3a.5.5 0 000 1H7.293L1.146 10.146a.5.5 0 00.708.708L8 4.707V8.5a.5.5 0 001 0v-5a.5.5 0 00-.5-.5h-5z" />
-                      </svg>
-                    </a>
-                  </div>
-                </div>
+                      {tool.badge ? (
+                        <div className="absolute top-4 right-4">
+                          <span
+                            className="text-xs font-mono font-semibold px-2 py-0.5 rounded"
+                            style={{
+                              background: `${tool.badgeColor}18`,
+                              color: tool.badgeColor,
+                              border: `1px solid ${tool.badgeColor}30`,
+                            }}
+                          >
+                            {tool.badge}
+                          </span>
+                        </div>
+                      ) : null}
+
+                      <div className="mb-3 pr-20">
+                        <h3 className="text-lg font-bold text-white">{tool.name}</h3>
+                        <p className="text-xs font-mono mt-1" style={{ color: '#00b4ff' }}>
+                          {tool.highlight}
+                        </p>
+                      </div>
+
+                      <p className="text-sm leading-relaxed mb-5" style={{ color: '#8b949e' }}>
+                        {tool.description}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid #21262d' }}>
+                        <span className="text-xs font-mono font-bold" style={{ color: '#3fb950' }}>
+                          {tool.price}
+                        </span>
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          className="inline-flex items-center gap-2 rounded-md bg-[#00b4ff] px-4 py-2 text-xs font-bold text-[#0d1117] transition-all duration-200 hover:bg-[#33c3ff] hover:shadow-[0_0_14px_rgba(0,180,255,0.3)]"
+                          aria-label={`Visit ${tool.name} vendor site (opens in new tab)`}
+                        >
+                          Visit vendor site
+                          <svg width="10" height="10" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                            <path d="M3.5 3a.5.5 0 000 1H7.293L1.146 10.146a.5.5 0 00.708.708L8 4.707V8.5a.5.5 0 001 0v-5a.5.5 0 00-.5-.5h-5z" />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })()
               ))}
             </div>
           </section>
@@ -300,7 +327,7 @@ export default function ToolsPage() {
             </div>
             <h2 className="text-white mb-4">Pair the tools with the threat briefings</h2>
             <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: '#8b949e' }}>
-              Subscribe to track launch updates, new tooling notes, and the move from plain vendor links to approved affiliate relationships.
+              Subscribe to track launch updates, new tooling notes, and practical product recommendations that match the week’s threat briefings.
             </p>
             <Link
               href="/newsletter"

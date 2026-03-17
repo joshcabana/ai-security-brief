@@ -155,7 +155,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <div className="p-6 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(0,180,255,0.05) 0%, rgba(0,180,255,0.02) 100%)', border: '1px solid rgba(0,180,255,0.2)' }}>
               <div className="text-xs font-mono uppercase mb-3" style={{ color: '#00b4ff' }}>Recommended</div>
               <h3 className="text-sm font-bold text-white mb-2">Security tools</h3>
-              <p className="text-xs mb-4" style={{ color: '#8b949e' }}>Vendor links stay untracked until affiliate approvals are in place.</p>
+              <p className="text-xs mb-4" style={{ color: '#8b949e' }}>Recommended tools may include affiliate links. We only feature products we'd use ourselves.</p>
               <Link href="/tools" className="text-xs font-semibold flex items-center gap-1 transition-colors" style={{ color: '#00b4ff' }}>
                 Browse tools
                 <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M1 8a.5.5 0 01.5-.5h11.793l-3.147-3.146a.5.5 0 01.708-.708l4 4a.5.5 0 010 .708l-4 4a.5.5 0 01-.708-.708L13.293 8.5H1.5A.5.5 0 011 8z" /></svg>
