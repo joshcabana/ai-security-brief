@@ -1,20 +1,29 @@
 ---
-title: "Critical Security Gaps Uncovered in LLM Guardrails: Implications for Enterprise AI"
-slug: "researchers-discover-major-security-gaps-in-llm-guardrails"
-date: "2026-03-17"
-author: "AI Security Brief"
-excerpt: "Recent research reveals significant vulnerabilities in the safety guardrails of large language models (LLMs), exposing organizations to manipulation and data integrity risks. Enterprises must urgently reassess their generative AI deployments to address these security gaps."
-category: "AI Threats"
+title: >-
+  Critical Security Gaps Uncovered in LLM Guardrails: Implications for
+  Enterprise AI
+slug: researchers-discover-major-security-gaps-in-llm-guardrails
+date: '2026-03-17'
+author: AI Security Brief
+excerpt: >-
+  Recent research reveals significant vulnerabilities in the safety guardrails
+  of large language models (LLMs), exposing organizations to manipulation and
+  data integrity risks. Enterprises must urgently reassess their generative AI
+  deployments to address these security gaps.
+category: AI Threats
 featured: false
-meta_title: "Researchers Discover Major Security Gaps in LLM Guardrails"
-meta_description: "Explore the major security gaps discovered in LLM guardrails and learn how organizations can strengthen generative AI deployments against manipulation and exploitation."
+meta_title: Researchers Discover Major Security Gaps in LLM Guardrails
+meta_description: >-
+  Explore the major security gaps discovered in LLM guardrails and learn how
+  organizations can strengthen generative AI deployments against manipulation
+  and exploitation.
 keywords:
-  - "LLM guardrails"
-  - "security gaps"
-  - "generative AI"
-  - "vulnerabilities"
-  - "data integrity"
-read_time: "5 min"
+  - LLM guardrails
+  - security gaps
+  - generative AI
+  - vulnerabilities
+  - data integrity
+read_time: 5 min
 ---
 # Critical Security Gaps Uncovered in LLM Guardrails: Implications for Enterprise AI
 
