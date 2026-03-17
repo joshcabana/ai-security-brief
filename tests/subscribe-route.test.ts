@@ -115,10 +115,58 @@ test('subscribe route returns 200 on a successful Beehiiv response', async () =>
   process.env.BEEHIIV_API_KEY = 'test-key';
   process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
   globalThis.fetch = async (input, init) => {
+    assert.ok(init?.body);
+    assert.deepEqual(JSON.parse(String(init.body)), {
+      email: 'reader@example.com',
+      reactivate_existing: false,
+      send_welcome_email: true,
+      utm_source: 'website',
+      utm_medium: 'organic',
+      utm_campaign: 'site-signup',
+      utm_content: 'homepage-hero',
+    });
     assert.equal(String(input), 'https://api.beehiiv.com/v2/publications/test-publication/subscriptions');
     assert.equal(init?.method, 'POST');
     assert.equal(init?.headers && (init.headers as Record<string, string>).Authorization, 'Bearer test-key');
     return new Response(JSON.stringify({ data: { id: 'sub_123' } }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
+
+  const response = await POST(
+    new Request('http://localhost/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'reader@example.com', source: 'homepage-hero' }),
+    }),
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    message: "You're in. Check your inbox for Beehiiv's confirmation email.",
+  });
+});
+
+test('subscribe route defaults the placement source to unknown when omitted', async () => {
+  process.env.BEEHIIV_API_KEY = 'test-key';
+  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  process.env.NEXT_PUBLIC_SITE_URL = 'https://aithreatbrief.com';
+  globalThis.fetch = async (input, init) => {
+    assert.equal(String(input), 'https://api.beehiiv.com/v2/publications/test-publication/subscriptions');
+    assert.ok(init?.body);
+    assert.deepEqual(JSON.parse(String(init.body)), {
+      email: 'reader@example.com',
+      reactivate_existing: false,
+      send_welcome_email: true,
+      utm_source: 'website',
+      utm_medium: 'organic',
+      utm_campaign: 'site-signup',
+      utm_content: 'unknown',
+      referring_site: 'https://aithreatbrief.com',
+    });
+    return new Response(JSON.stringify({ data: { id: 'sub_456' } }), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
     });

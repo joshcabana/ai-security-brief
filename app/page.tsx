@@ -112,7 +112,12 @@ export default async function HomePage() {
                 and the controls that still hold up under pressure.
               </p>
               <div className="max-w-xl">
-                <NewsletterForm variant="hero" placeholder="your@email.com" buttonText="Join the launch list" />
+                <NewsletterForm
+                  variant="hero"
+                  placeholder="your@email.com"
+                  buttonText="Join the launch list"
+                  source="homepage-hero"
+                />
               </div>
               <div className="flex items-center gap-3 mt-6">
                 <div className="flex -space-x-2" aria-hidden="true">
@@ -276,7 +281,12 @@ export default async function HomePage() {
           <p className="text-lg mb-10" style={{ color: '#8b949e' }}>
             The signup flow is wired for Beehiiv and now reports real success or failure instead of masking configuration gaps.
           </p>
-          <NewsletterForm variant="page" placeholder="your@work-email.com" buttonText="Subscribe for launch updates" />
+          <NewsletterForm
+            variant="page"
+            placeholder="your@work-email.com"
+            buttonText="Subscribe for launch updates"
+            source="homepage-cta"
+          />
         </div>
       </section>
     </>

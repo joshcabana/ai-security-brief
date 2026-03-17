@@ -6,6 +6,7 @@ interface NewsletterFormProps {
   variant?: 'default' | 'hero' | 'footer' | 'page';
   placeholder?: string;
   buttonText?: string;
+  source?: string;
 }
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
@@ -14,6 +15,7 @@ export default function NewsletterForm({
   variant = 'default',
   placeholder = 'Enter your email address',
   buttonText = 'Subscribe free',
+  source = 'unknown',
 }: NewsletterFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<FormStatus>('idle');
@@ -35,7 +37,7 @@ export default function NewsletterForm({
       const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source }),
       });
 
       const payload = (await response.json()) as { ok?: boolean; message?: string };

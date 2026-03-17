@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_SOURCE = 'unknown';
 
 function getBeehiivConfig() {
   const apiKey = process.env.BEEHIIV_API_KEY?.trim();
@@ -13,6 +14,20 @@ function getBeehiivConfig() {
     apiBaseUrl,
     configured: Boolean(apiKey && publicationId),
   };
+}
+
+function normalizeSource(source: unknown): string {
+  if (typeof source !== 'string') {
+    return DEFAULT_SOURCE;
+  }
+
+  const normalizedSource = source.trim().toLowerCase();
+
+  if (!normalizedSource) {
+    return DEFAULT_SOURCE;
+  }
+
+  return normalizedSource.replace(/\s+/g, '-');
 }
 
 export async function POST(request: Request) {
@@ -29,10 +44,10 @@ export async function POST(request: Request) {
     );
   }
 
-  let payload: { email?: string } | null = null;
+  let payload: { email?: string; source?: string } | null = null;
 
   try {
-    payload = (await request.json()) as { email?: string };
+    payload = (await request.json()) as { email?: string; source?: string };
   } catch {
     return NextResponse.json(
       { ok: false, message: 'The signup request body was invalid JSON.' },
@@ -41,6 +56,7 @@ export async function POST(request: Request) {
   }
 
   const email = payload?.email?.trim().toLowerCase();
+  const source = normalizeSource(payload?.source);
 
   if (!email || !EMAIL_REGEX.test(email)) {
     return NextResponse.json(
@@ -57,6 +73,7 @@ export async function POST(request: Request) {
     utm_source: 'website',
     utm_medium: 'organic',
     utm_campaign: 'site-signup',
+    utm_content: source,
     ...(referringSite ? { referring_site: referringSite } : {}),
   };
 

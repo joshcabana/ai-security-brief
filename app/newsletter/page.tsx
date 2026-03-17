@@ -127,6 +127,7 @@ export default async function NewsletterPage() {
               variant="page"
               placeholder="your@work-email.com"
               buttonText="Subscribe for launch updates"
+              source="newsletter-hero"
             />
 
             <div className="mt-6 pt-5 flex flex-wrap justify-center gap-6" style={{ borderTop: '1px solid #21262d' }}>
@@ -215,6 +216,7 @@ export default async function NewsletterPage() {
               variant="default"
               placeholder="your@email.com"
               buttonText="Subscribe & follow the launch"
+              source="newsletter-cta"
             />
           </div>
         </div>
