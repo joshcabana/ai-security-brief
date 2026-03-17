@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getAffiliateUrl, replaceAffiliateTokens } from '../lib/affiliate-links';
+import { getAffiliateUrl, getAffiliateUrlByPriority, replaceAffiliateTokens } from '../lib/affiliate-links';
 import { parseArticleSource } from '../lib/articles';
 
 test('getAffiliateUrl returns null for missing and blank environment values', () => {
@@ -13,6 +13,32 @@ test('getAffiliateUrl trims configured environment values', () => {
     getAffiliateUrl('NORDVPN', { AFFILIATE_NORDVPN: ' https://example.com/nordvpn ' }),
     'https://example.com/nordvpn',
   );
+});
+
+test('getAffiliateUrlByPriority returns the first configured affiliate url', () => {
+  assert.equal(
+    getAffiliateUrlByPriority(
+      ['PROTON_VPN', 'PROTON'],
+      {
+        AFFILIATE_PROTON: 'https://example.com/proton',
+        AFFILIATE_PROTON_VPN: 'https://example.com/proton-vpn',
+      },
+    ),
+    'https://example.com/proton-vpn',
+  );
+});
+
+test('getAffiliateUrlByPriority falls back to later configured affiliate urls', () => {
+  assert.equal(
+    getAffiliateUrlByPriority(
+      ['PROTON_VPN', 'PROTON'],
+      {
+        AFFILIATE_PROTON: 'https://example.com/proton',
+      },
+    ),
+    'https://example.com/proton',
+  );
+  assert.equal(getAffiliateUrlByPriority(['PROTON_VPN', 'PROTON'], {}), null);
 });
 
 test('replaceAffiliateTokens resolves configured markdown affiliate links', () => {

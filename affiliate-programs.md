@@ -40,7 +40,9 @@ Use these placeholders in articles and newsletters:
 
 ```
 [AFFILIATE:NORDVPN] → Replace with your NordVPN affiliate link
-[AFFILIATE:PROTON] → Replace with your Proton affiliate link
+[AFFILIATE:PROTON] → Legacy generic Proton fallback
+[AFFILIATE:PROTON_VPN] → Replace with your Proton VPN affiliate link
+[AFFILIATE:PROTON_MAIL] → Replace with your Proton Mail affiliate link
 [AFFILIATE:SURFSHARK] → Replace with your Surfshark affiliate link
 [AFFILIATE:1PASSWORD] → Replace with your 1Password affiliate link
 [AFFILIATE:MALWAREBYTES] → Replace with your Malwarebytes affiliate link

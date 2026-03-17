@@ -15,7 +15,7 @@ Updated: 18 March 2026
 - PureVPN: **Live in production** — deployed in OpenClaw article + `/tools` (PR #25)
 - 1Password / CJ: **Application pending advertiser approval** (CID 7901635, advertiser 5140517, verified 18 March 2026). Do not reapply.
 - Malwarebytes: Partnerize account created; access expired, re-verification needed
-- Proton: **Approved** (direct Proton Partners, 17 March 2026) + **Pending** (CJ advertiser 5227916, 18 March 2026). Reconcile paths before deployment.
+- Proton: **CJ links live** (advertiser 5227916, verified 18 March 2026) plus direct approval email from 17 March 2026. Use the CJ inventory for immediate deployment; compare the direct portal later only if terms differ materially.
 - Surfshark: Rejected; appeal available via `affiliates@aff.surfshark.com`
 - CyberGhost: Rejected at login gate; support follow-up sent
 - Jasper AI: No public signup path; enquiry sent
