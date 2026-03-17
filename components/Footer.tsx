@@ -43,7 +43,7 @@ export default function Footer() {
               <p className="text-sm" style={{ color: '#8b949e' }}>The form below now reports honest Beehiiv responses instead of silently pretending every signup worked.</p>
             </div>
             <div className="w-full md:w-auto md:min-w-80">
-              <NewsletterForm variant="footer" />
+              <NewsletterForm variant="footer" source="footer" />
             </div>
           </div>
         </div>
