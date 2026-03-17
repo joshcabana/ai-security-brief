@@ -9,13 +9,13 @@ This file is the canonical source for affiliate application copy for AI Security
 
 ## Current application status
 
-Updated: 17 March 2026 (late evening)
+Updated: 18 March 2026
 
 - NordVPN: **Live in production** — deployed in 3 articles + `/tools` (PR #24)
 - PureVPN: **Live in production** — deployed in OpenClaw article + `/tools` (PR #25)
-- 1Password / CJ: Signup verification email landed; confirmation still pending
+- 1Password / CJ: **Application pending advertiser approval** (CID 7901635, advertiser 5140517, verified 18 March 2026). Do not reapply.
 - Malwarebytes: Partnerize account created; access expired, re-verification needed
-- Proton: **Approved** — re-evaluation approved 17 March 2026; next: get tracking links and deploy
+- Proton: **Approved** (direct Proton Partners, 17 March 2026) + **Pending** (CJ advertiser 5227916, 18 March 2026). Reconcile paths before deployment.
 - Surfshark: Rejected; appeal available via `affiliates@aff.surfshark.com`
 - CyberGhost: Rejected at login gate; support follow-up sent
 - Jasper AI: No public signup path; enquiry sent
