@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAffiliateUrlByPriority } from '@/lib/affiliate-links';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
   description:
