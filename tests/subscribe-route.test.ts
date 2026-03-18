@@ -4,10 +4,16 @@ import { POST } from '../app/api/subscribe/route';
 
 const originalEnv = { ...process.env };
 const originalFetch = globalThis.fetch;
+const originalMathRandom = Math.random;
+const originalSetTimeout = globalThis.setTimeout;
+const originalClearTimeout = globalThis.clearTimeout;
 
 function restoreEnvironment() {
   process.env = { ...originalEnv };
   globalThis.fetch = originalFetch;
+  Math.random = originalMathRandom;
+  globalThis.setTimeout = originalSetTimeout;
+  globalThis.clearTimeout = originalClearTimeout;
 }
 
 test.afterEach(() => {
@@ -108,6 +114,89 @@ test('subscribe route returns 502 when Beehiiv cannot be reached', async () => {
   assert.equal(
     (await response.json()).message,
     'Beehiiv could not be reached. Check network access and publication settings, then try again.',
+  );
+});
+
+test('subscribe route retries once when Beehiiv responds with 429 before succeeding', async () => {
+  process.env.BEEHIIV_API_KEY = 'test-key';
+  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  Math.random = () => 0;
+
+  let attemptCount = 0;
+  globalThis.fetch = async () => {
+    attemptCount += 1;
+
+    if (attemptCount === 1) {
+      return new Response(JSON.stringify({ errors: [{ message: 'Rate limited.' }] }), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': '0',
+        },
+      });
+    }
+
+    return new Response(JSON.stringify({ data: { id: 'sub_retry' } }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
+
+  const response = await POST(
+    new Request('http://localhost/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'reader@example.com', source: 'homepage-hero' }),
+    }),
+  );
+
+  assert.equal(attemptCount, 2);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    ok: true,
+    message: "You're in. Check your inbox for Beehiiv's confirmation email.",
+  });
+});
+
+test('subscribe route returns 504 when Beehiiv times out', async () => {
+  process.env.BEEHIIV_API_KEY = 'test-key';
+  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+
+  globalThis.setTimeout = ((handler: TimerHandler) => {
+    queueMicrotask(() => {
+      if (typeof handler === 'function') {
+        handler();
+      }
+    });
+    return 0 as unknown as ReturnType<typeof setTimeout>;
+  }) as unknown as typeof globalThis.setTimeout;
+  globalThis.clearTimeout = (() => undefined) as typeof globalThis.clearTimeout;
+  globalThis.fetch = async (_input, init) =>
+    await new Promise<Response>((_resolve, reject) => {
+      const signal = init?.signal;
+
+      if (!(signal instanceof AbortSignal)) {
+        reject(new Error('Missing abort signal.'));
+        return;
+      }
+
+      signal.addEventListener('abort', () => {
+        reject(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+      });
+    });
+
+  const response = await POST(
+    new Request('http://localhost/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'reader@example.com' }),
+    }),
+  );
+
+  assert.equal(response.status, 504);
+  assert.equal(
+    (await response.json()).message,
+    'Beehiiv did not respond before the signup request timed out. Wait a moment and try again. If the delay continues, check Beehiiv API availability and publication settings.',
   );
 });
 

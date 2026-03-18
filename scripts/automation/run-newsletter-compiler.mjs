@@ -12,6 +12,7 @@ import {
 } from './common.mjs';
 import { requestJsonFromGitHubModels } from './github-models.mjs';
 import {
+  extractNewsletterIssueNumber,
   getNextNewsletterIssueNumber,
   parseAffiliatePrograms,
   parseAffiliatePlaceholderMap,
@@ -147,9 +148,39 @@ async function main() {
   }
 
   const draftFiles = (await fs.readdir(path.join(REPO_ROOT, 'drafts'))).filter((entry) => entry.startsWith('newsletter-') && entry.endsWith('.md'));
+  const existingIssueNumbers = [];
+  const publishedIssuePath = path.join(REPO_ROOT, 'newsletter-issue-001.md');
+
+  if (await fileExists(publishedIssuePath)) {
+    const publishedIssueNumber = extractNewsletterIssueNumber(await readText(publishedIssuePath));
+
+    if (!publishedIssueNumber) {
+      throw new Error('Published newsletter issue numbering could not be parsed from newsletter-issue-001.md.');
+    }
+
+    existingIssueNumbers.push(publishedIssueNumber);
+  }
+
+  let currentDraftIssueNumber = null;
+
+  for (const draftFile of draftFiles) {
+    const draftFilePath = path.join(REPO_ROOT, 'drafts', draftFile);
+    const draftIssueNumber = extractNewsletterIssueNumber(await readText(draftFilePath));
+
+    if (!draftIssueNumber) {
+      throw new Error(`Existing draft issue numbering could not be parsed from drafts/${draftFile}.`);
+    }
+
+    existingIssueNumbers.push(draftIssueNumber);
+
+    if (draftFilePath === draftPath) {
+      currentDraftIssueNumber = draftIssueNumber;
+    }
+  }
+
   const issueNumber = getNextNewsletterIssueNumber({
-    publishedIssueExists: await fileExists(path.join(REPO_ROOT, 'newsletter-issue-001.md')),
-    draftCount: draftFiles.length,
+    existingIssueNumbers,
+    currentDraftIssueNumber,
   });
 
   const payload = await requestJsonFromGitHubModels({

@@ -30,7 +30,7 @@ Our coverage includes the latest findings on Hive0163's persistent ransomware ta
 
 Cybersecurity researchers have disclosed details of AI-generated Slopoly malware used by Hive0163. This marks a significant shift in ransomware tactics, with AI enabling persistent access and advanced attack strategies.
 
-**[Read the full analysis → Hive0163 Deploys AI-Assisted Slopoly Malware for Persistent Ransomware Access](/blog/hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks-2026-03-17)**
+**[Read the full analysis → Hive0163 Deploys AI-Assisted Slopoly Malware for Persistent Access in Ransomware Attacks](/blog/hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks)**
 
 ---
 
