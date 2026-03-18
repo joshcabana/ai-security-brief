@@ -45,7 +45,7 @@ export default function Footer() {
             <div className="flex-1 min-w-0">
               <p className="text-xs uppercase tracking-widest font-mono mb-2" style={{ color: '#00b4ff', letterSpacing: '0.15em' }}>Stay briefed</p>
               <h3 className="text-xl font-bold text-white mb-1">Weekly briefings and tooling notes</h3>
-              <p className="text-sm" style={{ color: '#8b949e' }}>The form below now reports honest Beehiiv responses instead of silently pretending every signup worked.</p>
+              <p className="text-sm" style={{ color: '#8b949e' }}>One useful issue each week covering AI threats, privacy changes, and practical security tools.</p>
             </div>
             <div className="w-full md:w-auto md:min-w-80">
               <NewsletterForm variant="footer" source="footer" />
@@ -112,10 +112,10 @@ export default function Footer() {
           <p className="text-xs" style={{ color: '#484f58' }}>
             © {currentYear} AI Security Brief. All rights reserved.
             <span className="mx-2">·</span>
-            <span style={{ fontFamily: '"JetBrains Mono", monospace', color: '#30363d' }}>Signup flow: honest and repo-backed</span>
+            <span style={{ fontFamily: '"JetBrains Mono", monospace', color: '#30363d' }}>Independent editorial publication</span>
           </p>
           <span className="text-xs text-[#484f58]">
-            Automated with GitHub Actions
+            AI threats, privacy, and practical defence
           </span>
         </div>
       </div>

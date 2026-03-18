@@ -269,9 +269,9 @@ async function main() {
     assert.doesNotMatch(toolsHtml, /launch updates/i);
 
     const newsletterHtml = await fetch(`http://127.0.0.1:${coldStartPort}/newsletter`).then((response) => response.text());
-    assert.match(newsletterHtml, /real status message either way/);
-    assert.match(newsletterHtml, /Beehiiv credentials live in runtime environment variables/);
-    assert.match(newsletterHtml, /weekly threat intelligence, tooling notes, and privacy analysis/i);
+    assert.match(newsletterHtml, /weekly threat intelligence, privacy shifts, and practical tooling notes/i);
+    assert.match(newsletterHtml, /one concise issue each week covering AI threats, privacy changes, and tools worth evaluating/i);
+    assert.match(newsletterHtml, /weekly briefings, low-noise/i);
     assert.doesNotMatch(newsletterHtml, /launch list|publishing schedule is live/i);
 
     const missingConfigResult = await requestJson(`http://127.0.0.1:${coldStartPort}/api/subscribe`, {

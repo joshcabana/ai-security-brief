@@ -54,7 +54,7 @@ export default async function HomePage() {
     { label: 'Published briefings', value: String(articles.length), tone: '#00b4ff' },
     { label: 'Editorial tracks', value: String(editorialTracks), tone: '#3fb950' },
     { label: 'Tool categories', value: String(toolCategories.length), tone: '#d29922' },
-    { label: 'Automation skills', value: '5', tone: '#00b4ff' },
+    { label: 'Cadence', value: 'Weekly', tone: '#00b4ff' },
     {
       label: 'Latest publish date',
       value: articles[0] ? formatDate(articles[0].date) : 'Pending',
@@ -66,7 +66,7 @@ export default async function HomePage() {
     { value: String(articles.length), label: 'Published briefings' },
     { value: String(editorialTracks), label: 'Editorial tracks' },
     { value: String(toolCategories.length), label: 'Tool categories' },
-    { value: '5', label: 'Automation skills' },
+    { value: 'Weekly', label: 'Newsletter cadence' },
   ];
 
   return (
@@ -132,7 +132,7 @@ export default async function HomePage() {
                   ))}
                 </div>
                 <p className="text-sm" style={{ color: '#484f58' }}>
-                  <strong style={{ color: '#8b949e' }}>{articles.length} published briefings</strong> already wired into the site from markdown source files.
+                  <strong style={{ color: '#8b949e' }}>{articles.length} published briefings</strong> covering AI threats, privacy, and practical defence choices.
                 </p>
               </div>
             </div>
@@ -144,11 +144,11 @@ export default async function HomePage() {
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#d29922' }} />
                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#3fb950' }} />
                   </div>
-                  <span className="text-xs font-mono ml-2" style={{ color: '#484f58' }}>content-manifest.json</span>
+                  <span className="text-xs font-mono ml-2" style={{ color: '#484f58' }}>coverage-overview.log</span>
                 </div>
                 <div className="p-5 font-mono text-xs" style={{ lineHeight: '1.8' }}>
-                  <p style={{ color: '#3fb950' }}>$ pnpm check:content</p>
-                  <p className="mt-2" style={{ color: '#484f58' }}>Validating content inventory...</p>
+                  <p style={{ color: '#3fb950' }}>$ editorial coverage snapshot</p>
+                  <p className="mt-2" style={{ color: '#484f58' }}>Tracking the latest briefings and publication cadence...</p>
                   <div className="mt-4 space-y-1.5">
                     {dashboardRows.map((item) => (
                       <div key={item.label} className="flex items-center justify-between gap-3">
@@ -279,7 +279,7 @@ export default async function HomePage() {
           </div>
           <h2 className="text-white mb-5">Get the next briefing in your inbox</h2>
           <p className="text-lg mb-10" style={{ color: '#8b949e' }}>
-            The signup flow is wired for Beehiiv and now reports real success or failure instead of masking configuration gaps.
+            Weekly briefings on AI threats, privacy changes, and practical security tools worth your attention.
           </p>
           <NewsletterForm
             variant="page"
