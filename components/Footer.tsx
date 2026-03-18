@@ -44,7 +44,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
             <div className="flex-1 min-w-0">
               <p className="text-xs uppercase tracking-widest font-mono mb-2" style={{ color: '#00b4ff', letterSpacing: '0.15em' }}>Stay briefed</p>
-              <h3 className="text-xl font-bold text-white mb-1">Launch updates and weekly briefings</h3>
+              <h3 className="text-xl font-bold text-white mb-1">Weekly briefings and tooling notes</h3>
               <p className="text-sm" style={{ color: '#8b949e' }}>The form below now reports honest Beehiiv responses instead of silently pretending every signup worked.</p>
             </div>
             <div className="w-full md:w-auto md:min-w-80">
@@ -112,7 +112,7 @@ export default function Footer() {
           <p className="text-xs" style={{ color: '#484f58' }}>
             © {currentYear} AI Security Brief. All rights reserved.
             <span className="mx-2">·</span>
-            <span style={{ fontFamily: '"JetBrains Mono", monospace', color: '#30363d' }}>Launch state: honest and repo-backed</span>
+            <span style={{ fontFamily: '"JetBrains Mono", monospace', color: '#30363d' }}>Signup flow: honest and repo-backed</span>
           </p>
           <span className="text-xs text-[#484f58]">
             Automated with GitHub Actions

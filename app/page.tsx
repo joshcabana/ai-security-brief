@@ -63,7 +63,7 @@ export default async function HomePage() {
   ];
 
   const summaryStats = [
-    { value: String(articles.length), label: 'Launch briefings' },
+    { value: String(articles.length), label: 'Published briefings' },
     { value: String(editorialTracks), label: 'Editorial tracks' },
     { value: String(toolCategories.length), label: 'Tool categories' },
     { value: '5', label: 'Automation skills' },
@@ -108,14 +108,14 @@ export default async function HomePage() {
                 {' '}&amp; Privacy Defence
               </h1>
               <p className="text-lg leading-relaxed mb-10 max-w-xl" style={{ color: '#8b949e' }}>
-                A research-led launch set for teams tracking AI-enabled attacks, privacy risk,
+                A research-led publication for teams tracking AI-enabled attacks, privacy risk,
                 and the controls that still hold up under pressure.
               </p>
               <div className="max-w-xl">
                 <NewsletterForm
                   variant="hero"
                   placeholder="your@email.com"
-                  buttonText="Join the launch list"
+                  buttonText="Get weekly briefings"
                   source="homepage-hero"
                 />
               </div>
@@ -132,7 +132,7 @@ export default async function HomePage() {
                   ))}
                 </div>
                 <p className="text-sm" style={{ color: '#484f58' }}>
-                  <strong style={{ color: '#8b949e' }}>{articles.length} launch briefings</strong> already wired into the site from markdown source files.
+                  <strong style={{ color: '#8b949e' }}>{articles.length} published briefings</strong> already wired into the site from markdown source files.
                 </p>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default async function HomePage() {
                 </div>
                 <div className="p-5 font-mono text-xs" style={{ lineHeight: '1.8' }}>
                   <p style={{ color: '#3fb950' }}>$ pnpm check:content</p>
-                  <p className="mt-2" style={{ color: '#484f58' }}>Validating launch inventory...</p>
+                  <p className="mt-2" style={{ color: '#484f58' }}>Validating content inventory...</p>
                   <div className="mt-4 space-y-1.5">
                     {dashboardRows.map((item) => (
                       <div key={item.label} className="flex items-center justify-between gap-3">
@@ -184,7 +184,7 @@ export default async function HomePage() {
           <div className="flex items-end justify-between mb-12">
             <div>
               <div className="section-label mb-3">Latest Intelligence</div>
-              <h2 className="text-white">Launch Briefings</h2>
+              <h2 className="text-white">Latest Briefings</h2>
             </div>
             <Link
               href="/blog"
@@ -274,17 +274,17 @@ export default async function HomePage() {
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="section-label mb-5 justify-center">
             <span className="inline-flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-widest" style={{ color: '#00b4ff' }}>
-              Launch list
+              Weekly briefings
             </span>
           </div>
-          <h2 className="text-white mb-5">Get the next briefing when the publication goes live</h2>
+          <h2 className="text-white mb-5">Get the next briefing in your inbox</h2>
           <p className="text-lg mb-10" style={{ color: '#8b949e' }}>
             The signup flow is wired for Beehiiv and now reports real success or failure instead of masking configuration gaps.
           </p>
           <NewsletterForm
             variant="page"
             placeholder="your@work-email.com"
-            buttonText="Subscribe for launch updates"
+            buttonText="Subscribe free"
             source="homepage-cta"
           />
         </div>

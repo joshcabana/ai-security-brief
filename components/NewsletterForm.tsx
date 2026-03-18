@@ -18,6 +18,7 @@ export default function NewsletterForm({
   source = 'unknown',
 }: NewsletterFormProps) {
   const [email, setEmail] = useState('');
+  const [website, setWebsite] = useState('');
   const [status, setStatus] = useState<FormStatus>('idle');
   const [message, setMessage] = useState('');
 
@@ -37,7 +38,7 @@ export default function NewsletterForm({
       const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source }),
+        body: JSON.stringify({ email, source, website }),
       });
 
       const payload = (await response.json()) as { ok?: boolean; message?: string };
@@ -51,6 +52,7 @@ export default function NewsletterForm({
       setStatus('success');
       setMessage(payload.message || "You're in. Check your inbox for the confirmation email.");
       setEmail('');
+      setWebsite('');
     } catch {
       setStatus('error');
       setMessage('The signup request could not reach the server. Please try again later.');
@@ -112,6 +114,19 @@ export default function NewsletterForm({
                 event.currentTarget.style.boxShadow = 'none';
               }
             }}
+          />
+        </div>
+        <div hidden aria-hidden="true">
+          <label htmlFor={`website-${variant}`}>Website</label>
+          <input
+            id={`website-${variant}`}
+            type="text"
+            name="website"
+            value={website}
+            onChange={(event) => setWebsite(event.target.value)}
+            autoComplete="off"
+            aria-hidden="true"
+            tabIndex={-1}
           />
         </div>
         <button
