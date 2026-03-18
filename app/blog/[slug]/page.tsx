@@ -168,7 +168,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <aside className="space-y-6" aria-label="Article sidebar">
             <div className="p-6 rounded-xl" style={{ background: '#161b22', border: '1px solid #30363d' }}>
               <div className="text-xs font-mono uppercase tracking-widest mb-3" style={{ color: '#00b4ff', letterSpacing: '0.12em' }}>Stay Briefed</div>
-              <h3 className="text-base font-bold text-white mb-2">Get launch updates</h3>
+              <h3 className="text-base font-bold text-white mb-2">Get weekly briefings</h3>
               <p className="text-sm mb-5" style={{ color: '#8b949e' }}>The signup form now returns real Beehiiv responses, including configuration gaps.</p>
               <NewsletterForm variant="default" buttonText="Subscribe" source="article-inline" />
             </div>

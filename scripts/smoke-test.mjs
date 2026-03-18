@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 import { createServer as createHttpServer } from 'node:http';
-import net from 'node:net';
-import { readFile } from 'node:fs/promises';
-import { spawn } from 'node:child_process';
 import path from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import net from 'node:net';
 
 const repoDir = process.cwd();
+const packageJson = JSON.parse(await readFile(path.join(repoDir, 'package.json'), 'utf8'));
+const packageManagerSpec = typeof packageJson.packageManager === 'string'
+  ? packageJson.packageManager
+  : 'pnpm@10.23.0';
 
 function findFreePort() {
   return new Promise((resolve, reject) => {
@@ -52,7 +56,8 @@ async function waitForServer(url, label) {
 }
 
 function startApp(port, extraEnv = {}) {
-  const child = spawn('pnpm', ['start', '-p', String(port)], {
+  const packageManagerLaunch = resolvePackageManagerLaunch();
+  const child = spawn(packageManagerLaunch.command, [...packageManagerLaunch.args, 'start', '-p', String(port)], {
     cwd: repoDir,
     detached: true,
     env: {
@@ -130,6 +135,29 @@ function startApp(port, extraEnv = {}) {
       });
     },
   };
+}
+
+function canRunCommand(command, args) {
+  const result = spawnSync(command, args, { stdio: 'ignore' });
+  return !result.error && result.status === 0;
+}
+
+function resolvePackageManagerLaunch() {
+  if (canRunCommand('pnpm', ['--version'])) {
+    return {
+      command: 'pnpm',
+      args: [],
+    };
+  }
+
+  if (canRunCommand('npx', ['--version'])) {
+    return {
+      command: 'npx',
+      args: [packageManagerSpec],
+    };
+  }
+
+  throw new Error('Smoke tests require pnpm on PATH or npm/npx so the pinned pnpm version can be launched.');
 }
 
 async function startMockBeehiivServer() {
@@ -219,6 +247,9 @@ async function main() {
       homepageSlugs,
       'Expected homepage to link to the latest four article slugs in content-manifest.json.',
     );
+    assert.match(homeHtml, /Published briefings/);
+    assert.match(homeHtml, /Get the next briefing in your inbox/);
+    assert.doesNotMatch(homeHtml, /Join the launch list|publication goes live/i);
 
     const privacyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog?category=Privacy`).then((response) => response.text());
     assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), [`${privacyArticle.slug}`]);
@@ -234,10 +265,14 @@ async function main() {
     const toolsHtml = await fetch(`http://127.0.0.1:${coldStartPort}/tools`).then((response) => response.text());
     assert.match(toolsHtml, /Affiliate disclosure:/);
     assert.match(toolsHtml, /affiliate links/);
+    assert.match(toolsHtml, /Subscribe for weekly briefings, new tooling notes/);
+    assert.doesNotMatch(toolsHtml, /launch updates/i);
 
     const newsletterHtml = await fetch(`http://127.0.0.1:${coldStartPort}/newsletter`).then((response) => response.text());
     assert.match(newsletterHtml, /real status message either way/);
     assert.match(newsletterHtml, /Beehiiv credentials live in runtime environment variables/);
+    assert.match(newsletterHtml, /weekly threat intelligence, tooling notes, and privacy analysis/i);
+    assert.doesNotMatch(newsletterHtml, /launch list|publishing schedule is live/i);
 
     const missingConfigResult = await requestJson(`http://127.0.0.1:${coldStartPort}/api/subscribe`, {
       method: 'POST',
