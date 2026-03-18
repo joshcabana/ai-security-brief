@@ -4,6 +4,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import net from 'node:net';
+import { SECURITY_HEADERS } from '../lib/security-headers.mjs';
 
 const repoDir = process.cwd();
 const packageJson = JSON.parse(await readFile(path.join(repoDir, 'package.json'), 'utf8'));
@@ -223,6 +224,12 @@ async function requestJson(url, init) {
   };
 }
 
+function assertSecurityHeaders(headers) {
+  for (const header of SECURITY_HEADERS) {
+    assert.equal(headers.get(header.key), header.value, `Expected ${header.key} to match the configured value.`);
+  }
+}
+
 async function main() {
   const manifest = JSON.parse(
     await readFile(path.join(repoDir, 'content-manifest.json'), 'utf8'),
@@ -241,7 +248,10 @@ async function main() {
   try {
     await waitForServer(`http://127.0.0.1:${coldStartPort}/`, 'cold-start production server');
 
-    const homeHtml = await fetch(`http://127.0.0.1:${coldStartPort}/`).then((response) => response.text());
+    const homeResponse = await fetch(`http://127.0.0.1:${coldStartPort}/`);
+    assert.equal(homeResponse.status, 200);
+    assertSecurityHeaders(homeResponse.headers);
+    const homeHtml = await homeResponse.text();
     assert.deepEqual(
       extractArticleLinks(homeHtml, articleSlugs),
       homepageSlugs,

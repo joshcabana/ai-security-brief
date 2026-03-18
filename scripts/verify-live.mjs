@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { SECURITY_HEADERS, getExpectedSecurityHeaderValue } from '../lib/security-headers.mjs';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, '..');
@@ -72,6 +73,26 @@ async function fetchNoFollow(url) {
     });
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+function getSameSiteHeaders(baseUrl) {
+  return {
+    'content-type': 'application/json',
+    origin: baseUrl,
+    referer: `${baseUrl}/newsletter`,
+  };
+}
+
+function assertSecurityHeaders(headers) {
+  for (const header of SECURITY_HEADERS) {
+    const actualValue = headers.get(header.key);
+
+    if (actualValue !== header.value) {
+      throw new Error(
+        `Expected ${header.key} to be ${getExpectedSecurityHeaderValue(header.key)}, received ${actualValue ?? 'null'}`,
+      );
+    }
   }
 }
 
@@ -155,6 +176,18 @@ async function run() {
       },
     },
     {
+      name: 'security-headers',
+      path: '/',
+      method: 'GET',
+      assert: async (response) => {
+        if (response.status !== 200) {
+          throw new Error(`Expected HTTP 200, received ${response.status}`);
+        }
+        assertSecurityHeaders(response.headers);
+        await response.arrayBuffer();
+      },
+    },
+    {
       name: 'blog-index',
       path: '/blog',
       method: 'GET',
@@ -201,7 +234,7 @@ async function run() {
       path: '/api/subscribe',
       method: 'POST',
       body: JSON.stringify({ email: 'not-an-email' }),
-      headers: { 'content-type': 'application/json' },
+      headers: getSameSiteHeaders(baseUrl),
       assert: async (response) => {
         const payload = await response.json();
         if (response.status !== 400) {
