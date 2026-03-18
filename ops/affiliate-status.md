@@ -20,11 +20,10 @@ Updated: 18 March 2026
 ## Next actions
 
 1. **1Password: wait for CJ advertiser approval.** Application is already pending (advertiser 5140517). Do not reapply. Post-approval link path saved locally: `/member/7566978/publisher/links/search/#!advertiserIds=5140517`.
-2. **Add `AFFILIATE_PROTON=` to `.env.example`** so the env contract documents all live affiliate vars.
-3. Recover Partnerize access (re-verify or re-register `aithreatbrief`), then check live Malwarebytes campaign request status from the Partnerize console.
-4. Follow up on PureVPN PAP portal access (PAP credentials are needed for commission reporting, not for link tracking which is already live).
-5. Decide whether to request re-evaluation from Surfshark using the now-live site as evidence of topical fit and editorial quality. Hold until week 2 content is published.
-6. Watch Gmail for 1Password approval, Malwarebytes advertiser decision, and any CyberGhost / Jasper replies.
+2. Recover Partnerize access (re-verify or re-register `aithreatbrief`), then check live Malwarebytes campaign request status from the Partnerize console.
+3. Follow up on PureVPN PAP portal access (PAP credentials are needed for commission reporting, not for link tracking which is already live).
+4. Decide whether to request re-evaluation from Surfshark using the now-live site as evidence of topical fit and editorial quality. Hold until week 2 content is published.
+5. Watch Gmail for 1Password approval, Malwarebytes advertiser decision, and any CyberGhost / Jasper replies.
 
 ## Security rules
 
