@@ -14,7 +14,7 @@
     "affiliate:dry:drafts": "node scripts/replace-affiliate-links.mjs --include-drafts",
     "affiliate:apply": "node scripts/replace-affiliate-links.mjs --write",
     "content:manifest": "node scripts/content-manifest.mjs --write",
-    "check:content": "node scripts/content-manifest.mjs --check",
+    "check:content": "node scripts/content-manifest.mjs --check && node scripts/verify-content-integrity.mjs",
     "ops:check-monday-pipeline": "node scripts/check-monday-pipeline.mjs",
     "typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
     "test:unit": "node --import tsx --test tests/*.test.ts",

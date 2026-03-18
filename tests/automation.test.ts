@@ -10,7 +10,9 @@ import { requestJsonFromGitHubModels } from '../scripts/automation/github-models
 import { countActiveSubscriptions, derivePerformanceSnapshot } from '../scripts/automation/run-performance-logger.mjs';
 import {
   buildExpectedArticlePlan,
+  extractNewsletterIssueNumber,
   findRedundantCurrentWeekArticleFiles,
+  getNextNewsletterIssueNumber,
   injectAffiliatePlaceholders,
   parseAffiliatePrograms,
   parseHarvestMarkdown,
@@ -240,6 +242,31 @@ test('affiliate program parser derives deterministic rotation names and placehol
     { name: 'NordVPN', placeholderKey: 'NORDVPN' },
     { name: 'Proton (Mail/VPN/Pass)', placeholderKey: 'PROTON' },
   ]);
+});
+
+test('newsletter issue helpers parse issue numbers and advance from the highest existing issue', () => {
+  assert.equal(
+    extractNewsletterIssueNumber('# Newsletter Issue #7 — AI Security Brief\n\n## Email Configuration'),
+    7,
+  );
+
+  assert.equal(
+    getNextNewsletterIssueNumber({
+      existingIssueNumbers: [1, 2, 3],
+      currentDraftIssueNumber: null,
+    }),
+    4,
+  );
+});
+
+test('newsletter issue helper preserves the existing issue number on force-regeneration', () => {
+  assert.equal(
+    getNextNewsletterIssueNumber({
+      existingIssueNumbers: [1, 2, 3],
+      currentDraftIssueNumber: 3,
+    }),
+    3,
+  );
 });
 
 test('performance log upsert replaces placeholder row and updates same-date entries', () => {

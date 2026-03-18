@@ -1,4 +1,4 @@
-# Newsletter Issue #3 — AI Security Brief
+# Newsletter Issue #2 — AI Security Brief
 
 ## Email Configuration
 
@@ -17,11 +17,11 @@
 **AI SECURITY BRIEF**  
 *Intelligence on AI-Powered Threats & Privacy Defence*
 
-THE BRIEF — 2026-03-16 | Issue #3
+THE BRIEF — 2026-03-16 | Issue #2
 
 ---
 
-Welcome to AI Security Brief, Issue 3. This week, we spotlight the rise of AI-generated malware in ransomware attacks, critical vulnerabilities in AI agents, and concerning gaps in LLM safety guardrails. The evolving threat landscape demands new defensive strategies and vigilance.
+Welcome to AI Security Brief, Issue 2. This week, we spotlight the rise of AI-generated malware in ransomware attacks, critical vulnerabilities in AI agents, and concerning gaps in LLM safety guardrails. The evolving threat landscape demands new defensive strategies and vigilance.
 Stay informed as we break down the top findings and provide actionable insights for securing your AI systems.
 
 ---
