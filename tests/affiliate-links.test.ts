@@ -15,6 +15,23 @@ test('getAffiliateUrl trims configured environment values', () => {
   );
 });
 
+test('getAffiliateUrl returns null for malformed urls with unresolved placeholders', () => {
+  assert.equal(
+    getAffiliateUrl(
+      'PROTON_VPN',
+      {
+        AFFILIATE_PROTON_VPN:
+          'https://go.getproton.me/aff_c?offer_id=32&aff_id=2914&url_id=471&ad_id={eventId}&pubcid={pubcid}',
+      },
+    ),
+    null,
+  );
+});
+
+test('getAffiliateUrl returns null for invalid urls', () => {
+  assert.equal(getAffiliateUrl('NORDVPN', { AFFILIATE_NORDVPN: 'not-a-url' }), null);
+});
+
 test('getAffiliateUrlByPriority returns the first configured affiliate url', () => {
   assert.equal(
     getAffiliateUrlByPriority(

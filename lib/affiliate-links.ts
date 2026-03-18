@@ -6,6 +6,19 @@ function getAffiliateEnvKey(code: string): string {
   return `AFFILIATE_${code}`;
 }
 
+function isRenderableAffiliateUrl(value: string): boolean {
+  if (value.includes('{') || value.includes('}')) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 export function getAffiliateUrl(code: string, env: AffiliateEnvironment): string | null {
   const rawValue = env[getAffiliateEnvKey(code)];
 
@@ -14,7 +27,11 @@ export function getAffiliateUrl(code: string, env: AffiliateEnvironment): string
   }
 
   const trimmedValue = rawValue.trim();
-  return trimmedValue.length > 0 ? trimmedValue : null;
+  if (trimmedValue.length === 0 || !isRenderableAffiliateUrl(trimmedValue)) {
+    return null;
+  }
+
+  return trimmedValue;
 }
 
 export function getAffiliateUrlByPriority(codes: readonly string[], env: AffiliateEnvironment): string | null {
