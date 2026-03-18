@@ -15,37 +15,37 @@ const benefits = [
     icon: '🎯',
     title: 'Curated Threat Intelligence',
     description:
-      'Each issue is built from the same markdown-backed research archive that powers the site, not from a separate demo dataset.',
+      'A focused digest of major AI security incidents, model abuse patterns, and defensive shifts worth tracking.',
   },
   {
     icon: '🔧',
     title: 'Tool Reviews & Comparisons',
     description:
-      'VPN, password manager, email, and endpoint tooling is reviewed with affiliate disclosures where applicable and clean vendor fallbacks where no approved program exists.',
+      'Practical notes on VPNs, password managers, email security, and endpoint protection, with clear affiliate disclosure where relevant.',
   },
   {
     icon: '🧠',
     title: 'Threat Actor Analysis',
     description:
-      'Agentic AI abuse, prompt injection, and privacy reform stay at the centre of the editorial mix.',
+      'Coverage that keeps agentic abuse, prompt injection, and privacy reform in view.',
   },
   {
     icon: '⚡',
-    title: 'Honest Signup Flow',
+    title: 'Low-Noise Briefings',
     description:
-      'The site now reports real Beehiiv success and failure states, so configuration gaps surface immediately.',
+      'One useful issue each week for operators, builders, and security teams who do not need more noise.',
   },
   {
     icon: '📊',
-    title: 'Manifest-backed Publishing',
+    title: 'Practical Context',
     description:
-      'Every published article is checked against a content manifest before the build and deploy pipeline passes.',
+      'Each issue connects the headlines to concrete defensive implications, policy shifts, and tooling decisions.',
   },
   {
     icon: '🔒',
-    title: 'Human Review Before Publish',
+    title: 'Editor Reviewed',
     description:
-      'Newsletter drafts land in `/drafts/` first so a person can approve the issue before it reaches Beehiiv readers.',
+      'Every issue is reviewed before it goes out, so the newsletter reads like a briefing rather than a content dump.',
   },
 ];
 
@@ -57,8 +57,8 @@ export default async function NewsletterPage() {
   const stats = [
     { value: String(articles.length), label: 'Published briefings' },
     { value: String(categories.length), label: 'Editorial tracks' },
-    { value: '5', label: 'Automation skills' },
-    { value: 'Manual', label: 'Publish approval' },
+    { value: '1 issue', label: 'Weekly cadence' },
+    { value: 'Free', label: 'Subscription' },
   ];
 
   return (
@@ -92,7 +92,7 @@ export default async function NewsletterPage() {
             >
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#3fb950' }} aria-hidden="true" />
               <span className="tracking-wider uppercase" style={{ letterSpacing: '0.1em' }}>
-                Weekly briefings, review-first
+                Weekly briefings, low-noise
               </span>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default async function NewsletterPage() {
           </h1>
 
           <p className="text-xl leading-relaxed mb-10" style={{ color: '#8b949e' }}>
-            Subscribe for weekly threat intelligence, tooling notes, and privacy analysis. The form is wired to the live Beehiiv route and shows honest success or failure states.
+            Subscribe for weekly threat intelligence, privacy shifts, and practical tooling notes for teams operating in the AI era.
           </p>
 
           <div
@@ -121,7 +121,7 @@ export default async function NewsletterPage() {
           >
             <h2 className="text-xl font-bold text-white mb-2 text-left">Subscribe free</h2>
             <p className="text-sm text-left mb-6" style={{ color: '#8b949e' }}>
-              The form calls the server-side Beehiiv route and shows a real status message either way.
+              One concise issue each week covering AI threats, privacy changes, and tools worth evaluating.
             </p>
             <NewsletterForm
               variant="page"
@@ -143,10 +143,6 @@ export default async function NewsletterPage() {
               ))}
             </div>
           </div>
-
-          <p className="mt-6 text-xs" style={{ color: '#484f58' }}>
-            Beehiiv credentials live in runtime environment variables. They do not belong in the repository.
-          </p>
         </div>
       </section>
 
@@ -208,9 +204,9 @@ export default async function NewsletterPage() {
               border: '1px solid rgba(0,180,255,0.2)',
             }}
           >
-            <h3 className="text-xl font-bold text-white mb-3">Follow the next approved issue</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Get the next issue</h3>
             <p className="text-sm mb-6" style={{ color: '#8b949e' }}>
-              Newsletter drafts will be assembled from the latest harvest plus the freshest repo-backed articles, then saved in `/drafts/` for review.
+              Get the next issue covering AI threats, privacy changes, and practical tooling notes worth your time.
             </p>
             <NewsletterForm
               variant="default"

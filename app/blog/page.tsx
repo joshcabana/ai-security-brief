@@ -46,8 +46,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <div className="section-label mb-3">Intelligence Archive</div>
           <h1 className="text-white mb-4">Threat Intelligence &amp; Analysis</h1>
           <p className="text-lg max-w-2xl" style={{ color: '#8b949e' }}>
-            Long-form briefings pulled directly from the repository’s markdown source, with metadata,
-            citations, and categories kept in sync by the content manifest.
+            Long-form briefings on AI-powered threats, privacy defence, and security tooling, with citations and practical context for technical teams.
           </p>
         </div>
       </div>
@@ -114,7 +113,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           >
             <p className="text-lg font-medium text-white mb-2">No articles in this category yet</p>
             <p className="text-sm" style={{ color: '#8b949e' }}>
-              Browse the full archive or add a new markdown article to the repo.
+              Browse the full archive or check back for the next briefing.
             </p>
           </div>
         )}
