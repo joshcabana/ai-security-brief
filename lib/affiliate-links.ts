@@ -36,7 +36,7 @@ export function getAffiliateUrlByPriority(codes: readonly string[], env: Affilia
 export function replaceAffiliateTokens(markdown: string, env: AffiliateEnvironment): string {
   const withResolvedLinks = markdown.replace(
     AFFILIATE_LINK_PATTERN,
-    (match: string, label: string, code: string): string => {
+    (_match: string, label: string, code: string): string => {
       const affiliateUrl = getAffiliateUrl(code, env);
       return affiliateUrl ? `[${label}](${affiliateUrl})` : label;
     },

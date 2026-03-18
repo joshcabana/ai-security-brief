@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import NewsletterForm from './NewsletterForm';
+import ShieldLogo from './ShieldLogo';
 
 const footerSections = [
   {
@@ -57,11 +58,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2.5 mb-4 group" aria-label="AI Security Brief home">
-              <svg width="26" height="30" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300 group-hover:drop-shadow-[0_0_6px_rgba(0,180,255,0.5)]">
-                <path d="M16 1.5L2 7v9c0 8.5 6 16 14 18 8-2 14-9.5 14-18V7L16 1.5z" stroke="#00b4ff" strokeWidth="1.5" strokeLinejoin="round" fill="rgba(0,180,255,0.06)" />
-                <circle cx="16" cy="16" r="2.5" fill="#00b4ff" opacity="0.9" />
-                <path d="M9 16h4M19 16h4M16 12v4M16 16v4" stroke="#00b4ff" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-              </svg>
+              <ShieldLogo width={26} height={30} className="transition-all duration-300 group-hover:drop-shadow-[0_0_6px_rgba(0,180,255,0.5)]" />
               <span className="font-bold text-white text-sm tracking-tight">AI Security Brief</span>
             </Link>
             <p className="text-sm leading-relaxed mb-5" style={{ color: '#8b949e' }}>
