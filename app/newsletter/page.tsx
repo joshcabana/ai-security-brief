@@ -7,7 +7,7 @@ import { getAllArticles, getArticleCategories } from '@/lib/articles';
 export const metadata: Metadata = {
   title: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
   description:
-    'Subscribe to the AI Security Brief newsletter for launch updates, weekly threat intelligence, privacy tool reviews, and cybersecurity analysis.',
+    'Subscribe to the AI Security Brief newsletter for weekly threat intelligence, privacy tool reviews, and cybersecurity analysis.',
 };
 
 const benefits = [
@@ -52,10 +52,10 @@ const benefits = [
 export default async function NewsletterPage() {
   const articles = await getAllArticles();
   const categories = await getArticleCategories();
-  const launchArticles = articles.slice(0, 4);
+  const recentArticles = articles.slice(0, 4);
 
   const stats = [
-    { value: String(articles.length), label: 'Launch briefings' },
+    { value: String(articles.length), label: 'Published briefings' },
     { value: String(categories.length), label: 'Editorial tracks' },
     { value: '5', label: 'Automation skills' },
     { value: 'Manual', label: 'Publish approval' },
@@ -92,7 +92,7 @@ export default async function NewsletterPage() {
             >
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#3fb950' }} aria-hidden="true" />
               <span className="tracking-wider uppercase" style={{ letterSpacing: '0.1em' }}>
-                Launch-ready weekly briefings
+                Weekly briefings, review-first
               </span>
             </div>
           </div>
@@ -104,11 +104,11 @@ export default async function NewsletterPage() {
           </div>
 
           <h1 className="text-white mb-6" style={{ letterSpacing: '-0.03em' }}>
-            The launch list for <span style={{ color: '#00b4ff' }}>AI-era defenders</span>
+            Weekly AI security briefings for <span style={{ color: '#00b4ff' }}>AI-era defenders</span>
           </h1>
 
           <p className="text-xl leading-relaxed mb-10" style={{ color: '#8b949e' }}>
-            Subscribe for launch updates now, then weekly briefings once Beehiiv is connected and the publishing schedule is live.
+            Subscribe for weekly threat intelligence, tooling notes, and privacy analysis. The form is wired to the live Beehiiv route and shows honest success or failure states.
           </p>
 
           <div
@@ -126,7 +126,7 @@ export default async function NewsletterPage() {
             <NewsletterForm
               variant="page"
               placeholder="your@work-email.com"
-              buttonText="Subscribe for launch updates"
+              buttonText="Subscribe free"
               source="newsletter-hero"
             />
 
@@ -183,11 +183,11 @@ export default async function NewsletterPage() {
         </div>
       </section>
 
-      <section className="py-20" aria-label="Launch article archive">
+      <section className="py-20" aria-label="Briefing archive">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <div className="section-label mb-3">Launch archive</div>
+              <div className="section-label mb-3">Briefing archive</div>
               <h2 className="text-white">Current briefings</h2>
             </div>
             <Link href="/blog" className="text-sm hidden sm:block" style={{ color: '#484f58' }}>
@@ -196,7 +196,7 @@ export default async function NewsletterPage() {
           </div>
 
           <div className="space-y-4">
-            {launchArticles.map((article, index) => (
+            {recentArticles.map((article, index) => (
               <ArticleCard key={article.slug} article={article} variant="compact" index={index} />
             ))}
           </div>
@@ -208,14 +208,14 @@ export default async function NewsletterPage() {
               border: '1px solid rgba(0,180,255,0.2)',
             }}
           >
-            <h3 className="text-xl font-bold text-white mb-3">Ready for the first approved issue</h3>
+            <h3 className="text-xl font-bold text-white mb-3">Follow the next approved issue</h3>
             <p className="text-sm mb-6" style={{ color: '#8b949e' }}>
               Newsletter drafts will be assembled from the latest harvest plus the freshest repo-backed articles, then saved in `/drafts/` for review.
             </p>
             <NewsletterForm
               variant="default"
               placeholder="your@email.com"
-              buttonText="Subscribe & follow the launch"
+              buttonText="Subscribe for weekly briefings"
               source="newsletter-cta"
             />
           </div>

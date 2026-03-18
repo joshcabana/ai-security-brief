@@ -5,6 +5,7 @@ import path from 'node:path';
 import { countWords, escapeRegex, FINDING_CATEGORIES, REPO_ROOT, slugify } from './common.mjs';
 
 const CTA_LINE = '**Stay ahead of AI security threats.** Subscribe to the AI Security Brief newsletter for weekly intelligence. [Subscribe now →](/newsletter)';
+const NEWSLETTER_ISSUE_PATTERN = /^# Newsletter Issue #(\d+) — AI Security Brief$/m;
 
 const CATEGORY_MAP = {
   Regulation: 'Privacy',
@@ -324,8 +325,24 @@ export function renderNewsletterDraft({
   return lines.join('\n');
 }
 
-export function getNextNewsletterIssueNumber({ publishedIssueExists, draftCount }) {
-  return (publishedIssueExists ? 1 : 0) + draftCount + 1;
+export function extractNewsletterIssueNumber(markdown) {
+  const match = String(markdown).match(NEWSLETTER_ISSUE_PATTERN);
+
+  if (!match) {
+    return null;
+  }
+
+  const issueNumber = Number(match[1]);
+  return Number.isInteger(issueNumber) && issueNumber > 0 ? issueNumber : null;
+}
+
+export function getNextNewsletterIssueNumber({ existingIssueNumbers, currentDraftIssueNumber }) {
+  if (Number.isInteger(currentDraftIssueNumber) && currentDraftIssueNumber > 0) {
+    return currentDraftIssueNumber;
+  }
+
+  const validIssueNumbers = existingIssueNumbers.filter((value) => Number.isInteger(value) && value > 0);
+  return validIssueNumbers.length === 0 ? 1 : Math.max(...validIssueNumbers) + 1;
 }
 
 function buildDatedSlug(baseSlug, dateString, index = null) {
