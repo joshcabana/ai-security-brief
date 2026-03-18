@@ -7,6 +7,7 @@ const REQUEST_TIMEOUT_MS = 10000;
 const MAX_RETRY_ATTEMPTS = 2;
 const RETRY_BASE_DELAY_MS = 250;
 const RETRY_JITTER_MS = 100;
+const INVALID_REQUEST_MESSAGE = 'This signup request could not be verified. Refresh the page and try again.';
 const RETRYABLE_STATUS_CODES = new Set<number>([429, 503]);
 
 type BeehiivConfig = {
@@ -19,6 +20,7 @@ type BeehiivConfig = {
 type SubscribeRequestPayload = {
   email?: string;
   source?: string;
+  website?: string;
 };
 
 type BeehiivSubscribeBody = {
@@ -69,6 +71,45 @@ function getBeehiivConfig(): BeehiivConfig {
   };
 }
 
+function getAllowedOrigins(request: Request): string[] {
+  const allowedOrigins = new Set<string>([new URL(request.url).origin]);
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredSiteUrl) {
+    try {
+      allowedOrigins.add(new URL(configuredSiteUrl).origin);
+    } catch {
+      return Array.from(allowedOrigins);
+    }
+  }
+
+  return Array.from(allowedOrigins);
+}
+
+function getSubmittedOrigin(request: Request): string | null {
+  const originHeader = request.headers.get('origin');
+
+  if (originHeader) {
+    try {
+      return new URL(originHeader).origin;
+    } catch {
+      return null;
+    }
+  }
+
+  const refererHeader = request.headers.get('referer');
+
+  if (!refererHeader) {
+    return null;
+  }
+
+  try {
+    return new URL(refererHeader).origin;
+  } catch {
+    return null;
+  }
+}
+
 function normalizeSource(source: unknown): string {
   if (typeof source !== 'string') {
     return DEFAULT_SOURCE;
@@ -84,7 +125,21 @@ function normalizeSource(source: unknown): string {
 }
 
 function getReferringSite(request: Request): string {
-  return request.headers.get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL ?? '';
+  return getSubmittedOrigin(request) ?? getAllowedOrigins(request)[0] ?? '';
+}
+
+function isVerifiedSignupRequest(request: Request): boolean {
+  const submittedOrigin = getSubmittedOrigin(request);
+
+  if (!submittedOrigin) {
+    return false;
+  }
+
+  return getAllowedOrigins(request).includes(submittedOrigin);
+}
+
+function hasFilledHoneypot(value: unknown): boolean {
+  return typeof value === 'string' && value.trim().length > 0;
 }
 
 function isRetryableStatus(status: number): boolean {
@@ -157,6 +212,19 @@ function logFailure(failure: string, errorMessage: string): void {
       event: 'beehiiv_subscribe_failed',
       failure,
       error_message: errorMessage,
+    }),
+  );
+}
+
+function logRequestRejection(reason: string, request: Request, source: string): void {
+  console.warn(
+    JSON.stringify({
+      level: 'warn',
+      event: 'newsletter_subscribe_rejected',
+      reason,
+      source,
+      submitted_origin: getSubmittedOrigin(request),
+      allowed_origins: getAllowedOrigins(request),
     }),
   );
 }
@@ -261,6 +329,17 @@ export async function POST(request: Request): Promise<Response> {
 
   const email = payload?.email?.trim().toLowerCase();
   const source = normalizeSource(payload?.source);
+  const honeypotFilled = hasFilledHoneypot(payload?.website);
+
+  if (!isVerifiedSignupRequest(request)) {
+    logRequestRejection('origin_mismatch', request, source);
+    return NextResponse.json({ ok: false, message: INVALID_REQUEST_MESSAGE }, { status: 403 });
+  }
+
+  if (honeypotFilled) {
+    logRequestRejection('honeypot_filled', request, source);
+    return NextResponse.json({ ok: false, message: INVALID_REQUEST_MESSAGE }, { status: 400 });
+  }
 
   if (!email || !EMAIL_REGEX.test(email)) {
     return NextResponse.json(

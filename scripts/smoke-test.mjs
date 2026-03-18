@@ -298,26 +298,52 @@ async function main() {
 
   try {
     await waitForServer(`http://127.0.0.1:${configuredPort}/`, 'configured production server');
+    const sameSiteHeaders = {
+      'Content-Type': 'application/json',
+      origin: `http://127.0.0.1:${configuredPort}`,
+    };
 
     const invalidJsonResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: sameSiteHeaders,
       body: '{"email"',
     });
     assert.equal(invalidJsonResult.response.status, 400);
     assert.equal(invalidJsonResult.payload.message, 'The signup request body was invalid JSON.');
 
+    const invalidOriginResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        origin: 'https://attacker.example',
+      },
+      body: JSON.stringify({ email: 'reader@example.com' }),
+    });
+    assert.equal(invalidOriginResult.response.status, 403);
+    assert.equal(
+      invalidOriginResult.payload.message,
+      'This signup request could not be verified. Refresh the page and try again.',
+    );
+
     const invalidEmailResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: sameSiteHeaders,
       body: JSON.stringify({ email: 'not-an-email' }),
     });
     assert.equal(invalidEmailResult.response.status, 400);
     assert.equal(invalidEmailResult.payload.message, 'Enter a valid email address to subscribe.');
 
+    const honeypotResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
+      method: 'POST',
+      headers: sameSiteHeaders,
+      body: JSON.stringify({ email: 'reader@example.com', website: 'https://spam.example' }),
+    });
+    assert.equal(honeypotResult.response.status, 400);
+    assert.equal(honeypotResult.payload.message, 'This signup request could not be verified. Refresh the page and try again.');
+
     const upstreamErrorResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: sameSiteHeaders,
       body: JSON.stringify({ email: 'error@example.com' }),
     });
     assert.equal(upstreamErrorResult.response.status, 422);
@@ -325,7 +351,7 @@ async function main() {
 
     const successResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: sameSiteHeaders,
       body: JSON.stringify({ email: 'success@example.com' }),
     });
     assert.equal(successResult.response.status, 200);
