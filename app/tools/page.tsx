@@ -342,7 +342,7 @@ export default function ToolsPage() {
             </div>
             <h2 className="text-white mb-4">Pair the tools with the threat briefings</h2>
             <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: '#8b949e' }}>
-              Subscribe to track launch updates, new tooling notes, and practical product recommendations that match the week’s threat briefings.
+              Subscribe for weekly briefings, new tooling notes, and practical product recommendations that match the week’s threat briefings.
             </p>
             <Link
               href="/newsletter"
