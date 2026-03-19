@@ -25,7 +25,7 @@
     "verify:release": "pnpm check:content && pnpm typecheck && pnpm test:unit && pnpm build && pnpm test:smoke",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --ext .js,.mjs,.ts,.tsx"
   },
   "dependencies": {
     "fast-xml-parser": "^5.3.2",

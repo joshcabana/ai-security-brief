@@ -118,6 +118,35 @@ test('verify:ops --contract-only reports contract drift without failing', async 
   }
 });
 
+test('verify:ops --contract-only allows documented optional affiliate env keys', async () => {
+  const workspace = await createWorkspace({
+    '.env.example': [
+      'BEEHIIV_API_KEY=your-beehiiv-api-key-here',
+      'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
+      'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
+      'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
+      'AFFILIATE_NORDVPN=',
+      'AFFILIATE_PUREVPN=',
+      'AFFILIATE_PROTON=',
+      'AFFILIATE_PROTON_VPN=',
+      'AFFILIATE_PROTON_MAIL=',
+      '',
+    ].join('\n'),
+  });
+
+  try {
+    const result = runVerifyOps(workspace.workspaceDir, {
+      args: ['--contract-only'],
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Contract check passed\. No drift detected\./);
+    assert.doesNotMatch(result.stdout, /UNEXPECTED EXTRA KEY/);
+  } finally {
+    await workspace.cleanup();
+  }
+});
+
 test('verify:ops exits 1 when required runtime vars are missing', async () => {
   const workspace = await createWorkspace({
     '.env.example': [
