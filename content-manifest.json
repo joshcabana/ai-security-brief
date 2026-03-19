@@ -6,43 +6,43 @@
   ],
   "articles": [
     {
-      "title": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and Remote Code Execution",
+      "title": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE",
       "slug": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce",
       "date": "2026-03-19",
       "author": "AI Security Brief",
-      "excerpt": "Recent vulnerabilities in Amazon Bedrock, LangSmith, and SGLang expose organizations to data exfiltration and remote code execution risks. Cybersecurity professionals must urgently address these flaws to safeguard sensitive information and maintain operational integrity.",
+      "excerpt": "Three independent research teams disclosed critical vulnerabilities across Amazon Bedrock AgentCore, LangSmith, and SGLang in March 2026 — collectively enabling DNS-based data exfiltration, account takeover, and unauthenticated remote code execution against AI infrastructure. One of these flaws remains unpatched, and CERT/CC has issued a public advisory.",
       "category": "AI Threats",
       "featured": false,
-      "metaTitle": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang: Data Exfiltration & RCE Risks",
-      "metaDescription": "Discover how vulnerabilities in Amazon Bedrock, LangSmith, and SGLang enable data exfiltration and remote code execution. Learn actionable steps for mitigating these AI security threats.",
+      "metaTitle": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang: Data Exfiltration and RCE",
+      "metaDescription": "Critical vulnerabilities in Amazon Bedrock, LangSmith (CVE-2026-25750), and SGLang (CVE-2026-3059, CVE-2026-3060) enable DNS exfiltration, account takeover, and unauthenticated RCE.",
       "keywords": [
-        "Amazon Bedrock",
-        "LangSmith",
-        "SGLang",
-        "data exfiltration",
-        "remote code execution"
+        "Amazon Bedrock DNS exfiltration",
+        "LangSmith CVE-2026-25750 account takeover",
+        "SGLang RCE CVE-2026-3059",
+        "AI infrastructure vulnerabilities 2026",
+        "pickle deserialization remote code execution"
       ],
-      "readTime": "5 min",
+      "readTime": "7 min",
       "fileName": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce.md"
     },
     {
-      "title": "CursorJack Attack Path Exposes Code Execution Risk in AI Development Environments",
+      "title": "CursorJack: How MCP Deeplinks Turn Cursor IDE Into a Code Execution Vector",
       "slug": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment",
       "date": "2026-03-19",
       "author": "AI Security Brief",
-      "excerpt": "The CursorJack attack reveals a critical vulnerability in AI development environments, enabling code execution through malicious deeplinks. Developers and IT leaders must implement robust security measures to mitigate these risks and protect sensitive workflows.",
+      "excerpt": "Proofpoint Threat Research has demonstrated that a single crafted deeplink can weaponise Cursor IDE's MCP installation flow to execute arbitrary commands under a developer's full privileges — exposing the structural security gap at the heart of the Model Context Protocol ecosystem.",
       "category": "AI Threats",
       "featured": false,
-      "metaTitle": "CursorJack Attack Path: Code Execution Risk in AI Development Environments",
-      "metaDescription": "Explore the CursorJack attack path and its code execution risks in AI development environments. Learn how to defend against malicious deeplinks and secure your AI workflows.",
+      "metaTitle": "CursorJack Attack: MCP Deeplinks and Code Execution Risk in Cursor IDE",
+      "metaDescription": "Proofpoint's CursorJack research shows how a single crafted MCP deeplink can execute arbitrary commands in Cursor IDE. What CISOs and security engineers need to know.",
       "keywords": [
-        "CursorJack",
-        "code execution",
-        "AI development",
-        "deeplink vulnerability",
-        "security risk"
+        "CursorJack MCP deeplink attack",
+        "Cursor IDE security vulnerability",
+        "Model Context Protocol security risks",
+        "MCP server supply chain attack",
+        "AI development tooling threats"
       ],
-      "readTime": "5 min",
+      "readTime": "6 min",
       "fileName": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment.md"
     },
     {
