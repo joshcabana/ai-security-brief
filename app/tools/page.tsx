@@ -218,7 +218,7 @@ export default function ToolsPage() {
               <path d="M8 4.5a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3A.75.75 0 018 4.5zm0 6.5a1 1 0 110-2 1 1 0 010 2z" fill="#d29922" />
             </svg>
             <span>
-              <strong style={{ color: '#d29922' }}>Affiliate disclosure:</strong> some links on this page are affiliate links. We earn a small commission if you purchase — at no extra cost to you. We only list tools we'd recommend regardless.
+              <strong style={{ color: '#d29922' }}>Affiliate disclosure:</strong> some links on this page are affiliate links. We earn a small commission if you purchase — at no extra cost to you. We only list tools we recommend regardless.
             </span>
           </div>
         </div>
