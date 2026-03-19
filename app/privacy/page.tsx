@@ -53,7 +53,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="text-base font-bold text-white mb-2">Analytics</h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-                  This site does not currently use any client-side analytics service. If we add analytics in the future, this policy will be updated to name the provider and explain what data is collected. Vercel, our hosting provider, collects basic request-level data (e.g. access logs) as part of normal platform operation.
+                  This site uses Plausible Analytics, a privacy-focused, cookie-free analytics service. Plausible does not collect personal data, does not use cookies, and does not track users across websites. All data is aggregated and no individual visitor profiles are created. You can review Plausible&apos;s data policy at plausible.io/data-policy. Vercel, our hosting provider, collects basic request-level data (e.g. access logs) as part of normal platform operation.
                 </p>
               </div>
               <div>

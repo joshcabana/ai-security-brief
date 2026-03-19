@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { POST } from '../app/api/subscribe/route';
+import { resetRateLimit } from '../lib/rate-limit';
 
 const originalEnv = { ...process.env };
 const originalFetch = globalThis.fetch;
@@ -28,6 +29,7 @@ function restoreEnvironment() {
 }
 
 test.afterEach(() => {
+  resetRateLimit();
   restoreEnvironment();
 });
 

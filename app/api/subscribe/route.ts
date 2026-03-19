@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getRateLimitKey, isRateLimited } from '@/lib/rate-limit';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_SOURCE = 'unknown';
@@ -303,6 +304,15 @@ function getUpstreamMessage(upstreamPayload: unknown): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // Rate limit check
+  const rateLimitKey = getRateLimitKey(request);
+  if (isRateLimited(rateLimitKey)) {
+    return NextResponse.json(
+      { ok: false, message: 'Too many signup attempts. Please try again in a minute.' },
+      { status: 429, headers: { 'Retry-After': '60' } },
+    );
+  }
+
   const { apiKey, publicationId, apiBaseUrl, configured } = getBeehiivConfig();
 
   if (!configured || !apiKey || !publicationId) {
