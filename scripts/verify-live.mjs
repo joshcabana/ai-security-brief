@@ -2,7 +2,7 @@
 
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { SECURITY_HEADERS, getExpectedSecurityHeaderValue } from '../lib/security-headers.mjs';
 import {
   ANALYTICS_INTEGRATION_MARKERS,
@@ -52,14 +52,35 @@ function resolveOutputPath(outputPath) {
   return resolve(WORKDIR, outputPath);
 }
 
+export function getDeploymentProtectionHeaders(
+  secret = process.env.VERCEL_PROTECTION_BYPASS?.trim() || process.env.VERCEL_AUTOMATION_BYPASS_SECRET?.trim() || '',
+) {
+  if (!secret) {
+    return {};
+  }
+
+  return {
+    'x-vercel-protection-bypass': secret,
+  };
+}
+
+export function mergeRequestHeaders(additionalHeaders, protectionHeaders) {
+  return {
+    ...(protectionHeaders ?? {}),
+    ...(additionalHeaders ?? {}),
+  };
+}
+
 async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const protectionHeaders = getDeploymentProtectionHeaders();
     return await fetch(url, {
-      redirect: 'follow',
       ...options,
+      headers: mergeRequestHeaders(options.headers, protectionHeaders),
+      redirect: 'follow',
       signal: controller.signal,
     });
   } finally {
@@ -72,7 +93,9 @@ async function fetchNoFollow(url) {
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const protectionHeaders = getDeploymentProtectionHeaders();
     return await fetch(url, {
+      headers: protectionHeaders,
       redirect: 'manual',
       signal: controller.signal,
     });
@@ -87,6 +110,10 @@ function getSameSiteHeaders(baseUrl) {
     origin: baseUrl,
     referer: `${baseUrl}/newsletter`,
   };
+}
+
+export function resolveCanonicalBaseUrl(baseUrl, overrideCanonicalBaseUrl) {
+  return (overrideCanonicalBaseUrl || baseUrl).replace(/\/$/, '');
 }
 
 function toAbsoluteCanonical(baseUrl, canonicalPath) {
@@ -246,6 +273,7 @@ async function runRedirectChecks() {
 
 async function run() {
   const baseUrl = (getArgValue('base-url') || process.env.VERIFY_LIVE_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, '');
+  const canonicalBaseUrl = resolveCanonicalBaseUrl(baseUrl, getArgValue('canonical-base-url'));
   const outputPath = getArgValue('output');
   const manifest = loadManifest();
   const featuredArticle = manifest.articles[0];
@@ -273,7 +301,7 @@ async function run() {
       method: 'GET',
       assert: async (response) => {
         const body = await response.text();
-        const expectedCanonical = toAbsoluteCanonical(baseUrl, pageMetadata.canonicalPath);
+        const expectedCanonical = toAbsoluteCanonical(canonicalBaseUrl, pageMetadata.canonicalPath);
         const actualCanonical = extractCanonicalHref(body);
 
         if (response.status !== 200) {
@@ -352,7 +380,7 @@ async function run() {
       method: 'GET',
       assert: async (response) => {
         const body = await response.text();
-        const expectedCanonical = toAbsoluteCanonical(baseUrl, articlePath);
+        const expectedCanonical = toAbsoluteCanonical(canonicalBaseUrl, articlePath);
         const actualCanonical = extractCanonicalHref(body);
 
         if (response.status !== 200) {
@@ -422,6 +450,7 @@ async function run() {
   const report = {
     checkedAt: new Date().toISOString(),
     baseUrl,
+    canonicalBaseUrl,
     ok: results.every((result) => result.ok),
     results,
   };
@@ -441,26 +470,32 @@ async function run() {
   }
 }
 
-run().catch((error) => {
-  const message = error instanceof Error ? error.message : 'Unknown top-level verify-live failure.';
-  const report = {
-    checkedAt: new Date().toISOString(),
-    baseUrl: getArgValue('base-url') || process.env.VERIFY_LIVE_BASE_URL || DEFAULT_BASE_URL,
-    ok: false,
-    results: [
-      {
-        name: 'verify-live',
-        ok: false,
-        path: null,
-        status: null,
-        message,
-      },
-    ],
-  };
+export async function main() {
+  await run();
+}
 
-  console.log(JSON.stringify(report, null, 2));
-  if (process.env.GITHUB_STEP_SUMMARY) {
-    writeFileSync(process.env.GITHUB_STEP_SUMMARY, toSummary(report.results, report.baseUrl), { flag: 'a' });
-  }
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    const message = error instanceof Error ? error.message : 'Unknown top-level verify-live failure.';
+    const report = {
+      checkedAt: new Date().toISOString(),
+      baseUrl: getArgValue('base-url') || process.env.VERIFY_LIVE_BASE_URL || DEFAULT_BASE_URL,
+      ok: false,
+      results: [
+        {
+          name: 'verify-live',
+          ok: false,
+          path: null,
+          status: null,
+          message,
+        },
+      ],
+    };
+
+    console.log(JSON.stringify(report, null, 2));
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      writeFileSync(process.env.GITHUB_STEP_SUMMARY, toSummary(report.results, report.baseUrl), { flag: 'a' });
+    }
+    process.exit(1);
+  });
+}
