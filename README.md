@@ -165,7 +165,7 @@ pnpm ops:check-monday-pipeline -- --date YYYY-MM-DD
 
 - `pnpm verify:ops` loads `.env.local` when present and checks required runtime variables plus banned stale variables.
 - `pnpm verify:ops:contract` checks `.env.example` against the expected env contract.
-- `pnpm verify:live` validates the deployed site.
+- `pnpm verify:live` validates the deployed site: route reachability, security response headers, per-page canonical URLs, page-specific `og:description` values for `/tools` and `/newsletter`, article canonical correctness, and a privacy truth-regression guard that fails if the privacy page claims no analytics while analytics integration markers exist in source (or vice versa).
 - `pnpm ops:check-monday-pipeline` checks the expected open PRs and workflow runs for a Monday content cycle.
 
 ### Automation Commands
@@ -216,7 +216,7 @@ ai-security-brief/
 ├── components/             # Reusable UI components
 ├── drafts/                 # Review-only newsletter drafts
 ├── harvests/               # Weekly research harvests
-├── lib/                    # Content loading and affiliate helpers
+├── lib/                    # Content loading, affiliate helpers, and page metadata contract
 ├── logs/                   # Beehiiv performance logs
 ├── ops/                    # Affiliate status, intake, and local mapping templates
 ├── public/                 # Static assets served directly by Next.js
