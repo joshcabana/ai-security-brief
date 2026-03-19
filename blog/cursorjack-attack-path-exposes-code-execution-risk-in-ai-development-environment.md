@@ -1,20 +1,30 @@
 ---
-title: "CursorJack Attack Path Exposes Code Execution Risk in AI Development Environments"
-slug: "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment"
-date: "2026-03-19"
-author: "AI Security Brief"
-excerpt: "The CursorJack attack reveals a critical vulnerability in AI development environments, enabling code execution through malicious deeplinks. Developers and IT leaders must implement robust security measures to mitigate these risks and protect sensitive workflows."
-category: "AI Threats"
+title: >-
+  CursorJack Attack Path Exposes Code Execution Risk in AI Development
+  Environments
+slug: >-
+  cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment
+date: '2026-03-19'
+author: AI Security Brief
+excerpt: >-
+  The CursorJack attack reveals a critical vulnerability in AI development
+  environments, enabling code execution through malicious deeplinks. Developers
+  and IT leaders must implement robust security measures to mitigate these risks
+  and protect sensitive workflows.
+category: AI Threats
 featured: false
-meta_title: "CursorJack Attack Path: Code Execution Risk in AI Development Environments"
-meta_description: "Explore the CursorJack attack path and its code execution risks in AI development environments. Learn how to defend against malicious deeplinks and secure your AI workflows."
+meta_title: 'CursorJack Attack Path: Code Execution Risk in AI Development Environments'
+meta_description: >-
+  Explore the CursorJack attack path and its code execution risks in AI
+  development environments. Learn how to defend against malicious deeplinks and
+  secure your AI workflows.
 keywords:
-  - "CursorJack"
-  - "code execution"
-  - "AI development"
-  - "deeplink vulnerability"
-  - "security risk"
-read_time: "5 min"
+  - CursorJack
+  - code execution
+  - AI development
+  - deeplink vulnerability
+  - security risk
+read_time: 5 min
 ---
 # CursorJack Attack Path Exposes Code Execution Risk in AI Development Environments
 
