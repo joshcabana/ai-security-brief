@@ -35,6 +35,7 @@ test('deploy workflow verifies preview deployments on pull requests and uploads 
     previewJob,
     /node scripts\/verify-live\.mjs --base-url "\$\(cat preview-url\.txt\)" --output verify-live-preview\.json/,
   );
+  assert.match(previewJob, /VERCEL_PROTECTION_BYPASS:\s+\$\{\{ secrets\.VERCEL_PROTECTION_BYPASS \}\}/);
   assert.match(previewJob, /name:\s+verify-live-preview/);
 });
 

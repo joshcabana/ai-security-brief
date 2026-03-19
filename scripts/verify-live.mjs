@@ -2,7 +2,7 @@
 
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { SECURITY_HEADERS, getExpectedSecurityHeaderValue } from '../lib/security-headers.mjs';
 import {
   ANALYTICS_INTEGRATION_MARKERS,
@@ -52,12 +52,27 @@ function resolveOutputPath(outputPath) {
   return resolve(WORKDIR, outputPath);
 }
 
+export function getDeploymentProtectionHeaders(secret = process.env.VERCEL_PROTECTION_BYPASS?.trim() || '') {
+  if (!secret) {
+    return {};
+  }
+
+  return {
+    'x-vercel-protection-bypass': secret,
+  };
+}
+
 async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const protectionHeaders = getDeploymentProtectionHeaders();
     return await fetch(url, {
+      headers: {
+        ...protectionHeaders,
+        ...(options.headers ?? {}),
+      },
       redirect: 'follow',
       ...options,
       signal: controller.signal,
@@ -72,7 +87,9 @@ async function fetchNoFollow(url) {
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    const protectionHeaders = getDeploymentProtectionHeaders();
     return await fetch(url, {
+      headers: protectionHeaders,
       redirect: 'manual',
       signal: controller.signal,
     });
@@ -441,26 +458,32 @@ async function run() {
   }
 }
 
-run().catch((error) => {
-  const message = error instanceof Error ? error.message : 'Unknown top-level verify-live failure.';
-  const report = {
-    checkedAt: new Date().toISOString(),
-    baseUrl: getArgValue('base-url') || process.env.VERIFY_LIVE_BASE_URL || DEFAULT_BASE_URL,
-    ok: false,
-    results: [
-      {
-        name: 'verify-live',
-        ok: false,
-        path: null,
-        status: null,
-        message,
-      },
-    ],
-  };
+export async function main() {
+  await run();
+}
 
-  console.log(JSON.stringify(report, null, 2));
-  if (process.env.GITHUB_STEP_SUMMARY) {
-    writeFileSync(process.env.GITHUB_STEP_SUMMARY, toSummary(report.results, report.baseUrl), { flag: 'a' });
-  }
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    const message = error instanceof Error ? error.message : 'Unknown top-level verify-live failure.';
+    const report = {
+      checkedAt: new Date().toISOString(),
+      baseUrl: getArgValue('base-url') || process.env.VERIFY_LIVE_BASE_URL || DEFAULT_BASE_URL,
+      ok: false,
+      results: [
+        {
+          name: 'verify-live',
+          ok: false,
+          path: null,
+          status: null,
+          message,
+        },
+      ],
+    };
+
+    console.log(JSON.stringify(report, null, 2));
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      writeFileSync(process.env.GITHUB_STEP_SUMMARY, toSummary(report.results, report.baseUrl), { flag: 'a' });
+    }
+    process.exit(1);
+  });
+}

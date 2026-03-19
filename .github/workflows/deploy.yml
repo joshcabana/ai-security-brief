@@ -135,6 +135,8 @@ jobs:
         run: node scripts/get-vercel-preview-url.mjs --repo ${{ github.repository }} --pr ${{ github.event.pull_request.number }} --project ai-security-brief --output preview-url.txt
 
       - name: Verify live preview
+        env:
+          VERCEL_PROTECTION_BYPASS: ${{ secrets.VERCEL_PROTECTION_BYPASS }}
         run: node scripts/verify-live.mjs --base-url "$(cat preview-url.txt)" --output verify-live-preview.json
 
       - name: Upload preview verification artifact
