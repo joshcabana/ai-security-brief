@@ -33,9 +33,13 @@ test('deploy workflow verifies preview deployments on pull requests and uploads 
   );
   assert.match(
     previewJob,
-    /node scripts\/verify-live\.mjs --base-url "\$\(cat preview-url\.txt\)" --output verify-live-preview\.json/,
+    /node scripts\/verify-live\.mjs --base-url "\$\(cat preview-url\.txt\)" --canonical-base-url https:\/\/aithreatbrief\.com --output verify-live-preview\.json/,
   );
-  assert.match(previewJob, /VERCEL_PROTECTION_BYPASS:\s+\$\{\{ secrets\.VERCEL_PROTECTION_BYPASS \}\}/);
+  assert.match(previewJob, /node scripts\/get-vercel-protection-bypass\.mjs/);
+  assert.match(previewJob, /echo "::add-mask::\$VERCEL_PROTECTION_BYPASS"/);
+  assert.match(previewJob, /VERCEL_TOKEN:\s+\$\{\{ secrets\.VERCEL_TOKEN \}\}/);
+  assert.match(previewJob, /VERCEL_ORG_ID:\s+\$\{\{ secrets\.VERCEL_ORG_ID \}\}/);
+  assert.match(previewJob, /VERCEL_PROJECT_ID:\s+\$\{\{ secrets\.VERCEL_PROJECT_ID \}\}/);
   assert.match(previewJob, /name:\s+verify-live-preview/);
 });
 
