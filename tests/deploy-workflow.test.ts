@@ -47,6 +47,7 @@ test('deploy workflow sanitises the Vercel deploy URL and keeps production live 
   const deployJob = extractJobBlock('deploy');
   const productionVerificationJob = extractJobBlock('verify_live');
 
+  assert.match(deployJob, /needs\.deploy_gate\.outputs\.enabled == 'true' && github\.ref == 'refs\/heads\/main'/);
   assert.match(deployJob, /DEPLOYMENT_OUTPUT=.*2>&1/);
   assert.match(deployJob, /grep -v 'https:\/\/vercel\.com\//);
   assert.match(deployJob, /Failed to parse deployment URL from Vercel CLI output\./);

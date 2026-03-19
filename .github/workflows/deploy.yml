@@ -68,7 +68,7 @@ jobs:
 
   deploy:
     needs: [verify, deploy_gate]
-    if: ${{ needs.deploy_gate.outputs.enabled == 'true' }}
+    if: ${{ needs.deploy_gate.outputs.enabled == 'true' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
