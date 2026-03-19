@@ -57,7 +57,7 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="text-base font-bold text-white mb-2">Cookies</h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-                  This site may use essential cookies required for basic functionality. Third-party services such as Beehiiv may set their own cookies when you interact with embedded forms. No analytics cookies or advertising cookies are used on this site.
+                  This site may use essential cookies required for basic functionality. We do not currently embed third-party analytics or newsletter widgets that set cookies while you browse the site. If you follow links to Beehiiv-hosted pages or emails, Beehiiv may set its own cookies under its privacy policy. No analytics cookies or advertising cookies are used on this site.
                 </p>
               </div>
             </div>
