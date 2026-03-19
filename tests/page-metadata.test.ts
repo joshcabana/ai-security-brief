@@ -72,5 +72,5 @@ test('verified metadata and privacy analytics declarations match the live contra
         'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams and builders.',
     },
   ]);
-  assert.match(PRIVACY_ANALYTICS_DECLARATION, /does not currently use any client-side analytics service/i);
+  assert.match(PRIVACY_ANALYTICS_DECLARATION, /plausible analytics/i);
 });
