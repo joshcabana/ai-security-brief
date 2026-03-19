@@ -5,7 +5,7 @@ import test from 'node:test';
 
 const repoRoot = process.cwd();
 const packageJsonPath = path.join(repoRoot, 'package.json');
-const eslintConfigPath = path.join(repoRoot, '.eslintrc.json');
+const eslintConfigPath = path.join(repoRoot, 'eslint.config.mjs');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
   scripts?: Record<string, string>;
 };
@@ -13,16 +13,15 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
 test('lint script uses eslint CLI instead of interactive next lint', () => {
   assert.equal(
     packageJson.scripts?.lint,
-    'ESLINT_USE_FLAT_CONFIG=false eslint . --ext .js,.mjs,.ts,.tsx',
+    'eslint . --ext .js,.mjs,.ts,.tsx',
   );
 });
 
-test('eslint config exists and extends next core web vitals', () => {
+test('eslint flat config exists and extends next core web vitals', () => {
   assert.equal(existsSync(eslintConfigPath), true);
 
-  const eslintConfig = JSON.parse(readFileSync(eslintConfigPath, 'utf8')) as {
-    extends?: string[];
-  };
+  const eslintConfigSource = readFileSync(eslintConfigPath, 'utf8');
 
-  assert.deepEqual(eslintConfig.extends, ['next/core-web-vitals']);
+  assert.match(eslintConfigSource, /compat\.extends\('next\/core-web-vitals'\)/);
+  assert.match(eslintConfigSource, /ignores: \['\.next\/\*\*', 'node_modules\/\*\*', 'out\/\*\*'\]/);
 });
