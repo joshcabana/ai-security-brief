@@ -1,10 +1,50 @@
 {
-  "articleCount": 7,
+  "articleCount": 9,
   "categories": [
     "AI Threats",
     "Privacy"
   ],
   "articles": [
+    {
+      "title": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE",
+      "slug": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce",
+      "date": "2026-03-19",
+      "author": "AI Security Brief",
+      "excerpt": "Three independent research teams disclosed critical vulnerabilities across Amazon Bedrock AgentCore, LangSmith, and SGLang in March 2026 — collectively enabling DNS-based data exfiltration, account takeover, and unauthenticated remote code execution against AI infrastructure. One of these flaws remains unpatched, and CERT/CC has issued a public advisory.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang: Data Exfiltration and RCE",
+      "metaDescription": "Critical vulnerabilities in Amazon Bedrock, LangSmith (CVE-2026-25750), and SGLang (CVE-2026-3059, CVE-2026-3060) enable DNS exfiltration, account takeover, and unauthenticated RCE.",
+      "keywords": [
+        "Amazon Bedrock DNS exfiltration",
+        "LangSmith CVE-2026-25750 account takeover",
+        "SGLang RCE CVE-2026-3059",
+        "AI infrastructure vulnerabilities 2026",
+        "pickle deserialization remote code execution"
+      ],
+      "readTime": "7 min",
+      "fileName": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce.md"
+    },
+    {
+      "title": "CursorJack: How MCP Deeplinks Turn Cursor IDE Into a Code Execution Vector",
+      "slug": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment",
+      "date": "2026-03-19",
+      "author": "AI Security Brief",
+      "excerpt": "Proofpoint Threat Research has demonstrated that a single crafted deeplink can weaponise Cursor IDE's MCP installation flow to execute arbitrary commands under a developer's full privileges — exposing the structural security gap at the heart of the Model Context Protocol ecosystem.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "CursorJack Attack: MCP Deeplinks and Code Execution Risk in Cursor IDE",
+      "metaDescription": "Proofpoint's CursorJack research shows how a single crafted MCP deeplink can execute arbitrary commands in Cursor IDE. What CISOs and security engineers need to know.",
+      "keywords": [
+        "CursorJack MCP deeplink attack",
+        "Cursor IDE security vulnerability",
+        "Model Context Protocol security risks",
+        "MCP server supply chain attack",
+        "AI development tooling threats"
+      ],
+      "readTime": "6 min",
+      "fileName": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment.md"
+    },
     {
       "title": "LLM Guardrails Are Failing: What the 2025–2026 Research Actually Shows",
       "slug": "researchers-discover-major-security-gaps-in-llm-guardrails",
