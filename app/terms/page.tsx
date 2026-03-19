@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/terms',
   title: 'Terms of Service',
   description:
     'Terms of service for AI Security Brief, including disclaimers, affiliate disclosure, and limitations of liability.',
-};
+});
 
 export default function TermsPage() {
   return (

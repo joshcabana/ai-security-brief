@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { dirname, isAbsolute, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { SECURITY_HEADERS, getExpectedSecurityHeaderValue } from '../lib/security-headers.mjs';
+import {
+  ANALYTICS_INTEGRATION_MARKERS,
+  PRIVACY_ANALYTICS_DECLARATION,
+  VERIFIED_PAGE_METADATA,
+} from '../lib/page-metadata.mjs';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(SCRIPT_DIR, '..');
@@ -84,6 +89,92 @@ function getSameSiteHeaders(baseUrl) {
   };
 }
 
+function toAbsoluteCanonical(baseUrl, canonicalPath) {
+  if (canonicalPath === '/') {
+    return baseUrl;
+  }
+
+  return `${baseUrl}${canonicalPath}`;
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractCanonicalHref(body) {
+  const match = body.match(/<link rel="canonical" href="([^"]+)"/i);
+  return match?.[1] ?? null;
+}
+
+function extractMetaPropertyContent(body, property) {
+  const escapedProperty = escapeRegExp(property);
+  const propertyFirst = new RegExp(
+    `<meta[^>]+property="${escapedProperty}"[^>]+content="([^"]+)"`,
+    'i',
+  );
+  const contentFirst = new RegExp(
+    `<meta[^>]+content="([^"]+)"[^>]+property="${escapedProperty}"`,
+    'i',
+  );
+  const match = body.match(propertyFirst) ?? body.match(contentFirst);
+  return match?.[1] ?? null;
+}
+
+function collectSourceFiles(directoryPath) {
+  const entries = readdirSync(directoryPath, { withFileTypes: true });
+  const filePaths = [];
+
+  for (const entry of entries) {
+    const entryPath = resolve(directoryPath, entry.name);
+
+    if (entry.isDirectory()) {
+      filePaths.push(...collectSourceFiles(entryPath));
+      continue;
+    }
+
+    if (entry.isFile()) {
+      filePaths.push(entryPath);
+    }
+  }
+
+  return filePaths;
+}
+
+function codebaseHasAnalyticsIntegration() {
+  const excludedPaths = new Set([
+    resolve(REPO_ROOT, 'app/privacy/page.tsx'),
+    resolve(REPO_ROOT, 'lib/page-metadata.mjs'),
+  ]);
+  const sourceDirectories = [
+    resolve(REPO_ROOT, 'app'),
+    resolve(REPO_ROOT, 'components'),
+    resolve(REPO_ROOT, 'lib'),
+  ];
+
+  for (const directoryPath of sourceDirectories) {
+    if (!statSync(directoryPath).isDirectory()) {
+      continue;
+    }
+
+    const sourceFiles = collectSourceFiles(directoryPath).filter((filePath) => {
+      if (excludedPaths.has(filePath)) {
+        return false;
+      }
+
+      return /\.(?:[cm]?js|tsx?)$/.test(filePath);
+    });
+
+    for (const filePath of sourceFiles) {
+      const contents = readFileSync(filePath, 'utf8').toLowerCase();
+      if (ANALYTICS_INTEGRATION_MARKERS.some((marker) => contents.includes(marker))) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 function assertSecurityHeaders(headers) {
   for (const header of SECURITY_HEADERS) {
     const actualValue = headers.get(header.key);
@@ -159,6 +250,7 @@ async function run() {
   const manifest = loadManifest();
   const featuredArticle = manifest.articles[0];
   const articlePath = `/blog/${featuredArticle.slug}`;
+  const analyticsIntegrationEnabled = codebaseHasAnalyticsIntegration();
 
   const routeChecks = [
     {
@@ -175,6 +267,45 @@ async function run() {
         }
       },
     },
+    ...VERIFIED_PAGE_METADATA.map((pageMetadata) => ({
+      name: `metadata:${pageMetadata.path === '/' ? 'home' : pageMetadata.path.slice(1).replace(/\//g, '-')}`,
+      path: pageMetadata.path,
+      method: 'GET',
+      assert: async (response) => {
+        const body = await response.text();
+        const expectedCanonical = toAbsoluteCanonical(baseUrl, pageMetadata.canonicalPath);
+        const actualCanonical = extractCanonicalHref(body);
+
+        if (response.status !== 200) {
+          throw new Error(`Expected HTTP 200, received ${response.status}`);
+        }
+        if (actualCanonical !== expectedCanonical) {
+          throw new Error(`Expected canonical ${expectedCanonical}, received ${actualCanonical ?? 'null'}`);
+        }
+
+        if (pageMetadata.ogDescription) {
+          const actualOgDescription = extractMetaPropertyContent(body, 'og:description');
+
+          if (actualOgDescription !== pageMetadata.ogDescription) {
+            throw new Error(
+              `Expected og:description for ${pageMetadata.path} to be "${pageMetadata.ogDescription}", received ${actualOgDescription ?? 'null'}`,
+            );
+          }
+        }
+
+        if (pageMetadata.path === '/privacy') {
+          const declaresNoClientSideAnalytics = body.includes(PRIVACY_ANALYTICS_DECLARATION);
+
+          if (analyticsIntegrationEnabled && declaresNoClientSideAnalytics) {
+            throw new Error('Privacy policy still declares no client-side analytics while analytics integration markers exist in source.');
+          }
+
+          if (!analyticsIntegrationEnabled && !declaresNoClientSideAnalytics) {
+            throw new Error('Privacy policy no longer states that no client-side analytics service is deployed.');
+          }
+        }
+      },
+    })),
     {
       name: 'security-headers',
       path: '/',
@@ -221,11 +352,17 @@ async function run() {
       method: 'GET',
       assert: async (response) => {
         const body = await response.text();
+        const expectedCanonical = toAbsoluteCanonical(baseUrl, articlePath);
+        const actualCanonical = extractCanonicalHref(body);
+
         if (response.status !== 200) {
           throw new Error(`Expected HTTP 200, received ${response.status}`);
         }
         if (!body.includes(featuredArticle.title)) {
           throw new Error(`Article page is missing expected title: ${featuredArticle.title}`);
+        }
+        if (actualCanonical !== expectedCanonical) {
+          throw new Error(`Expected article canonical ${expectedCanonical}, received ${actualCanonical ?? 'null'}`);
         }
       },
     },

@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import NewsletterForm from '@/components/NewsletterForm';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/about',
   title: 'About',
   description:
     'About AI Security Brief — independent intelligence on AI-powered cyber threats, privacy tools, and security strategies.',
-};
+});
 
 const coverageAreas = [
   {

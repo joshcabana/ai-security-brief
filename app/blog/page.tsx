@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import ArticleCard from '@/components/ArticleCard';
 import { getAllArticles, getArticleCategories } from '@/lib/articles';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/blog',
   title: 'Blog — AI Threats, Privacy & Cybersecurity Analysis',
   description:
     'In-depth analysis of AI-powered cyber threats, privacy defence strategies, vulnerability disclosures, and security tool reviews.',
-};
+});
 
 interface BlogPageProps {
   searchParams?: Promise<{ category?: string }>;
