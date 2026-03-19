@@ -6,23 +6,23 @@
   ],
   "articles": [
     {
-      "title": "Critical Security Gaps Uncovered in LLM Guardrails: Implications for Enterprise AI",
+      "title": "LLM Guardrails Are Failing: What the 2025–2026 Research Actually Shows",
       "slug": "researchers-discover-major-security-gaps-in-llm-guardrails",
       "date": "2026-03-17",
       "author": "AI Security Brief",
-      "excerpt": "Recent research reveals significant vulnerabilities in the safety guardrails of large language models (LLMs), exposing organizations to manipulation and data integrity risks. Enterprises must urgently reassess their generative AI deployments to address these security gaps.",
+      "excerpt": "Palo Alto Networks' Unit 42, Oxford researchers, and a Nature Communications study converge on the same finding: the safety layers enterprises rely on to govern generative AI can be bypassed at scale, by automated tools, in under 60 seconds. The attack success rates are not marginal — they are, in several documented cases, approaching 100%.",
       "category": "AI Threats",
       "featured": false,
-      "metaTitle": "Researchers Discover Major Security Gaps in LLM Guardrails",
-      "metaDescription": "Explore the major security gaps discovered in LLM guardrails and learn how organizations can strengthen generative AI deployments against manipulation and exploitation.",
+      "metaTitle": "LLM Guardrails Are Failing — 2025–2026 Research and Attack Success Rates",
+      "metaDescription": "Unit 42, Oxford, and Nature Communications research shows LLM guardrails failing at scale. Named jailbreak techniques, CVEs, attack success rates, and what defenders should actually do.",
       "keywords": [
-        "LLM guardrails",
-        "security gaps",
-        "generative AI",
-        "vulnerabilities",
-        "data integrity"
+        "LLM guardrails bypass",
+        "jailbreak attack success rates",
+        "generative AI vulnerabilities",
+        "prompt injection",
+        "OWASP LLM security"
       ],
-      "readTime": "5 min",
+      "readTime": "8 min",
       "fileName": "researchers-discover-major-security-gaps-in-llm-guardrails.md"
     },
     {
@@ -30,39 +30,39 @@
       "slug": "hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks",
       "date": "2026-03-16",
       "author": "AI Security Brief",
-      "excerpt": "Hive0163's use of AI-generated Slopoly malware marks a new escalation in ransomware tactics, enabling persistent access and demanding advanced defensive strategies.",
+      "excerpt": "IBM X-Force discovered Slopoly, an LLM-generated PowerShell backdoor deployed by Hive0163 that maintained persistent access for 7+ days during a live ransomware engagement. The code self-describes as a \"Polymorphic C2 Persistence Client\" — but isn't actually polymorphic. That gap between what AI claims to build and what it actually builds is the story.",
       "category": "AI Threats",
       "featured": false,
       "metaTitle": "Hive0163 Uses AI-Assisted Slopoly Malware for Persistent Access in Ransomware Attacks",
-      "metaDescription": "Discover how Hive0163 leverages AI-assisted Slopoly malware for persistent access in ransomware attacks, signaling a new era of cyber threat sophistication.",
+      "metaDescription": "IBM X-Force analyst Golo Mühr details Slopoly, an LLM-generated PowerShell backdoor used by Hive0163/Interlock. SHA256, C2 IPs, CVE-2026-20131, MITRE ATT&CK techniques, and defender actions inside.",
       "keywords": [
         "Hive0163",
-        "AI-assisted malware",
-        "Slopoly",
-        "ransomware",
-        "persistent access"
+        "Slopoly malware",
+        "AI-generated malware",
+        "Interlock ransomware",
+        "CVE-2026-20131"
       ],
-      "readTime": "5 min",
+      "readTime": "7 min",
       "fileName": "hive0163-uses-ai-assisted-slopoly-malware-for-persistent-access-in-ransomware-attacks.md"
     },
     {
-      "title": "OpenClaw AI Agent Flaws Expose Risks of Prompt Injection and Data Exfiltration",
+      "title": "OpenClaw AI Agent Flaws: CVEs, Prompt Injection, and a Government Warning",
       "slug": "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration",
       "date": "2026-03-16",
       "author": "AI Security Brief",
-      "excerpt": "Security vulnerabilities in the OpenClaw AI agent could allow prompt injection and unauthorized data exfiltration, highlighting urgent gaps in AI agent security protocols.",
+      "excerpt": "China's CNCERT issued a formal warning on March 14 about OpenClaw's inherently weak default configurations. With 97+ CVEs tracked, 135,000+ exposed instances, and zero-click data exfiltration demonstrated in the wild, the open-source AI agent has become a case study in what happens when autonomous systems ship without a security baseline.",
       "category": "AI Threats",
       "featured": false,
-      "metaTitle": "OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration",
-      "metaDescription": "Explore the security flaws in OpenClaw AI agents that could lead to prompt injection attacks and data exfiltration, and learn how to mitigate these risks.",
+      "metaTitle": "OpenClaw AI Agent Flaws: CVEs, Prompt Injection, and Government Warnings",
+      "metaDescription": "China's CNCERT warned on March 14, 2026 about OpenClaw's security flaws, including CVE-2026-25253 (CVSS 8.8), CVE-2026-28363 (CVSS 9.9), zero-click data exfiltration via Telegram/Discord, and 135,000+ exposed instances.",
       "keywords": [
-        "OpenClaw",
-        "AI agent vulnerabilities",
+        "OpenClaw vulnerabilities",
+        "CVE-2026-25253",
+        "AI agent security",
         "prompt injection",
-        "data exfiltration",
-        "security protocols"
+        "CNCERT warning"
       ],
-      "readTime": "5 min",
+      "readTime": "8 min",
       "fileName": "openclaw-ai-agent-flaws-could-enable-prompt-injection-and-data-exfiltration.md"
     },
     {
