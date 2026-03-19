@@ -1,24 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAffiliateUrlByPriority } from '@/lib/affiliate-links';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/tools',
   title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
   description:
     'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection — with clear affiliate disclosure.',
-  openGraph: {
-    title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
-    description:
-      'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection — with clear affiliate disclosure.',
-  },
-  twitter: {
-    title: 'Security Tools & Resources',
-    description:
-      'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection.',
-  },
-};
+  openGraphTitle: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
+  openGraphDescription:
+    'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection — with clear affiliate disclosure.',
+  twitterTitle: 'Security Tools & Resources',
+  twitterDescription:
+    'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection.',
+});
 
 interface Tool {
   name: string;

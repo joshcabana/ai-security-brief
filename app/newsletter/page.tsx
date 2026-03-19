@@ -3,22 +3,20 @@ import Link from 'next/link';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterForm from '@/components/NewsletterForm';
 import { getAllArticles, getArticleCategories } from '@/lib/articles';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/newsletter',
   title: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
   description:
     'Subscribe to the AI Security Brief newsletter for weekly threat intelligence, privacy tool reviews, and cybersecurity analysis.',
-  openGraph: {
-    title: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
-    description:
-      'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams and builders.',
-  },
-  twitter: {
-    title: 'AI Security Brief Newsletter',
-    description:
-      'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams.',
-  },
-};
+  openGraphTitle: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
+  openGraphDescription:
+    'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams and builders.',
+  twitterTitle: 'AI Security Brief Newsletter',
+  twitterDescription:
+    'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams.',
+});
 
 const benefits = [
   {

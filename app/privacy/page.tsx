@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/privacy',
   title: 'Privacy Policy',
   description:
     'Privacy policy for AI Security Brief, covering data collection, cookies, newsletter subscriptions, and affiliate link disclosures.',
-};
+});
 
 export default function PrivacyPage() {
   return (
