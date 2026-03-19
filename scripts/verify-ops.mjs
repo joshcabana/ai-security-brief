@@ -39,6 +39,14 @@ const REQUIRED = [
   },
 ]
 
+const OPTIONAL = [
+  'AFFILIATE_NORDVPN',
+  'AFFILIATE_PUREVPN',
+  'AFFILIATE_PROTON',
+  'AFFILIATE_PROTON_VPN',
+  'AFFILIATE_PROTON_MAIL',
+]
+
 // ── 3. Known stale vars that must NOT be present (prevents misconfiguration) ──
 const BANNED = [
   {
@@ -156,9 +164,12 @@ if (existsSync(envExamplePath)) {
   const exampleKeys = exampleEntries.map((entry) => entry.key)
   const requiredKeys = REQUIRED.map((entry) => entry.key)
   const bannedKeys = BANNED.map((entry) => entry.key)
+  const optionalKeys = OPTIONAL
   const missingRequired = requiredKeys.filter((key) => !exampleKeys.includes(key))
   const bannedPresent = bannedKeys.filter((key) => exampleKeys.includes(key))
-  const unexpectedExtra = exampleKeys.filter((key) => !requiredKeys.includes(key) && !bannedKeys.includes(key))
+  const unexpectedExtra = exampleKeys.filter(
+    (key) => !requiredKeys.includes(key) && !bannedKeys.includes(key) && !optionalKeys.includes(key),
+  )
 
   if (missingRequired.length) {
     missingRequired.forEach((key) => {
