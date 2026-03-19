@@ -94,7 +94,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             <div className="section-label mb-6">
               {activeCategory === 'All' ? 'All Articles' : activeCategory}
               <span className="ml-2 text-xs" style={{ color: '#484f58' }}>
-                ({regularArticles.length})
+                ({filteredArticles.length})
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
