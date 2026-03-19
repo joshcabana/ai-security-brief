@@ -8,6 +8,16 @@ export const metadata: Metadata = {
   title: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
   description:
     'Subscribe to the AI Security Brief newsletter for weekly threat intelligence, privacy tool reviews, and cybersecurity analysis.',
+  openGraph: {
+    title: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
+    description:
+      'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams and builders.',
+  },
+  twitter: {
+    title: 'AI Security Brief Newsletter',
+    description:
+      'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams.',
+  },
 };
 
 const benefits = [
