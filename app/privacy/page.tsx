@@ -51,13 +51,13 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="text-base font-bold text-white mb-2">Analytics</h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-                  We use privacy-respecting analytics to understand how visitors interact with our content. This may include anonymised page views, referral sources, and general geographic region. We do not collect personally identifiable information through analytics.
+                  This site does not currently use any client-side analytics service. If we add analytics in the future, this policy will be updated to name the provider and explain what data is collected. Vercel, our hosting provider, collects basic request-level data (e.g. access logs) as part of normal platform operation.
                 </p>
               </div>
               <div>
                 <h3 className="text-base font-bold text-white mb-2">Cookies</h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-                  This site may use essential cookies required for basic functionality. Third-party services such as Beehiiv and analytics providers may set their own cookies. No advertising cookies are used on this site.
+                  This site may use essential cookies required for basic functionality. Third-party services such as Beehiiv may set their own cookies when you interact with embedded forms. No analytics cookies or advertising cookies are used on this site.
                 </p>
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function PrivacyPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: '#00b4ff' }} aria-hidden="true">&bull;</span>
-                To understand which content is useful through aggregated analytics
+                To understand which content is useful based on server-level access patterns
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: '#00b4ff' }} aria-hidden="true">&bull;</span>

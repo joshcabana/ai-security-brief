@@ -7,7 +7,17 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
   description:
-    'Independently evaluated security tools: VPNs, password managers, email security, and endpoint protection.',
+    'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection — with clear affiliate disclosure.',
+  openGraph: {
+    title: 'Security Tools & Resources — Vetted VPNs, Password Managers & More',
+    description:
+      'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection — with clear affiliate disclosure.',
+  },
+  twitter: {
+    title: 'Security Tools & Resources',
+    description:
+      'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection.',
+  },
 };
 
 interface Tool {
@@ -186,7 +196,7 @@ export default function ToolsPage() {
           <div className="section-label mb-3">Curated Arsenal</div>
           <h1 className="text-white mb-4">Security Tools &amp; Resources</h1>
           <p className="text-lg max-w-2xl" style={{ color: '#8b949e' }}>
-            Research-led tooling recommendations that line up with the threat and privacy themes covered across the briefing archive.
+            Curated tooling picks that line up with the threat and privacy themes covered across the briefing archive.
           </p>
 
           <div
