@@ -25,11 +25,15 @@ function extractJobBlock(jobName: string): string {
 test('deploy workflow verifies preview deployments on pull requests and uploads a preview artifact', () => {
   const previewJob = extractJobBlock('verify_preview');
 
-  assert.match(previewJob, /needs:\s+\[verify, deploy_gate, deploy\]/);
+  assert.match(previewJob, /needs:\s+verify/);
   assert.match(previewJob, /github\.event_name == 'pull_request'/);
   assert.match(
     previewJob,
-    /node scripts\/verify-live\.mjs --base-url "\$\{\{ needs\.deploy\.outputs\.url \}\}" --output verify-live-preview\.json/,
+    /node scripts\/get-vercel-preview-url\.mjs --repo \$\{\{ github\.repository \}\} --pr \$\{\{ github\.event\.pull_request\.number \}\} --project ai-security-brief --output preview-url\.txt/,
+  );
+  assert.match(
+    previewJob,
+    /node scripts\/verify-live\.mjs --base-url "\$\(cat preview-url\.txt\)" --output verify-live-preview\.json/,
   );
   assert.match(previewJob, /name:\s+verify-live-preview/);
 });

@@ -117,8 +117,8 @@ jobs:
           echo "url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
 
   verify_preview:
-    needs: [verify, deploy_gate, deploy]
-    if: ${{ always() && github.event_name == 'pull_request' && needs.verify.result == 'success' && needs.deploy_gate.outputs.enabled == 'true' && needs.deploy.result == 'success' }}
+    needs: verify
+    if: ${{ always() && github.event_name == 'pull_request' && needs.verify.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -129,11 +129,16 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Resolve Vercel preview URL
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/get-vercel-preview-url.mjs --repo ${{ github.repository }} --pr ${{ github.event.pull_request.number }} --project ai-security-brief --output preview-url.txt
+
       - name: Verify live preview
-        run: node scripts/verify-live.mjs --base-url "${{ needs.deploy.outputs.url }}" --output verify-live-preview.json
+        run: node scripts/verify-live.mjs --base-url "$(cat preview-url.txt)" --output verify-live-preview.json
 
       - name: Upload preview verification artifact
-        if: always()
+        if: ${{ always() && hashFiles('verify-live-preview.json') != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: verify-live-preview
