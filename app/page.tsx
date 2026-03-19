@@ -3,12 +3,14 @@ import Link from 'next/link';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterForm from '@/components/NewsletterForm';
 import { getAllArticles } from '@/lib/articles';
+import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
+  canonicalPath: '/',
   title: 'AI Security Brief — AI Threats, Privacy Tools & Cybersecurity Intelligence',
   description:
     'Independent intelligence on AI-powered cyber threats, privacy defence strategies, and security tools for technology professionals.',
-};
+});
 
 const toolCategories = [
   {

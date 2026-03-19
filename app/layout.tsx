@@ -40,7 +40,6 @@ export const metadata: Metadata = {
   creator: siteName,
   metadataBase: getSiteUrl(),
   alternates: {
-    canonical: siteUrl,
     types: {
       'application/rss+xml': `${siteUrl}/feed.xml`,
     },
