@@ -1,6 +1,6 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ [`79d4a86`](https://github.com/joshcabana/ai-security-brief/commit/79d4a865cd28402fdb195c77d7e98ed267cebe99)
+**Pinned to:** `main` @ [`7ae38a6`](https://github.com/joshcabana/ai-security-brief/commit/7ae38a6)
 **Last updated:** 22 March 2026
 **Updated by:** Perplexity Computer (automated session)
 
