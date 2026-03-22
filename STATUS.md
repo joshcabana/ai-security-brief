@@ -109,7 +109,7 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | 1Password | Non-affiliate | Direct link (CJ pending) |
 | Malwarebytes | Non-affiliate | Direct link (Partnerize pending) |
 
-**Action needed:** Proton VPN and Proton Mail env vars (`AFFILIATE_PROTON_VPN`, `AFFILIATE_PROTON_MAIL`) are set in Vercel, but the /tools page renders plain fallback URLs. Investigate whether `getAffiliateUrlByPriority()` is reading env vars correctly at build time.
+**Fixed (22 Mar evening):** Proton env vars contained `{eventId}` / `{pubcid}` template placeholders that failed `isRenderableAffiliateUrl()` validation. Cleaned to remove template params. `AFFILIATE_NORDVPN` Production was also empty — set to `https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143381&url_id=902`.
 
 ### Blog articles (NordVPN tokens)
 | Article | Token | Rendered |
@@ -120,7 +120,7 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | `ai-flaws-in-amazon-bedrock-langsmith-and-sglang` | Direct `[NordVPN](https://nordvpn.com)` | **Linked but no tracking** — points to plain nordvpn.com |
 | `cursorjack-attack-path` | Direct `[1Password](https://1password.com)` | **Linked but no tracking** — points to plain 1password.com |
 
-**Root cause:** `AFFILIATE_NORDVPN` is set in Vercel, so `replaceAffiliateTokens()` should resolve `[AFFILIATE:NORDVPN]` tokens on next deployment. Articles with hardcoded `https://nordvpn.com` (no token) won't benefit from env var resolution.
+**Fixed (22 Mar evening):** `AFFILIATE_NORDVPN` Production was empty — now populated. Blog article `[AFFILIATE:NORDVPN]` tokens will resolve on this deployment. Articles with hardcoded `https://nordvpn.com` (no token) still need manual migration to `[AFFILIATE:NORDVPN]` token format.
 
 ## Key Constraints
 
