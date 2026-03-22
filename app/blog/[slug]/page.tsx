@@ -10,6 +10,8 @@ interface ArticlePageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 function formatDate(date: string): string {
   return new Date(date).toLocaleDateString('en-AU', {
     year: 'numeric',
@@ -22,11 +24,6 @@ const categoryColors: Record<string, { bg: string; text: string; border: string 
   'AI Threats': { bg: 'rgba(248,81,73,0.08)', text: '#f85149', border: 'rgba(248,81,73,0.2)' },
   Privacy: { bg: 'rgba(0,180,255,0.08)', text: '#00b4ff', border: 'rgba(0,180,255,0.2)' },
 };
-
-export async function generateStaticParams() {
-  const articles = await getAllArticles();
-  return articles.map((article) => ({ slug: article.slug }));
-}
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
