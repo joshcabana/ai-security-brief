@@ -167,18 +167,21 @@ export function assertAffiliateAnchor(body, label, hrefSnippets, context, anchor
   const ariaLabel = anchorOptions?.ariaLabel;
   const anchorPattern = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
   let matchedAnchor = null;
-  let matchedText = false;
   let mismatchMessage = null;
 
   for (const anchorMatch of body.matchAll(anchorPattern)) {
     const anchorAttributes = anchorMatch[1];
-    const innerHtml = anchorMatch[2].trim();
+    const innerHtml = anchorMatch[2];
+    const visibleText = innerHtml
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-    if (!innerHtml.startsWith(anchorText)) {
+    if (visibleText !== anchorText) {
       continue;
     }
 
-    matchedText = true;
     const hrefMatch = anchorAttributes.match(/href="([^"]+)"/i);
 
     if (!hrefMatch) {
@@ -205,7 +208,7 @@ export function assertAffiliateAnchor(body, label, hrefSnippets, context, anchor
   }
 
   if (matchedAnchor === null) {
-    if (matchedText && mismatchMessage !== null) {
+    if (mismatchMessage !== null) {
       throw new Error(mismatchMessage);
     }
 
