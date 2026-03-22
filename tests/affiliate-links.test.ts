@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 import { getAffiliateUrl, getAffiliateUrlByPriority, replaceAffiliateTokens } from '../lib/affiliate-links';
-import { getArticleCacheKey, parseArticleSource } from '../lib/articles';
+import {
+  getArticleCacheKey,
+  getArticleCacheSignature,
+  getArticleSourceCacheKey,
+  parseArticleSource,
+} from '../lib/articles';
 
 test('getAffiliateUrl returns null for missing and blank environment values', () => {
   assert.equal(getAffiliateUrl('NORDVPN', {}), null);
@@ -58,40 +66,168 @@ test('getAffiliateUrlByPriority falls back to later configured affiliate urls', 
   assert.equal(getAffiliateUrlByPriority(['PROTON_VPN', 'PROTON'], {}), null);
 });
 
-test('getArticleCacheKey returns a stable snapshot for configured affiliate env values', () => {
-  const cacheKey = getArticleCacheKey({
-    AFFILIATE_PUREVPN: ' https://example.com/purevpn ',
-    AFFILIATE_NORDVPN: 'https://example.com/nordvpn',
-    NEXT_PUBLIC_SITE_URL: 'https://ignored.example.com',
-  });
+test('getArticleSourceCacheKey returns a stable fingerprint for article files', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'ai-security-brief-articles-'));
 
-  assert.equal(
-    cacheKey,
-    'AFFILIATE_NORDVPN=https://example.com/nordvpn\x00AFFILIATE_PUREVPN=https://example.com/purevpn',
-  );
+  try {
+    await writeFile(
+      path.join(tempDir, 'alpha.md'),
+      [
+        '---',
+        'title: "Alpha"',
+        'slug: "alpha"',
+        'date: "2026-03-17"',
+        'author: "AI Security Brief"',
+        'excerpt: "Alpha excerpt."',
+        'category: "AI Threats"',
+        'featured: false',
+        'meta_title: "Alpha Meta Title"',
+        'meta_description: "Alpha meta description."',
+        'keywords:',
+        '  - one',
+        '  - two',
+        '  - three',
+        '  - four',
+        '  - five',
+        'read_time: "5 min"',
+        '---',
+        '',
+        '# Alpha',
+        '',
+        'Alpha content.',
+      ].join('\n'),
+    );
+
+    const initialKey = await getArticleSourceCacheKey(tempDir);
+
+    await writeFile(
+      path.join(tempDir, 'alpha.md'),
+      [
+        '---',
+        'title: "Alpha"',
+        'slug: "alpha"',
+        'date: "2026-03-17"',
+        'author: "AI Security Brief"',
+        'excerpt: "Alpha excerpt."',
+        'category: "AI Threats"',
+        'featured: false',
+        'meta_title: "Alpha Meta Title"',
+        'meta_description: "Alpha meta description."',
+        'keywords:',
+        '  - one',
+        '  - two',
+        '  - three',
+        '  - four',
+        '  - five',
+        'read_time: "5 min"',
+        '---',
+        '',
+        '# Alpha',
+        '',
+        'Alpha content updated.',
+      ].join('\n'),
+    );
+
+    const updatedKey = await getArticleSourceCacheKey(tempDir);
+
+    assert.notEqual(initialKey, updatedKey);
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
 });
 
-test('getArticleCacheKey ignores unrelated env vars and blank affiliate values', () => {
-  assert.equal(
-    getArticleCacheKey({
-      AFFILIATE_NORDVPN: '   ',
-      AFFILIATE_PUREVPN: '\n',
+test('getArticleCacheSignature keeps source and affiliate invalidation explicit', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'ai-security-brief-signature-'));
+
+  try {
+    await writeFile(
+      path.join(tempDir, 'alpha.md'),
+      [
+        '---',
+        'title: "Alpha"',
+        'slug: "alpha"',
+        'date: "2026-03-17"',
+        'author: "AI Security Brief"',
+        'excerpt: "Alpha excerpt."',
+        'category: "AI Threats"',
+        'featured: false',
+        'meta_title: "Alpha Meta Title"',
+        'meta_description: "Alpha meta description."',
+        'keywords:',
+        '  - one',
+        '  - two',
+        '  - three',
+        '  - four',
+        '  - five',
+        'read_time: "5 min"',
+        '---',
+        '',
+        '# Alpha',
+        '',
+        'Alpha content.',
+      ].join('\n'),
+    );
+
+    const signature = await getArticleCacheSignature(tempDir, {
+      AFFILIATE_PUREVPN: ' https://example.com/purevpn ',
+      AFFILIATE_NORDVPN: 'https://example.com/nordvpn',
       NEXT_PUBLIC_SITE_URL: 'https://ignored.example.com',
-      OTHER_SETTING: 'still ignored',
-    }),
-    '',
-  );
+    });
+
+    assert.deepEqual(signature, {
+      sourceKey: await getArticleSourceCacheKey(tempDir),
+      affiliateKey: 'AFFILIATE_NORDVPN=https://example.com/nordvpn\x00AFFILIATE_PUREVPN=https://example.com/purevpn',
+    });
+    assert.equal(getArticleCacheKey(signature), `${signature.sourceKey}\u0000${signature.affiliateKey}`);
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
 });
 
-test('getArticleCacheKey changes when affiliate env values change', () => {
-  const baseKey = getArticleCacheKey({
-    AFFILIATE_NORDVPN: 'https://example.com/nordvpn',
-  });
-  const changedKey = getArticleCacheKey({
-    AFFILIATE_NORDVPN: 'https://example.com/nordvpn-updated',
-  });
+test('getArticleCacheSignature changes when affiliate env values change', async () => {
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'ai-security-brief-affiliate-'));
 
-  assert.notEqual(baseKey, changedKey);
+  try {
+    await writeFile(
+      path.join(tempDir, 'alpha.md'),
+      [
+        '---',
+        'title: "Alpha"',
+        'slug: "alpha"',
+        'date: "2026-03-17"',
+        'author: "AI Security Brief"',
+        'excerpt: "Alpha excerpt."',
+        'category: "AI Threats"',
+        'featured: false',
+        'meta_title: "Alpha Meta Title"',
+        'meta_description: "Alpha meta description."',
+        'keywords:',
+        '  - one',
+        '  - two',
+        '  - three',
+        '  - four',
+        '  - five',
+        'read_time: "5 min"',
+        '---',
+        '',
+        '# Alpha',
+        '',
+        'Alpha content.',
+      ].join('\n'),
+    );
+
+    const baseSignature = await getArticleCacheSignature(tempDir, {
+      AFFILIATE_NORDVPN: 'https://example.com/nordvpn',
+    });
+    const changedSignature = await getArticleCacheSignature(tempDir, {
+      AFFILIATE_NORDVPN: 'https://example.com/nordvpn-updated',
+    });
+
+    assert.notEqual(baseSignature.affiliateKey, changedSignature.affiliateKey);
+    assert.equal(baseSignature.sourceKey, changedSignature.sourceKey);
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
 });
 
 test('replaceAffiliateTokens resolves configured markdown affiliate links', () => {

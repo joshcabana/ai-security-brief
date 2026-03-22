@@ -32,6 +32,10 @@ export interface ArticleDocument extends ArticleSummary {
 }
 
 type ArticleEnvironment = Readonly<Record<string, string | undefined>>;
+export type ArticleCacheSignature = Readonly<{
+  sourceKey: string;
+  affiliateKey: string;
+}>;
 
 function assertDateString(value: unknown, field: string, fileName: string): string {
   const normalisedValue = assertString(value, field, fileName);
@@ -121,7 +125,21 @@ async function parseArticleFile(blogDir: string, fileName: string): Promise<Arti
   return parseArticleSource(fileName, source);
 }
 
-export function getArticleCacheKey(env: ArticleEnvironment = process.env): string {
+export async function getArticleSourceCacheKey(blogDir: string): Promise<string> {
+  const entries = await fs.readdir(blogDir);
+  const articleFiles = entries.filter((entry) => entry.endsWith('.md')).sort();
+  const fingerprints = await Promise.all(
+    articleFiles.map(async (fileName) => {
+      const filePath = path.join(blogDir, fileName);
+      const fileStats = await fs.stat(filePath);
+      return `${fileName}:${fileStats.size}:${fileStats.mtimeMs}`;
+    }),
+  );
+
+  return fingerprints.join('\u0000');
+}
+
+function getAffiliateCacheKey(env: ArticleEnvironment = process.env): string {
   const affiliateEntries = Object.entries(env).reduce<Array<readonly [string, string]>>((entries, [key, value]) => {
     if (!key.startsWith('AFFILIATE_') || typeof value !== 'string') {
       return entries;
@@ -139,6 +157,20 @@ export function getArticleCacheKey(env: ArticleEnvironment = process.env): strin
     .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
     .map(([key, value]) => `${key}=${value}`)
     .join('\u0000');
+}
+
+export async function getArticleCacheSignature(
+  blogDir: string,
+  env: ArticleEnvironment = process.env,
+): Promise<ArticleCacheSignature> {
+  return {
+    sourceKey: await getArticleSourceCacheKey(blogDir),
+    affiliateKey: getAffiliateCacheKey(env),
+  };
+}
+
+export function getArticleCacheKey(signature: ArticleCacheSignature): string {
+  return `${signature.sourceKey}\u0000${signature.affiliateKey}`;
 }
 
 export async function loadArticlesFromDirectory(blogDir: string): Promise<ArticleDocument[]> {
@@ -162,7 +194,9 @@ export async function loadArticlesFromDirectory(blogDir: string): Promise<Articl
 }
 
 const getArticleDocuments = unstable_cache(
-  async (_articleCacheKey: string): Promise<ArticleDocument[]> => {
+  async (articleCacheSignature: ArticleCacheSignature): Promise<ArticleDocument[]> => {
+    void articleCacheSignature.sourceKey;
+    void articleCacheSignature.affiliateKey;
     return loadArticlesFromDirectory(BLOG_DIR);
   },
   ['blog-articles'],
@@ -170,12 +204,14 @@ const getArticleDocuments = unstable_cache(
 );
 
 export const getAllArticles = cache(async (): Promise<ArticleSummary[]> => {
-  const articles = await getArticleDocuments(getArticleCacheKey());
+  const articleCacheSignature = await getArticleCacheSignature(BLOG_DIR);
+  const articles = await getArticleDocuments(articleCacheSignature);
   return articles.map(({ body: _body, contentHtml: _contentHtml, ...summary }) => summary);
 });
 
 export const getArticleBySlug = cache(async (slug: string): Promise<ArticleDocument | null> => {
-  const articles = await getArticleDocuments(getArticleCacheKey());
+  const articleCacheSignature = await getArticleCacheSignature(BLOG_DIR);
+  const articles = await getArticleDocuments(articleCacheSignature);
   return articles.find((article) => article.slug === slug) ?? null;
 });
 
