@@ -189,7 +189,7 @@ test('getTokenizedAffiliateArticleChecks derives checks from supplied tokenized 
     'NORDVPN',
     'NordVPN',
     ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
-    (article) => markdownByFile.get(article.fileName) ?? '',
+    (article: { fileName: string }) => markdownByFile.get(article.fileName) ?? '',
   );
 
   assert.equal(checks.length, 2);
