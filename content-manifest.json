@@ -1,10 +1,50 @@
 {
-  "articleCount": 9,
+  "articleCount": 11,
   "categories": [
     "AI Threats",
     "Privacy"
   ],
   "articles": [
+    {
+      "title": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE",
+      "slug": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce-2026-03-23",
+      "date": "2026-03-23",
+      "author": "AI Security Brief",
+      "excerpt": "Recent vulnerabilities in Amazon Bedrock, LangSmith, and SGLang expose organizations to data exfiltration and remote code execution risks, demanding urgent reassessment of AI security strategies.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang: Data Exfiltration and RCE Risks",
+      "metaDescription": "Discover how newly disclosed vulnerabilities in Amazon Bedrock, LangSmith, and SGLang enable data exfiltration and remote code execution, and learn actionable steps for securing AI environments.",
+      "keywords": [
+        "AI vulnerabilities",
+        "data exfiltration",
+        "remote code execution",
+        "Amazon Bedrock",
+        "LangSmith"
+      ],
+      "readTime": "5 min",
+      "fileName": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce-2026-03-23.md"
+    },
+    {
+      "title": "CursorJack Attack Path Exposes Code Execution Risk in AI Development Environments",
+      "slug": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment-2026-03-23",
+      "date": "2026-03-23",
+      "author": "AI Security Brief",
+      "excerpt": "The CursorJack attack demonstrates how malicious MCP deeplinks in Cursor IDE can trigger user-approved code execution, revealing critical vulnerabilities in AI development environments.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "CursorJack Attack Path: Code Execution Risks in AI Development Environments",
+      "metaDescription": "Explore the CursorJack attack path and its implications for code execution risks in AI development environments. Learn how to strengthen defenses against sophisticated threats targeting developers.",
+      "keywords": [
+        "CursorJack",
+        "code execution risk",
+        "AI development",
+        "Cursor IDE",
+        "security measures"
+      ],
+      "readTime": "5 min",
+      "fileName": "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment-2026-03-23.md"
+    },
     {
       "title": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE",
       "slug": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce",
