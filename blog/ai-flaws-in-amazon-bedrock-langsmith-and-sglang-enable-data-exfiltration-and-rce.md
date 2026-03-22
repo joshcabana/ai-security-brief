@@ -119,7 +119,10 @@ These three vulnerabilities are not random coincidences in the AI toolchain. The
 
 **The serialization debt in ML infrastructure** (SGLang): Python's `pickle` module has been a known attack vector for well over a decade. Its use in security-sensitive deserialization paths — especially over unauthenticated network channels — is a category of technical debt that the ML engineering community has been slower to retire than the broader software security community. Three independent pickle-based RCE vulnerabilities in a single project in 2026 is not bad luck. It reflects inherited patterns from research code that was never designed for adversarial environments.
 
-For teams that perform threat modelling on AI deployments and investigate hostile infrastructure, [NordVPN](https://nordvpn.com) offers a straightforward way to isolate analyst workstations from untrusted network environments during testing — reducing the risk of lateral exposure when probing AI component configurations against test servers.
+For teams that perform threat modelling on AI deployments and investigate hostile infrastructure,
+[NordVPN]([AFFILIATE:NORDVPN]) offers a straightforward way to isolate analyst workstations from
+untrusted network environments during testing — reducing the risk of lateral exposure when probing
+AI component configurations against test servers.
 
 ---
 
