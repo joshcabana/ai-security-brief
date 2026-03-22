@@ -1,8 +1,8 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `HEAD` (updated by this commit)
-**Last updated:** 22 March 2026 (evening session)
-**Updated by:** Perplexity Computer (automated session)
+**Pinned to:** `main` @ `HEAD` (state verified against `origin/main` after the 23 March 2026 closeout)
+**Last updated:** 23 March 2026
+**Updated by:** Codex (automated session)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -16,11 +16,14 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `dpl_7S1M4Y9EEnPRktoiGBu5TkBVWL1k` — READY |
+| Latest deploy | `main` @ `49798f3` via GitHub Actions run `23404432943` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
-| Analytics | Plausible (code deployed, **env var `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` set to `aithreatbrief.com`**) |
+| Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
+| Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
+| Search Console | Blocked externally; apex-property DNS TXT verification cannot proceed because the authenticated Cloudflare account is not authorised for `aithreatbrief.com` |
+| Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | 10 req/min per IP on `/api/subscribe` |
-| Tests | 98/98 pass (`pnpm run verify:release`) |
+| Tests | 102/102 unit tests pass; `pnpm build` passes; `pnpm verify:live` passes against production |
 
 ## Content
 
@@ -32,7 +35,7 @@
 
 ## Open PRs
 
-None as of 22 March 2026.
+None as of 23 March 2026.
 
 ## Affiliate Status
 
@@ -44,7 +47,7 @@ Source: [`ops/affiliate-status.md`](ops/affiliate-status.md) (last updated 18 Ma
 | Proton (VPN/Mail) | **Live in production** (CJ links via env vars) |
 | PureVPN | **Live in production** |
 | 1Password | Pending CJ approval (advertiser 5140517) — **do not reapply** |
-| Malwarebytes | Partnerize account needs re-verification |
+| Malwarebytes | Blocked externally; Google login says the account is not recognised and Partnerize password recovery is gated behind hCaptcha, so campaign state remains unconfirmed |
 | Surfshark | Rejected (appeal path available) |
 
 ## Automation Pipeline
@@ -88,39 +91,40 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 ## Operator Tasks (Manual)
 
 - [x] Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` in Vercel and redeploy
-- [ ] Set up UptimeRobot for aithreatbrief.com
+- [x] Set up UptimeRobot for `https://aithreatbrief.com` and `https://aithreatbrief.com/tools`
+- [ ] Verify Google Search Console apex property via DNS TXT and submit `https://aithreatbrief.com/sitemap.xml` — blocked because the authenticated Cloudflare account is not authorised for the zone
 - [x] Submit key URLs to Google Indexing API (homepage, /tools, blog articles)
-- [x] Validate affiliate tracking for 3 live programmes (NordVPN ✅, PureVPN ✅, Proton ⚠️ see below)
-- [ ] Re-verify Malwarebytes Partnerize account
+- [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
+- [ ] Re-verify Malwarebytes Partnerize account — blocked because Partnerize does not recognise the Google account and the reset flow is hCaptcha-gated
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [ ] Weekly: transfer newsletter draft to Beehiiv and send
 
-## Affiliate Link Audit (22 March 2026)
+## Affiliate Link Audit (23 March 2026)
 
 ### /tools page
 | Tool | Status | Tracking |
 |------|--------|----------|
 | NordVPN | **Working** | `aff_id=143381` via HasOffers — resolves to NordVPN special offer page |
+| Proton VPN | **Working** | CJ link resolves through `go.getproton.me` with `url_id=471` |
+| Proton Mail | **Working** | CJ link resolves through `go.getproton.me` with `url_id=921` |
 | PureVPN | **Working** | `affiliate_id=49384204` — resolves to PureVPN order page |
-| Proton VPN | **Not tracked** | Href is plain `https://protonvpn.com/` — CJ affiliate link NOT applied |
-| Proton Mail | **Not tracked** | Href is plain `https://proton.me/mail` — CJ affiliate link NOT applied |
 | Mullvad | Non-affiliate | Direct link (expected — no affiliate program) |
 | Bitwarden | Non-affiliate | Direct link |
 | 1Password | Non-affiliate | Direct link (CJ pending) |
 | Malwarebytes | Non-affiliate | Direct link (Partnerize pending) |
 
-**Fixed (22 Mar evening):** Proton env vars contained `{eventId}` / `{pubcid}` template placeholders that failed `isRenderableAffiliateUrl()` validation. Cleaned to remove template params. `AFFILIATE_NORDVPN` Production was also empty — set to `https://go.nordvpn.net/aff_c?offer_id=15&aff_id=143381&url_id=902`.
+**Live verification:** `/tools` renders tracked vendor URLs for NordVPN, Proton VPN, Proton Mail, and PureVPN in production.
 
 ### Blog articles (NordVPN tokens)
-| Article | Token | Rendered |
+| Article | Source state | Live render |
 |---------|-------|----------|
-| `agentic-ai-security-risks` | `[AFFILIATE:NORDVPN]` in source | **Not visible** — token may have degraded to plain text |
-| `australias-privacy-act-reforms-2026` | `[AFFILIATE:NORDVPN]` in source | **Plain text** — "NordVPN" with no hyperlink |
-| `how-ai-is-being-used-to-launch-cyberattacks-in-2026` | `[AFFILIATE:NORDVPN]` in source | **Not visible** — VPN mentioned generically, no brand name in rendered output |
-| `ai-flaws-in-amazon-bedrock-langsmith-and-sglang` | Direct `[NordVPN](https://nordvpn.com)` | **Linked but no tracking** — points to plain nordvpn.com |
-| `cursorjack-attack-path` | Direct `[1Password](https://1password.com)` | **Linked but no tracking** — points to plain 1password.com |
+| `agentic-ai-security-risks` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
+| `australias-privacy-act-reforms-2026` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
+| `how-ai-is-being-used-to-launch-cyberattacks-in-2026` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
+| `ai-flaws-in-amazon-bedrock-langsmith-and-sglang` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
+| `cursorjack-attack-path` | Direct `[1Password](https://1password.com)` | Unchanged by design pending CJ approval |
 
-**Fixed (22 Mar evening):** `AFFILIATE_NORDVPN` Production was empty — now populated. Blog article `[AFFILIATE:NORDVPN]` tokens will resolve on this deployment. Articles with hardcoded `https://nordvpn.com` (no token) still need manual migration to `[AFFILIATE:NORDVPN]` token format.
+**Root cause and fix:** article pages were prerendered and freezing the plain-text fallback while `/tools` was already runtime-rendered. The fix landed in `main` at `49798f3`, moving `/blog/[slug]` to runtime rendering so article affiliate tokens resolve against production env vars.
 
 ## Key Constraints
 
@@ -135,11 +139,11 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 
 | SHA | Description |
 |-----|-------------|
+| `49798f3` | Merge PR #39: render article affiliate tokens at runtime |
+| `6a05715` | Merge PR #38: add live affiliate verification and migrate NordVPN article links |
+| `eefad4a` | Document affiliate env var fixes in `STATUS.md` |
+| `7996feb` | Update `STATUS.md` with Plausible env var and affiliate audit results |
 | `79d4a86` | Plausible analytics (env-gated) + subscribe rate limiting |
-| `22ab4ef` | Merge PR #36: Week 12 performance log |
-| `22f59cd` | Merge PR #35: Week 12 content — analyst-grade articles + newsletter |
-| `2a2d44b` | Upgrade: rewrite articles to analyst-grade quality |
-| `10ae6bf` | Tag: `v1.0-handover` |
 
 ---
 
