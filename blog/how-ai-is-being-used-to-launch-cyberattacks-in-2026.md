@@ -69,7 +69,9 @@ The asymmetry is real but not insurmountable. The same AI capabilities that empo
 
 The organisations that treat AI security as optional are the ones that will feature in the next round of breach disclosures. Those that move now — deploying AI-native defences, hardening identity infrastructure, and assuming breach at machine speed — are the ones that will survive the next phase of this arms race.
 
-For analysts or remote staff who investigate live phishing infrastructure from shared networks, a reputable VPN such as [NordVPN]([AFFILIATE:NORDVPN]) is a basic operational privacy control that reduces unnecessary IP exposure while hostile content is being reviewed.
+For analysts or remote staff who investigate live phishing infrastructure from shared networks, a
+reputable VPN such as [NordVPN]([AFFILIATE:NORDVPN]) is a basic operational privacy control that
+reduces unnecessary IP exposure while hostile content is being reviewed.
 
 ---
 

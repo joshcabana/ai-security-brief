@@ -15,6 +15,29 @@ const REPO_ROOT = resolve(SCRIPT_DIR, '..');
 const WORKDIR = process.cwd();
 const DEFAULT_BASE_URL = 'https://aithreatbrief.com';
 const REQUEST_TIMEOUT_MS = 20000;
+const TOOLS_AFFILIATE_LINK_EXPECTATIONS = [
+  {
+    name: 'NordVPN',
+    snippets: ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+  },
+  {
+    name: 'Proton VPN',
+    snippets: ['https://go.getproton.me/aff_c?', 'url_id=471'],
+  },
+  {
+    name: 'Proton Mail',
+    snippets: ['https://go.getproton.me/aff_c?', 'url_id=921'],
+  },
+  {
+    name: 'PureVPN',
+    snippets: ['https://www.purevpn.com/order-now.php?', 'affiliate_id=49384204'],
+  },
+];
+const TOKEN_AFFILIATE_ARTICLE_CHECK = {
+  path: '/blog/agentic-ai-security-risks',
+  label: 'NordVPN',
+  hrefSnippets: ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+};
 
 // Domains that must redirect to DEFAULT_BASE_URL (apex)
 const REDIRECT_DOMAINS = [
@@ -126,6 +149,26 @@ function toAbsoluteCanonical(baseUrl, canonicalPath) {
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function assertBodyIncludesAll(body, snippets, context) {
+  for (const snippet of snippets) {
+    if (!body.includes(snippet)) {
+      throw new Error(`${context} is missing expected snippet: ${snippet}`);
+    }
+  }
+}
+
+export function assertAffiliateAnchor(body, label, hrefSnippets, context) {
+  const anchorPattern = new RegExp(`<a[^>]+href="([^"]+)"[^>]*>${escapeRegExp(label)}<\\/a>`, 'i');
+  const anchorMatch = body.match(anchorPattern);
+
+  if (!anchorMatch) {
+    throw new Error(`${context} is missing a rendered affiliate anchor for ${label}.`);
+  }
+
+  const href = anchorMatch[1];
+  assertBodyIncludesAll(href, hrefSnippets, `${context} href`);
 }
 
 function extractCanonicalHref(body) {
@@ -361,6 +404,22 @@ async function run() {
       },
     },
     {
+      name: 'tools-page-affiliates',
+      path: '/tools',
+      method: 'GET',
+      assert: async (response) => {
+        const body = await response.text();
+
+        if (response.status !== 200) {
+          throw new Error(`Expected HTTP 200, received ${response.status}`);
+        }
+
+        for (const expectation of TOOLS_AFFILIATE_LINK_EXPECTATIONS) {
+          assertBodyIncludesAll(body, expectation.snippets, `/tools ${expectation.name} affiliate link`);
+        }
+      },
+    },
+    {
       name: 'newsletter-page',
       path: '/newsletter',
       method: 'GET',
@@ -392,6 +451,25 @@ async function run() {
         if (actualCanonical !== expectedCanonical) {
           throw new Error(`Expected article canonical ${expectedCanonical}, received ${actualCanonical ?? 'null'}`);
         }
+      },
+    },
+    {
+      name: 'article-affiliate-link',
+      path: TOKEN_AFFILIATE_ARTICLE_CHECK.path,
+      method: 'GET',
+      assert: async (response) => {
+        const body = await response.text();
+
+        if (response.status !== 200) {
+          throw new Error(`Expected HTTP 200, received ${response.status}`);
+        }
+
+        assertAffiliateAnchor(
+          body,
+          TOKEN_AFFILIATE_ARTICLE_CHECK.label,
+          TOKEN_AFFILIATE_ARTICLE_CHECK.hrefSnippets,
+          TOKEN_AFFILIATE_ARTICLE_CHECK.path,
+        );
       },
     },
     {

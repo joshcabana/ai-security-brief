@@ -98,7 +98,9 @@ The 10 December 2026 deadline is not distant. Organisations using any automated 
 
 5. **Monitor Wave 2 reforms.** The right to erasure, data portability, and enhanced individual rights for automated decision-making are expected in subsequent reform tranches. Organisations building AI systems now should architect them with these anticipated obligations in mind.
 
-A VPN will not solve Privacy Act compliance, but requiring staff to use [NordVPN]([AFFILIATE:NORDVPN]) on public or otherwise untrusted networks is a low-friction privacy control that reduces avoidable exposure in day-to-day operations.
+A VPN will not solve Privacy Act compliance, but requiring staff to use
+[NordVPN]([AFFILIATE:NORDVPN]) on public or otherwise untrusted networks is a low-friction privacy
+control that reduces avoidable exposure in day-to-day operations.
 
 ---
 
