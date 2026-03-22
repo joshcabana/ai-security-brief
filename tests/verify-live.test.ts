@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import test from 'node:test';
 import {
   assertAffiliateAnchor,
   assertBodyIncludesAll,
   getDeploymentProtectionHeaders,
+  getTokenizedAffiliateArticleChecks,
   mergeRequestHeaders,
   resolveCanonicalBaseUrl,
 } from '../scripts/verify-live.mjs';
@@ -106,6 +109,21 @@ test('assertAffiliateAnchor accepts a rendered affiliate anchor', () => {
   });
 });
 
+test('assertAffiliateAnchor matches the tools-page anchor text and aria-label', () => {
+  assert.doesNotThrow(() => {
+    assertAffiliateAnchor(
+      '<a href="https://go.nordvpn.net/aff_c?offer_id=15&amp;aff_id=143381&amp;url_id=902" aria-label="Visit NordVPN vendor site (opens in new tab)">Visit vendor site</a>',
+      'NordVPN',
+      ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+      '/tools NordVPN affiliate link',
+      {
+        anchorText: 'Visit vendor site',
+        ariaLabel: 'Visit NordVPN vendor site (opens in new tab)',
+      },
+    );
+  });
+});
+
 test('assertAffiliateAnchor rejects plain-text brand mentions', () => {
   assert.throws(
     () => {
@@ -117,5 +135,63 @@ test('assertAffiliateAnchor rejects plain-text brand mentions', () => {
       );
     },
     /missing a rendered affiliate anchor for NordVPN/,
+  );
+});
+
+test('assertAffiliateAnchor rejects tools anchors with the wrong aria-label', () => {
+  assert.throws(
+    () => {
+      assertAffiliateAnchor(
+        '<a href="https://go.nordvpn.net/aff_c?offer_id=15&amp;aff_id=143381&amp;url_id=902" aria-label="Visit NordVPN vendor site">Visit vendor site</a>',
+        'NordVPN',
+        ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+        '/tools NordVPN affiliate link',
+        {
+          anchorText: 'Visit vendor site',
+          ariaLabel: 'Visit NordVPN vendor site (opens in new tab)',
+        },
+      );
+    },
+    /expected Visit NordVPN vendor site \(opens in new tab\)/,
+  );
+});
+
+test('getTokenizedAffiliateArticleChecks derives the NordVPN article set from manifest-backed source markdown', () => {
+  const repoRoot = resolve(process.cwd());
+  const manifest = JSON.parse(readFileSync(resolve(repoRoot, 'content-manifest.json'), 'utf8')) as {
+    articles: Array<{ slug: string; fileName: string }>;
+  };
+
+  const checks = getTokenizedAffiliateArticleChecks(
+    manifest.articles,
+    'NORDVPN',
+    'NordVPN',
+    ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+    (article) => readFileSync(resolve(repoRoot, 'blog', article.fileName), 'utf8'),
+  );
+
+  assert.deepEqual(checks.map((check) => check.path), [
+    '/blog/ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce',
+    '/blog/australias-privacy-act-reforms-2026',
+    '/blog/agentic-ai-security-risks',
+    '/blog/how-ai-is-being-used-to-launch-cyberattacks-in-2026',
+  ]);
+});
+
+test('getTokenizedAffiliateArticleChecks throws when no published articles include the token marker', () => {
+  assert.throws(
+    () => {
+      getTokenizedAffiliateArticleChecks(
+        [
+          { slug: 'one', fileName: 'one.md' },
+          { slug: 'two', fileName: 'two.md' },
+        ],
+        'NORDVPN',
+        'NordVPN',
+        ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+        () => 'No affiliate tokens here.',
+      );
+    },
+    /No published articles in content-manifest\.json reference \[AFFILIATE:NORDVPN\]\./,
   );
 });
