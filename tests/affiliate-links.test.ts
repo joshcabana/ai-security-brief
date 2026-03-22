@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { getAffiliateUrl, getAffiliateUrlByPriority, replaceAffiliateTokens } from '../lib/affiliate-links';
-import { parseArticleSource } from '../lib/articles';
+import { getArticleCacheKey, parseArticleSource } from '../lib/articles';
 
 test('getAffiliateUrl returns null for missing and blank environment values', () => {
   assert.equal(getAffiliateUrl('NORDVPN', {}), null);
@@ -56,6 +56,42 @@ test('getAffiliateUrlByPriority falls back to later configured affiliate urls', 
     'https://example.com/proton',
   );
   assert.equal(getAffiliateUrlByPriority(['PROTON_VPN', 'PROTON'], {}), null);
+});
+
+test('getArticleCacheKey returns a stable snapshot for configured affiliate env values', () => {
+  const cacheKey = getArticleCacheKey({
+    AFFILIATE_PUREVPN: ' https://example.com/purevpn ',
+    AFFILIATE_NORDVPN: 'https://example.com/nordvpn',
+    NEXT_PUBLIC_SITE_URL: 'https://ignored.example.com',
+  });
+
+  assert.equal(
+    cacheKey,
+    'AFFILIATE_NORDVPN=https://example.com/nordvpn\x00AFFILIATE_PUREVPN=https://example.com/purevpn',
+  );
+});
+
+test('getArticleCacheKey ignores unrelated env vars and blank affiliate values', () => {
+  assert.equal(
+    getArticleCacheKey({
+      AFFILIATE_NORDVPN: '   ',
+      AFFILIATE_PUREVPN: '\n',
+      NEXT_PUBLIC_SITE_URL: 'https://ignored.example.com',
+      OTHER_SETTING: 'still ignored',
+    }),
+    '',
+  );
+});
+
+test('getArticleCacheKey changes when affiliate env values change', () => {
+  const baseKey = getArticleCacheKey({
+    AFFILIATE_NORDVPN: 'https://example.com/nordvpn',
+  });
+  const changedKey = getArticleCacheKey({
+    AFFILIATE_NORDVPN: 'https://example.com/nordvpn-updated',
+  });
+
+  assert.notEqual(baseKey, changedKey);
 });
 
 test('replaceAffiliateTokens resolves configured markdown affiliate links', () => {
