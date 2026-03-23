@@ -1,7 +1,7 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `HEAD` (updated by closeout-hardening merge)
-**Last updated:** 23 March 2026 (late evening)
+**Pinned to:** `main` @ `1a929de`
+**Last updated:** 24 March 2026 (00:00 AEDT)
 **Updated by:** Perplexity Computer (full autonomy session)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
@@ -23,7 +23,7 @@
 | Search Console | Blocked externally; apex-property DNS TXT verification cannot proceed because the authenticated Cloudflare account is not authorised for `aithreatbrief.com` |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | 10 req/min per IP on `/api/subscribe` |
-| Tests | 102/102 unit tests pass; `pnpm build` passes; `pnpm verify:live` passes against production |
+| Tests | 111/111 unit tests pass; `pnpm build` passes; `pnpm verify:live` passes against production |
 
 ## Content
 
@@ -38,7 +38,8 @@
 | PR | Title | State |
 |-----|-------|-------|
 | #41 | Automation: content week 2026-13 | Draft (duplicate articles — do not merge) |
-| #42 | feat: add Claude Code launch.json | Open (CI failed) |
+
+Closed this session: #37 (superseded), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
 
 ## Affiliate Status
 
