@@ -1,10 +1,50 @@
 {
-  "articleCount": 9,
+  "articleCount": 11,
   "categories": [
     "AI Threats",
     "Privacy"
   ],
   "articles": [
+    {
+      "title": "Best VPNs for Cybersecurity Professionals 2026",
+      "slug": "best-vpns-for-cybersecurity-professionals-2026",
+      "date": "2026-03-24",
+      "author": "AI Security Brief",
+      "excerpt": "A data-driven comparison of the best VPNs for security analysts, threat researchers, and IT teams — evaluated on encryption, jurisdiction, audit history, and operational security.",
+      "category": "Privacy",
+      "featured": true,
+      "metaTitle": "Best VPNs for Cybersecurity Professionals 2026 — Expert Comparison",
+      "metaDescription": "Compare NordVPN, ProtonVPN, PureVPN, and Mullvad for cybersecurity work. Pricing, encryption, audit history, and jurisdiction analysis for security professionals.",
+      "keywords": [
+        "best VPN for cybersecurity",
+        "VPN for security professionals",
+        "secure VPN comparison",
+        "VPN for threat analysts",
+        "cybersecurity VPN 2026"
+      ],
+      "readTime": "9 min",
+      "fileName": "best-vpns-for-cybersecurity-professionals-2026.md"
+    },
+    {
+      "title": "NordVPN vs ProtonVPN: A Security Professional's Comparison",
+      "slug": "nordvpn-vs-protonvpn-security-comparison",
+      "date": "2026-03-24",
+      "author": "AI Security Brief",
+      "excerpt": "A head-to-head comparison of NordVPN and ProtonVPN for cybersecurity work — covering encryption, jurisdiction, open-source status, audit history, and pricing.",
+      "category": "Privacy",
+      "featured": false,
+      "metaTitle": "NordVPN vs ProtonVPN 2026 — Security Professional's Head-to-Head",
+      "metaDescription": "NordVPN vs ProtonVPN compared for cybersecurity professionals. Encryption, jurisdiction, audit history, pricing, and which is better for security work.",
+      "keywords": [
+        "NordVPN vs ProtonVPN",
+        "VPN comparison security",
+        "best VPN for security work",
+        "NordVPN ProtonVPN review",
+        "secure VPN 2026"
+      ],
+      "readTime": "7 min",
+      "fileName": "nordvpn-vs-protonvpn-security-comparison.md"
+    },
     {
       "title": "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE",
       "slug": "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce",
