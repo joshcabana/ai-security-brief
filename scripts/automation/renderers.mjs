@@ -411,8 +411,23 @@ export function resolveUniqueSlug(baseSlug, existingArticles, reservedSlugs, dat
 
 export function buildExpectedArticlePlan(findings, existingArticles, dateString) {
   const reservedSlugs = new Set();
+  const existingBaseSlugs = new Set(
+    existingArticles.map((entry) => entry.slug.replace(/-\d{4}-\d{2}-\d{2}(?:-\d+)?$/, '')),
+  );
 
-  return findings.slice(0, 2).map((finding) => {
+  // Filter out findings whose topic already has a published article (dedup).
+  // A finding is considered duplicate if its slugified headline matches the base
+  // slug of any existing article (ignoring date suffixes added by prior runs).
+  const novelFindings = findings.filter((finding) => {
+    const baseSlug = slugify(finding.headline);
+    return !existingBaseSlugs.has(baseSlug);
+  });
+
+  // Fall back to all findings if filtering leaves fewer than 2 (edge case:
+  // every harvest finding already has a published article).
+  const candidateFindings = novelFindings.length >= 2 ? novelFindings : findings;
+
+  return candidateFindings.slice(0, 2).map((finding) => {
     const baseSlug = slugify(finding.headline);
     const slug = resolveUniqueSlug(baseSlug, existingArticles, reservedSlugs, dateString);
     reservedSlugs.add(slug);

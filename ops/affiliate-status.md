@@ -8,7 +8,7 @@ Updated: 18 March 2026
 
 | Programme | Status | Notes |
 | --- | --- | --- |
-| NordVPN | **Live in production** | Tracked link deployed in 3 articles + `/tools` via PR #24 (`aff_id=143381`) |
+| NordVPN | **Live in production** | Tracked link deployed in 4 articles + `/tools` via PR #24 (`aff_id=143381`) |
 | PureVPN | **Live in production** | Tracked link deployed in OpenClaw article + `/tools` via PR #25 (`affiliate_id=49384204`) |
 | 1Password / CJ | **Application pending advertiser approval** | CJ dashboard verified live on 18 March 2026 (CID 7901635). 1Password (advertiser 5140517) is in Pending Applications. Do not reapply. Email confirmation is no longer an active blocker. |
 | Malwarebytes | Partnerize account created, access expired | Partnerize onboarding emails landed on 16 March 2026 and the account username is confirmed, but verification link expired; re-verification needed before Malwarebytes campaign status can be checked. hive0163 article slot reserved. |
