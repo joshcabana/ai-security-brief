@@ -29,7 +29,7 @@
 
 | Metric | Count |
 |--------|-------|
-| Published articles | 9 |
+| Published articles | 11 |
 | Analyst-grade | 2 (Bedrock/LangSmith/SGLang, CursorJack) |
 | Automation-grade | 7 (need editorial upgrade) |
 
