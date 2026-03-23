@@ -177,9 +177,56 @@ const toolCategories: ToolCategory[] = [
   },
 ];
 
+function generateToolsJsonLd() {
+  const items = [
+    { name: 'NordVPN', description: 'Advanced threat protection VPN with dark web monitoring.', category: 'VPN', rating: 4.7, price: '$3.09/mo' },
+    { name: 'Proton VPN', description: 'Swiss-based, open-source VPN with a free tier.', category: 'VPN', rating: 4.5, price: 'Free – $9.99/mo' },
+    { name: 'PureVPN', description: 'No-log audited VPN with 6,000+ servers in 65+ countries.', category: 'VPN', rating: 4.3, price: '$2.14/mo' },
+    { name: 'Proton Mail', description: 'End-to-end encrypted email from Switzerland.', category: 'Email Security', rating: 4.6, price: 'Free – $12.99/mo' },
+  ];
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Security Tools & Resources — AI Threat Brief',
+    description: 'Curated security tools for AI-era defence: VPNs, password managers, encrypted email, and endpoint protection.',
+    url: 'https://aithreatbrief.com/tools',
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Product',
+        name: item.name,
+        description: item.description,
+        category: item.category,
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: item.rating,
+          bestRating: 5,
+          worstRating: 1,
+          ratingCount: 1,
+        },
+        offers: {
+          '@type': 'Offer',
+          price: item.price,
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        },
+      },
+    })),
+  };
+}
+
 export default function ToolsPage() {
+  const jsonLd = generateToolsJsonLd();
+
   return (
     <div style={{ background: '#0d1117', minHeight: '100vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div
         className="relative overflow-hidden"
         style={{
