@@ -1,20 +1,29 @@
 ---
-title: "CursorJack Attack Path Exposes Code Execution Risk in AI Development Environments"
-slug: "cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment-2026-03-23"
-date: "2026-03-23"
-author: "AI Security Brief"
-excerpt: "The CursorJack attack demonstrates how malicious MCP deeplinks in Cursor IDE can trigger user-approved code execution, revealing critical vulnerabilities in AI development environments."
-category: "AI Threats"
+title: >-
+  CursorJack Attack Path Exposes Code Execution Risk in AI Development
+  Environments
+slug: >-
+  cursorjack-attack-path-exposes-code-execution-risk-in-ai-development-environment-2026-03-23
+date: '2026-03-23'
+author: AI Security Brief
+excerpt: >-
+  The CursorJack attack demonstrates how malicious MCP deeplinks in Cursor IDE
+  can trigger user-approved code execution, revealing critical vulnerabilities
+  in AI development environments.
+category: AI Threats
 featured: false
-meta_title: "CursorJack Attack Path: Code Execution Risks in AI Development Environments"
-meta_description: "Explore the CursorJack attack path and its implications for code execution risks in AI development environments. Learn how to strengthen defenses against sophisticated threats targeting developers."
+meta_title: 'CursorJack Attack Path: Code Execution Risks in AI Development Environments'
+meta_description: >-
+  Explore the CursorJack attack path and its implications for code execution
+  risks in AI development environments. Learn how to strengthen defenses against
+  sophisticated threats targeting developers.
 keywords:
-  - "CursorJack"
-  - "code execution risk"
-  - "AI development"
-  - "Cursor IDE"
-  - "security measures"
-read_time: "5 min"
+  - CursorJack
+  - code execution risk
+  - AI development
+  - Cursor IDE
+  - security measures
+read_time: 5 min
 ---
 # CursorJack Attack Path Exposes Code Execution Risk in AI Development Environments
 

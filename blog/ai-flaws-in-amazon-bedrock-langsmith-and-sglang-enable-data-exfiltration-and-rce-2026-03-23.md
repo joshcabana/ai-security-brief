@@ -1,20 +1,31 @@
 ---
-title: "AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE"
-slug: "ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce-2026-03-23"
-date: "2026-03-23"
-author: "AI Security Brief"
-excerpt: "Recent vulnerabilities in Amazon Bedrock, LangSmith, and SGLang expose organizations to data exfiltration and remote code execution risks, demanding urgent reassessment of AI security strategies."
-category: "AI Threats"
+title: >-
+  AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and
+  RCE
+slug: >-
+  ai-flaws-in-amazon-bedrock-langsmith-and-sglang-enable-data-exfiltration-and-rce-2026-03-23
+date: '2026-03-23'
+author: AI Security Brief
+excerpt: >-
+  Recent vulnerabilities in Amazon Bedrock, LangSmith, and SGLang expose
+  organizations to data exfiltration and remote code execution risks, demanding
+  urgent reassessment of AI security strategies.
+category: AI Threats
 featured: false
-meta_title: "AI Flaws in Amazon Bedrock, LangSmith, and SGLang: Data Exfiltration and RCE Risks"
-meta_description: "Discover how newly disclosed vulnerabilities in Amazon Bedrock, LangSmith, and SGLang enable data exfiltration and remote code execution, and learn actionable steps for securing AI environments."
+meta_title: >-
+  AI Flaws in Amazon Bedrock, LangSmith, and SGLang: Data Exfiltration and RCE
+  Risks
+meta_description: >-
+  Discover how newly disclosed vulnerabilities in Amazon Bedrock, LangSmith, and
+  SGLang enable data exfiltration and remote code execution, and learn
+  actionable steps for securing AI environments.
 keywords:
-  - "AI vulnerabilities"
-  - "data exfiltration"
-  - "remote code execution"
-  - "Amazon Bedrock"
-  - "LangSmith"
-read_time: "5 min"
+  - AI vulnerabilities
+  - data exfiltration
+  - remote code execution
+  - Amazon Bedrock
+  - LangSmith
+read_time: 5 min
 ---
 # AI Flaws in Amazon Bedrock, LangSmith, and SGLang Enable Data Exfiltration and RCE
 
