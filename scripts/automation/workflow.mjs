@@ -26,6 +26,7 @@ export async function prepareAutomationRun({ kind, schedule }) {
   const gate = shouldRunInScheduledWindow({
     targetWeekday: schedule.weekday,
     targetHour: schedule.hour,
+    graceHours: schedule.graceHours ?? 0,
     options,
   });
 

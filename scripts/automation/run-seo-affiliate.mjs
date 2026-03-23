@@ -33,7 +33,7 @@ async function main() {
 
   const context = await prepareAutomationRun({
     kind: 'content',
-    schedule: { weekday: 'monday', hour: 15 },
+    schedule: { weekday: 'monday', hour: 15, graceHours: 1 },
   });
 
   if (context.skipped) {

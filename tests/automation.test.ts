@@ -31,12 +31,14 @@ test('schedule gate respects Australia/Sydney local hours across DST boundaries'
   const summerRun = shouldRunInScheduledWindow({
     targetWeekday: 'sunday',
     targetHour: 20,
+    graceHours: 0,
     options: { date: null, dryRun: false, skipScheduleGate: false },
     now: new Date('2026-01-04T09:05:00Z'),
   });
   const winterRun = shouldRunInScheduledWindow({
     targetWeekday: 'sunday',
     targetHour: 20,
+    graceHours: 0,
     options: { date: null, dryRun: false, skipScheduleGate: false },
     now: new Date('2026-06-14T10:05:00Z'),
   });
@@ -44,6 +46,28 @@ test('schedule gate respects Australia/Sydney local hours across DST boundaries'
   assert.equal(summerRun.shouldRun, true);
   assert.equal(winterRun.shouldRun, true);
   assert.equal(getLocalTimeParts(new Date('2026-03-16T18:05:00Z')).weekday, 'tuesday');
+});
+
+test('schedule gate accepts same-day runs within the configured one-hour grace window', () => {
+  const graceRun = shouldRunInScheduledWindow({
+    targetWeekday: 'monday',
+    targetHour: 13,
+    graceHours: 1,
+    options: { date: null, dryRun: false, skipScheduleGate: false },
+    now: new Date('2026-03-23T03:08:26Z'),
+  });
+
+  const outsideGraceRun = shouldRunInScheduledWindow({
+    targetWeekday: 'monday',
+    targetHour: 13,
+    graceHours: 1,
+    options: { date: null, dryRun: false, skipScheduleGate: false },
+    now: new Date('2026-03-23T04:08:26Z'),
+  });
+
+  assert.equal(graceRun.shouldRun, true);
+  assert.match(graceRun.reason, /grace window/);
+  assert.equal(outsideGraceRun.shouldRun, false);
 });
 
 test('automation identity uses ISO week naming for content and performance branches', () => {

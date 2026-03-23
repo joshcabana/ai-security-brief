@@ -40,7 +40,7 @@ jobs:
 
       - name: Gate Australia/Sydney run window
         id: gate
-        run: node scripts/automation/check-window.mjs --weekday monday --hour 5
+        run: node scripts/automation/check-window.mjs --weekday monday --hour 5 --grace-hours 1
         env:
           AUTOMATION_RUN_DATE: ${{ github.event.inputs.run_date }}
           AUTOMATION_DRY_RUN: ${{ github.event.inputs.dry_run }}
