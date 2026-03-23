@@ -14,15 +14,22 @@ function getArgValue(name) {
 async function main() {
   const weekday = getArgValue('weekday');
   const hour = getArgValue('hour');
+  const graceHoursValue = getArgValue('grace-hours');
+  const graceHours = graceHoursValue === null ? 0 : Number(graceHoursValue);
 
   if (!weekday || !hour) {
-    throw new Error('check-window requires --weekday and --hour.');
+    throw new Error('check-window requires --weekday and --hour. Optional: --grace-hours N.');
+  }
+
+  if (!Number.isInteger(graceHours) || graceHours < 0) {
+    throw new Error('--grace-hours must be a non-negative integer.');
   }
 
   const options = parseCliOptions();
   const result = shouldRunInScheduledWindow({
     targetWeekday: weekday.toLowerCase(),
     targetHour: Number(hour),
+    graceHours,
     options,
   });
 

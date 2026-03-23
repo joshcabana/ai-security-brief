@@ -18,26 +18,29 @@ const REQUEST_TIMEOUT_MS = 20000;
 const TOOLS_AFFILIATE_LINK_EXPECTATIONS = [
   {
     name: 'NordVPN',
+    anchorText: 'Visit vendor site',
+    ariaLabel: 'Visit NordVPN vendor site (opens in new tab)',
     snippets: ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
   },
   {
     name: 'Proton VPN',
+    anchorText: 'Visit vendor site',
+    ariaLabel: 'Visit Proton VPN vendor site (opens in new tab)',
     snippets: ['https://go.getproton.me/aff_c?', 'url_id=471'],
   },
   {
     name: 'Proton Mail',
+    anchorText: 'Visit vendor site',
+    ariaLabel: 'Visit Proton Mail vendor site (opens in new tab)',
     snippets: ['https://go.getproton.me/aff_c?', 'url_id=921'],
   },
   {
     name: 'PureVPN',
+    anchorText: 'Visit vendor site',
+    ariaLabel: 'Visit PureVPN vendor site (opens in new tab)',
     snippets: ['https://www.purevpn.com/order-now.php?', 'affiliate_id=49384204'],
   },
 ];
-const TOKEN_AFFILIATE_ARTICLE_CHECK = {
-  path: '/blog/agentic-ai-security-risks',
-  label: 'NordVPN',
-  hrefSnippets: ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
-};
 
 // Domains that must redirect to DEFAULT_BASE_URL (apex)
 const REDIRECT_DOMAINS = [
@@ -159,16 +162,94 @@ export function assertBodyIncludesAll(body, snippets, context) {
   }
 }
 
-export function assertAffiliateAnchor(body, label, hrefSnippets, context) {
-  const anchorPattern = new RegExp(`<a[^>]+href="([^"]+)"[^>]*>${escapeRegExp(label)}<\\/a>`, 'i');
-  const anchorMatch = body.match(anchorPattern);
+export function assertAffiliateAnchor(body, label, hrefSnippets, context, anchorOptions) {
+  const anchorText = anchorOptions?.anchorText ?? label;
+  const ariaLabel = anchorOptions?.ariaLabel;
+  const anchorPattern = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+  let matchedAnchor = null;
+  let mismatchMessage = null;
 
-  if (!anchorMatch) {
-    throw new Error(`${context} is missing a rendered affiliate anchor for ${label}.`);
+  for (const anchorMatch of body.matchAll(anchorPattern)) {
+    const anchorAttributes = anchorMatch[1];
+    const innerHtml = anchorMatch[2];
+    const visibleText = innerHtml
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (visibleText !== anchorText) {
+      continue;
+    }
+
+    const hrefMatch = anchorAttributes.match(/href="([^"]+)"/i);
+
+    if (!hrefMatch) {
+      mismatchMessage = `${context} affiliate anchor for ${label} is missing an href attribute.`;
+      continue;
+    }
+
+    if (ariaLabel !== undefined) {
+      const ariaLabelMatch = anchorAttributes.match(/aria-label="([^"]+)"/i);
+
+      if (!ariaLabelMatch) {
+        mismatchMessage = `${context} affiliate anchor for ${label} is missing aria-label ${ariaLabel}.`;
+        continue;
+      }
+
+      if (ariaLabelMatch[1] !== ariaLabel) {
+        mismatchMessage = `${context} affiliate anchor for ${label} has aria-label ${ariaLabelMatch[1]}, expected ${ariaLabel}.`;
+        continue;
+      }
+    }
+
+    matchedAnchor = hrefMatch[1];
+    break;
   }
 
-  const href = anchorMatch[1];
-  assertBodyIncludesAll(href, hrefSnippets, `${context} href`);
+  if (matchedAnchor === null) {
+    if (mismatchMessage !== null) {
+      throw new Error(mismatchMessage);
+    }
+
+    throw new Error(`${context} is missing a rendered affiliate anchor for ${label} with text ${anchorText}.`);
+  }
+
+  assertBodyIncludesAll(matchedAnchor, hrefSnippets, `${context} href`);
+}
+
+export function getTokenizedAffiliateArticleChecks(articles, tokenCode, label, hrefSnippets, readMarkdown) {
+  const tokenMarker = `[AFFILIATE:${tokenCode}]`;
+  const checks = [];
+
+  for (const article of articles) {
+    const markdown = readMarkdown(article);
+
+    if (!markdown.includes(tokenMarker)) {
+      continue;
+    }
+
+    checks.push({
+      name: `article-affiliate-link:${article.slug}`,
+      path: `/blog/${article.slug}`,
+      method: 'GET',
+      assert: async (response) => {
+        const body = await response.text();
+
+        if (response.status !== 200) {
+          throw new Error(`Expected HTTP 200, received ${response.status}`);
+        }
+
+        assertAffiliateAnchor(body, label, hrefSnippets, `/blog/${article.slug}`);
+      },
+    });
+  }
+
+  if (checks.length === 0) {
+    throw new Error(`No published articles in content-manifest.json reference ${tokenMarker}.`);
+  }
+
+  return checks;
 }
 
 function extractCanonicalHref(body) {
@@ -322,6 +403,13 @@ async function run() {
   const featuredArticle = manifest.articles[0];
   const articlePath = `/blog/${featuredArticle.slug}`;
   const analyticsIntegrationEnabled = codebaseHasAnalyticsIntegration();
+  const nordVpnArticleChecks = getTokenizedAffiliateArticleChecks(
+    manifest.articles,
+    'NORDVPN',
+    'NordVPN',
+    ['https://go.nordvpn.net/aff_c?', 'aff_id=143381'],
+    (article) => readFileSync(resolve(REPO_ROOT, 'blog', article.fileName), 'utf8'),
+  );
 
   const routeChecks = [
     {
@@ -415,7 +503,16 @@ async function run() {
         }
 
         for (const expectation of TOOLS_AFFILIATE_LINK_EXPECTATIONS) {
-          assertBodyIncludesAll(body, expectation.snippets, `/tools ${expectation.name} affiliate link`);
+          assertAffiliateAnchor(
+            body,
+            expectation.name,
+            expectation.snippets,
+            `/tools ${expectation.name} affiliate link`,
+            {
+              anchorText: expectation.anchorText,
+              ariaLabel: expectation.ariaLabel,
+            },
+          );
         }
       },
     },
@@ -453,25 +550,7 @@ async function run() {
         }
       },
     },
-    {
-      name: 'article-affiliate-link',
-      path: TOKEN_AFFILIATE_ARTICLE_CHECK.path,
-      method: 'GET',
-      assert: async (response) => {
-        const body = await response.text();
-
-        if (response.status !== 200) {
-          throw new Error(`Expected HTTP 200, received ${response.status}`);
-        }
-
-        assertAffiliateAnchor(
-          body,
-          TOKEN_AFFILIATE_ARTICLE_CHECK.label,
-          TOKEN_AFFILIATE_ARTICLE_CHECK.hrefSnippets,
-          TOKEN_AFFILIATE_ARTICLE_CHECK.path,
-        );
-      },
-    },
+    ...nordVpnArticleChecks,
     {
       name: 'subscribe-endpoint',
       path: '/api/subscribe',

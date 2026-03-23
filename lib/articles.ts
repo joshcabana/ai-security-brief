@@ -1,4 +1,6 @@
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
@@ -29,6 +31,12 @@ export interface ArticleDocument extends ArticleSummary {
   body: string;
   contentHtml: string;
 }
+
+type ArticleEnvironment = Readonly<Record<string, string | undefined>>;
+export type ArticleCacheSignature = Readonly<{
+  sourceKey: string;
+  affiliateKey: string;
+}>;
 
 function assertDateString(value: unknown, field: string, fileName: string): string {
   const normalisedValue = assertString(value, field, fileName);
@@ -118,6 +126,53 @@ async function parseArticleFile(blogDir: string, fileName: string): Promise<Arti
   return parseArticleSource(fileName, source);
 }
 
+export async function getArticleSourceCacheKey(blogDir: string): Promise<string> {
+  const entries = await fs.readdir(blogDir);
+  const articleFiles = entries.filter((entry) => entry.endsWith('.md')).sort();
+  const fingerprints = await Promise.all(articleFiles.map(async (fileName) => {
+    const filePath = path.join(blogDir, fileName);
+    const source = await fs.readFile(filePath, 'utf8');
+    const digest = createHash('sha256').update(source).digest('hex');
+    return `${fileName}:${digest}`;
+  }));
+
+  return fingerprints.join('\u0000');
+}
+
+function getAffiliateCacheKey(env: ArticleEnvironment = process.env): string {
+  const affiliateEntries = Object.entries(env).reduce<Array<readonly [string, string]>>((entries, [key, value]) => {
+    if (!key.startsWith('AFFILIATE_') || typeof value !== 'string') {
+      return entries;
+    }
+
+    const normalizedValue = value.trim();
+    if (normalizedValue.length > 0) {
+      entries.push([key, normalizedValue]);
+    }
+
+    return entries;
+  }, []);
+
+  return affiliateEntries
+    .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+    .map(([key, value]) => `${key}=${value}`)
+    .join('\u0000');
+}
+
+export async function getArticleCacheSignature(
+  blogDir: string,
+  env: ArticleEnvironment = process.env,
+): Promise<ArticleCacheSignature> {
+  return {
+    sourceKey: await getArticleSourceCacheKey(blogDir),
+    affiliateKey: getAffiliateCacheKey(env),
+  };
+}
+
+export function getArticleCacheKey(signature: ArticleCacheSignature): string {
+  return `${signature.sourceKey}\u0000${signature.affiliateKey}`;
+}
+
 export async function loadArticlesFromDirectory(blogDir: string): Promise<ArticleDocument[]> {
   const entries = await fs.readdir(blogDir);
   const articleFiles = entries.filter((entry) => entry.endsWith('.md')).sort();
@@ -138,17 +193,25 @@ export async function loadArticlesFromDirectory(blogDir: string): Promise<Articl
   });
 }
 
-const getArticleDocuments = cache(async (): Promise<ArticleDocument[]> => {
-  return loadArticlesFromDirectory(BLOG_DIR);
-});
+const getArticleDocuments = unstable_cache(
+  async (articleCacheSignature: ArticleCacheSignature): Promise<ArticleDocument[]> => {
+    void articleCacheSignature.sourceKey;
+    void articleCacheSignature.affiliateKey;
+    return loadArticlesFromDirectory(BLOG_DIR);
+  },
+  ['blog-articles'],
+  { revalidate: false },
+);
 
 export const getAllArticles = cache(async (): Promise<ArticleSummary[]> => {
-  const articles = await getArticleDocuments();
+  const articleCacheSignature = await getArticleCacheSignature(BLOG_DIR);
+  const articles = await getArticleDocuments(articleCacheSignature);
   return articles.map(({ body: _body, contentHtml: _contentHtml, ...summary }) => summary);
 });
 
 export const getArticleBySlug = cache(async (slug: string): Promise<ArticleDocument | null> => {
-  const articles = await getArticleDocuments();
+  const articleCacheSignature = await getArticleCacheSignature(BLOG_DIR);
+  const articles = await getArticleDocuments(articleCacheSignature);
   return articles.find((article) => article.slug === slug) ?? null;
 });
 
