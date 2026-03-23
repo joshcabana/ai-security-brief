@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
+import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
@@ -128,13 +129,12 @@ async function parseArticleFile(blogDir: string, fileName: string): Promise<Arti
 export async function getArticleSourceCacheKey(blogDir: string): Promise<string> {
   const entries = await fs.readdir(blogDir);
   const articleFiles = entries.filter((entry) => entry.endsWith('.md')).sort();
-  const fingerprints = await Promise.all(
-    articleFiles.map(async (fileName) => {
-      const filePath = path.join(blogDir, fileName);
-      const fileStats = await fs.stat(filePath);
-      return `${fileName}:${fileStats.size}:${fileStats.mtimeMs}`;
-    }),
-  );
+  const fingerprints = await Promise.all(articleFiles.map(async (fileName) => {
+    const filePath = path.join(blogDir, fileName);
+    const source = await fs.readFile(filePath, 'utf8');
+    const digest = createHash('sha256').update(source).digest('hex');
+    return `${fileName}:${digest}`;
+  }));
 
   return fingerprints.join('\u0000');
 }

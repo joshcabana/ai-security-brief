@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, utimes, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -66,12 +66,13 @@ test('getAffiliateUrlByPriority falls back to later configured affiliate urls', 
   assert.equal(getAffiliateUrlByPriority(['PROTON_VPN', 'PROTON'], {}), null);
 });
 
-test('getArticleSourceCacheKey returns a stable fingerprint for article files', async () => {
+test('getArticleSourceCacheKey changes when article content changes', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'ai-security-brief-articles-'));
+  const articlePath = path.join(tempDir, 'alpha.md');
 
   try {
     await writeFile(
-      path.join(tempDir, 'alpha.md'),
+      articlePath,
       [
         '---',
         'title: "Alpha"',
@@ -99,9 +100,11 @@ test('getArticleSourceCacheKey returns a stable fingerprint for article files', 
     );
 
     const initialKey = await getArticleSourceCacheKey(tempDir);
+    const fixedTimestamp = new Date('2026-03-17T00:00:00.000Z');
+    await utimes(articlePath, fixedTimestamp, fixedTimestamp);
 
     await writeFile(
-      path.join(tempDir, 'alpha.md'),
+      articlePath,
       [
         '---',
         'title: "Alpha"',
@@ -124,9 +127,10 @@ test('getArticleSourceCacheKey returns a stable fingerprint for article files', 
         '',
         '# Alpha',
         '',
-        'Alpha content updated.',
+        'Bravo content update.',
       ].join('\n'),
     );
+    await utimes(articlePath, fixedTimestamp, fixedTimestamp);
 
     const updatedKey = await getArticleSourceCacheKey(tempDir);
 
