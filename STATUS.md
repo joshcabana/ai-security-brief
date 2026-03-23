@@ -1,8 +1,8 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `HEAD` (state verified against `origin/main` after the 23 March 2026 closeout)
-**Last updated:** 23 March 2026
-**Updated by:** Codex (automated session)
+**Pinned to:** `main` @ `77b13e3`
+**Last updated:** 23 March 2026 (evening audit)
+**Updated by:** Perplexity Computer (quality audit fix)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -16,7 +16,7 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `49798f3` via GitHub Actions run `23404432943` — READY |
+| Latest deploy | `main` @ `77b13e3` (Merge PR #40) — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -35,7 +35,12 @@
 
 ## Open PRs
 
-None as of 23 March 2026.
+| PR | Title | State |
+|-----|-------|-------|
+| #37 | Automation: performance week 2026-12 | Draft |
+| #41 | Automation: content week 2026-13 | Draft |
+| #42 | feat: add Claude Code launch.json | Open (CI failed) |
+| #43 | fix(affiliate): Harden live verification and cache invalidation | Draft |
 
 ## Affiliate Status
 
@@ -84,9 +89,13 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 ### GitHub Actions secrets:
 | Variable | Purpose |
 |----------|---------|
-| `GITHUB_MODELS_TOKEN` | GitHub Models API access |
 | `VERCEL_TOKEN` | Vercel deployment from CI |
-| `BEEHIIV_API_KEY` | Performance log subscriber count |
+| `VERCEL_ORG_ID` | Vercel org identifier |
+| `VERCEL_PROJECT_ID` | Vercel project identifier |
+| `BEEHIIV_API_KEY` | Newsletter subscriber management |
+| `BEEHIIV_PUBLICATION_ID` | AI Security Brief publication |
+
+Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-in `github.token` for GitHub Models API access.
 
 ## Operator Tasks (Manual)
 
