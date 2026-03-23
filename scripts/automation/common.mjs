@@ -124,7 +124,13 @@ export function getLocalTimeParts(date = new Date(), timeZone = TIME_ZONE) {
   };
 }
 
-export function shouldRunInScheduledWindow({ targetWeekday, targetHour, options, now = new Date() }) {
+export function shouldRunInScheduledWindow({
+  targetWeekday,
+  targetHour,
+  options,
+  now = new Date(),
+  graceHours = 0,
+}) {
   if (options.skipScheduleGate || options.date) {
     return {
       shouldRun: true,
@@ -134,18 +140,29 @@ export function shouldRunInScheduledWindow({ targetWeekday, targetHour, options,
   }
 
   const observed = getLocalTimeParts(now);
+  const observedHour = String(observed.hour).padStart(2, '0');
+  const targetHourLabel = String(targetHour).padStart(2, '0');
+  const hourDistance = Math.abs(observed.hour - targetHour);
 
-  if (observed.weekday !== targetWeekday || observed.hour !== targetHour) {
+  if (observed.weekday !== targetWeekday || hourDistance > graceHours) {
     return {
       shouldRun: false,
-      reason: `current Australia/Sydney time is ${observed.weekday} ${String(observed.hour).padStart(2, '0')}:00`,
+      reason: `current Australia/Sydney time is ${observed.weekday} ${observedHour}:00`,
+      observed,
+    };
+  }
+
+  if (hourDistance > 0) {
+    return {
+      shouldRun: true,
+      reason: `within ${graceHours}-hour grace window of ${targetWeekday} ${targetHourLabel}:00 Australia/Sydney (observed ${observedHour}:00)`,
       observed,
     };
   }
 
   return {
     shouldRun: true,
-    reason: `matched ${targetWeekday} ${String(targetHour).padStart(2, '0')}:00 Australia/Sydney`,
+    reason: `matched ${targetWeekday} ${targetHourLabel}:00 Australia/Sydney`,
     observed,
   };
 }

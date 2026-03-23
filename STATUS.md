@@ -1,8 +1,8 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `77b13e3`
-**Last updated:** 23 March 2026 (evening audit)
-**Updated by:** Perplexity Computer (quality audit fix)
+**Pinned to:** `main` @ `HEAD` (updated by closeout-hardening merge)
+**Last updated:** 23 March 2026 (late evening)
+**Updated by:** Perplexity Computer (full autonomy session)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -37,10 +37,8 @@
 
 | PR | Title | State |
 |-----|-------|-------|
-| #37 | Automation: performance week 2026-12 | Draft |
-| #41 | Automation: content week 2026-13 | Draft |
+| #41 | Automation: content week 2026-13 | Draft (duplicate articles — do not merge) |
 | #42 | feat: add Claude Code launch.json | Open (CI failed) |
-| #43 | fix(affiliate): Harden live verification and cache invalidation | Draft |
 
 ## Affiliate Status
 
@@ -63,7 +61,7 @@ Five GitHub Actions workflows run weekly (Monday, Sydney time):
 2. `article-factory.yml` — Article draft generation (default model: `openai/gpt-4.1`)
 3. `newsletter-compiler.yml` — Newsletter draft (default model: `openai/gpt-4.1`)
 4. `seo-affiliate.yml` — SEO metadata + affiliate placeholders (default model: `openai/gpt-4o-mini`)
-5. `weekly-performance.yml` — Performance log (default model: `openai/gpt-4o-mini`)
+5. `performance-logger.yml` — Performance log (default model: `openai/gpt-4o-mini`)
 
 Pipeline outputs land as draft PRs on a content branch. Operator must review, upgrade if needed, and merge.
 
@@ -75,6 +73,7 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | `BEEHIIV_API_KEY` | Newsletter subscriber management |
 | `BEEHIIV_PUBLICATION_ID` | AI Security Brief publication |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO |
+| `NEXT_PUBLIC_SITE_NAME` | Site name for metadata and verification checks |
 
 ### Optional (set to activate):
 | Variable | Purpose |
