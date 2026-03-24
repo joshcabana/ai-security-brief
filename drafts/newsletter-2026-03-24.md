@@ -1,4 +1,4 @@
-# AI Security Brief — Weekly Newsletter
+# Newsletter Issue #5 — AI Security Brief
 **Issue: March 24, 2026**
 
 ---
