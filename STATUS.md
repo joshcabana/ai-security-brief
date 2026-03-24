@@ -1,8 +1,8 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `1a929de`
-**Last updated:** 24 March 2026 (00:00 AEDT)
-**Updated by:** Perplexity Computer (full autonomy session)
+**Pinned to:** `main` @ `16a4c1f`
+**Last updated:** 25 March 2026 (03:00 AEDT)
+**Updated by:** Perplexity Computer (QA audit session)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -16,7 +16,7 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `308ddf9` — READY |
+| Latest deploy | `main` @ `16a4c1f` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -35,11 +35,9 @@
 
 ## Open PRs
 
-| PR | Title | State |
-|-----|-------|-------|
-| #41 | Automation: content week 2026-13 | Draft (duplicate articles — do not merge) |
+No open PRs.
 
-Closed this session: #37 (superseded), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
+Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed without merge), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
 
 ## Affiliate Status
 
@@ -111,6 +109,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 ## Affiliate Link Audit (23 March 2026)
 
 ### /tools page
+
 | Tool | Status | Tracking |
 |------|--------|----------|
 | NordVPN | **Working** | `aff_id=143381` via HasOffers — resolves to NordVPN special offer page |
@@ -125,6 +124,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 **Live verification:** `/tools` renders tracked vendor URLs for NordVPN, Proton VPN, Proton Mail, and PureVPN in production.
 
 ### Blog articles (NordVPN tokens)
+
 | Article | Source state | Live render |
 |---------|-------|----------|
 | `agentic-ai-security-risks` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
@@ -148,6 +148,11 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |-----|-------------|
+| `16a4c1f` | fix(smoke): support multiple Privacy category articles in category pages |
+| `dd7f16e` | fix: newsletter issue number + STATUS.md deploy SHA |
+| `308ddf9` | ops: add marketing assets + lead magnet + newsletter draft |
+| `f974bf3` | content: add 2 buyer-intent comparison articles |
+| `affc89f` | feat: dedup fix, JSON-LD schema, affiliate count correction |
 | `49798f3` | Merge PR #39: render article affiliate tokens at runtime |
 | `6a05715` | Merge PR #38: add live affiliate verification and migrate NordVPN article links |
 | `eefad4a` | Document affiliate env var fixes in `STATUS.md` |
