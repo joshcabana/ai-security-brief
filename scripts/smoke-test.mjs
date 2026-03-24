@@ -236,8 +236,8 @@ async function main() {
   );
   const articleSlugs = manifest.articles.map((article) => article.slug);
   const homepageSlugs = articleSlugs.slice(0, 4);
-  const privacyArticle = manifest.articles.find((article) => article.category === 'Privacy');
-  assert.ok(privacyArticle, 'Expected one Privacy article in content-manifest.json.');
+  const privacyArticles = manifest.articles.filter((article) => article.category === 'Privacy');
+  assert.ok(privacyArticles.length > 0, 'Expected at least one Privacy article in content-manifest.json.');
 
   const coldStartPort = await findFreePort();
   const coldStartApp = startApp(coldStartPort, {
@@ -262,7 +262,7 @@ async function main() {
     assert.doesNotMatch(homeHtml, /Join the launch list|publication goes live/i);
 
     const privacyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog?category=Privacy`).then((response) => response.text());
-    assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), [`${privacyArticle.slug}`]);
+    assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), privacyArticles.map((a) => a.slug));
 
     for (const article of manifest.articles) {
       const articleHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog/${article.slug}`).then((response) => response.text());
