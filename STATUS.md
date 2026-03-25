@@ -1,7 +1,7 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `8dde53b`
-**Last updated:** 25 March 2026
+**Pinned to:** `main` @ `20ca4e3`
+**Last updated:** 26 March 2026
 **Updated by:** Perplexity Computer (QA audit)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
@@ -20,7 +20,7 @@
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
-| Search Console | Blocked externally; apex-property DNS TXT verification cannot proceed because the authenticated Cloudflare account is not authorised for `aithreatbrief.com` |
+| Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | 10 req/min per IP on `/api/subscribe` |
 | Tests | 111/111 unit tests pass; `pnpm build` passes; `pnpm verify:live` passes against production |
@@ -102,7 +102,7 @@ Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (co
 
 - [x] Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` in Vercel and redeploy
 - [x] Set up UptimeRobot for `https://aithreatbrief.com` and `https://aithreatbrief.com/tools`
-- [ ] Verify Google Search Console apex property via DNS TXT and submit `https://aithreatbrief.com/sitemap.xml` — blocked because the authenticated Cloudflare account is not authorised for the zone
+- [x] Google Search Console verified (26 Mar 2026) + sitemap submitted
 - [x] Submit key URLs to Google Indexing API (homepage, /tools, blog articles)
 - [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
 - [ ] Re-verify Malwarebytes Partnerize account — blocked because Partnerize does not recognise the Google account and the reset flow is hCaptcha-gated
