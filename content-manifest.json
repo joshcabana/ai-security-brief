@@ -1,10 +1,30 @@
 {
-  "articleCount": 11,
+  "articleCount": 12,
   "categories": [
     "AI Threats",
     "Privacy"
   ],
   "articles": [
+    {
+      "title": "Best Password Managers for Security Teams 2026",
+      "slug": "best-password-managers-for-security-teams-2026",
+      "date": "2026-03-26",
+      "author": "AI Security Brief",
+      "excerpt": "A security-focused comparison of enterprise password managers — evaluating zero-knowledge architecture, audit history, SSO integration, and secrets management for IT teams.",
+      "category": "Privacy",
+      "featured": false,
+      "metaTitle": "Best Password Managers for Security Teams 2026 — Expert Comparison",
+      "metaDescription": "Compare 1Password, Bitwarden, Dashlane, and NordPass for security teams. Zero-knowledge encryption, SSO integration, audit logs, and enterprise deployment.",
+      "keywords": [
+        "best password manager for teams",
+        "enterprise password manager",
+        "1Password vs Bitwarden",
+        "password manager security",
+        "team password management 2026"
+      ],
+      "readTime": "8 min",
+      "fileName": "best-password-managers-for-security-teams-2026.md"
+    },
     {
       "title": "Best VPNs for Cybersecurity Professionals 2026",
       "slug": "best-vpns-for-cybersecurity-professionals-2026",
