@@ -1,8 +1,8 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `16a4c1f`
-**Last updated:** 25 March 2026 (03:00 AEDT)
-**Updated by:** Perplexity Computer (QA audit session)
+**Pinned to:** `main` @ `8dde53b`
+**Last updated:** 25 March 2026
+**Updated by:** Perplexity Computer (QA audit)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -16,7 +16,7 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `16a4c1f` — READY |
+| Latest deploy | `main` @ `8dde53b` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -92,8 +92,11 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | `VERCEL_PROJECT_ID` | Vercel project identifier |
 | `BEEHIIV_API_KEY` | Newsletter subscriber management |
 | `BEEHIIV_PUBLICATION_ID` | AI Security Brief publication |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL (added 25 Mar) |
+| `NEXT_PUBLIC_SITE_NAME` | Site name for metadata (added 25 Mar) |
 
 Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-in `github.token` for GitHub Models API access.
+Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (confirmed absent 25 Mar).
 
 ## Operator Tasks (Manual)
 
