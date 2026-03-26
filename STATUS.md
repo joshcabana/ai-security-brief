@@ -16,7 +16,7 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `168f403` **Last updated:** 27 March 2026 **Updated by:** Perplexity Computer (newsletter scheduled, performance logger activated, final sign-off)
+**Pinned to:** `main` @ `0e6554e` **Last updated:** 27 March 2026 **Updated by:** Perplexity Computer (newsletter scheduled, performance logger activated, final sign-off)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -32,7 +32,7 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `168f403` — READY |
+| Latest deploy | `main` @ `0e6554e` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -171,7 +171,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |---|---|
-| `168f403` | docs: newsletter scheduled, performance logger confirmed, final STATUS.md update |
+| `0e6554e` | docs: newsletter scheduled, performance logger confirmed, final STATUS.md update |
 | `8172600` | docs: update STATUS.md SHA to 4988d59 after CI fix |
 | `4988d59` | fix: align affiliate-status.md programme names with intake doc (fixes CI drift check) |
 | `a919223` | docs: declare 100% project completion — all automated phases complete |
