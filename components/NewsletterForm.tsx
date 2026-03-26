@@ -170,7 +170,7 @@ export default function NewsletterForm({
 
       <p className="mt-2 text-xs" style={{ color: '#484f58' }}>
         No spam. Unsubscribe anytime. Powered by{' '}
-        <a href="https://beehiiv.com" target="_blank" rel="noopener noreferrer" style={{ color: '#30363d' }} className="hover:underline">Beehiiv</a>.
+        <a href="https://beehiiv.com" target="_blank" rel="noopener noreferrer" style={{ color: '#8b949e' }} className="hover:underline">Beehiiv</a>.
       </p>
     </form>
   );
