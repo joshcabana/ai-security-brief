@@ -30,8 +30,8 @@
 | Metric | Count |
 |--------|-------|
 | Published articles | 12 |
-| Analyst-grade | 2 (Bedrock/LangSmith/SGLang, CursorJack) |
-| Automation-grade | 7 (need editorial upgrade) |
+| Analyst-grade | 12 (all articles upgraded to analyst-grade as of 26 Mar 2026) |
+| Automation-grade | 0 |
 
 ## Open PRs
 
