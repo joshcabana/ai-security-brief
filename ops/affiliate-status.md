@@ -8,10 +8,9 @@ Updated: 27 March 2026 (synced with 26 Mar Perplexity Computer audit)
 
 | Programme | Status | Action Required | Last Updated |
 |---|---|---|---|
-| NordVPN | **Live** (`aff_id=143381`) | None — verified in 4 articles + `/tools` | 26 Mar 2026 |
-| Proton VPN | **Live** (CJ `url_id=471`) | None — verified on `/tools` | 26 Mar 2026 |
-| Proton Mail | **Live** (CJ `url_id=921`) | None — verified on `/tools` | 26 Mar 2026 |
-| PureVPN | **Live** (`affiliate_id=49384204`) | None — verified on `/tools` | 26 Mar 2026 |
+| NordVPN | **Live in production** (`aff_id=143381`) | None — verified in 4 articles + `/tools` | 26 Mar 2026 |
+| Proton | **Live in production** (CJ VPN `url_id=471`, Mail `url_id=921`) | None — both Proton VPN and Proton Mail verified on `/tools` | 26 Mar 2026 |
+| PureVPN | **Live in production** (`affiliate_id=49384204`) | None — verified on `/tools` | 26 Mar 2026 |
 | 1Password | Pending CJ approval (advertiser 5140517) | Wait only. Do NOT reapply. | 26 Mar 2026 |
 | Malwarebytes | Partnerize access confirmed (username: `aithreatbrief`), ticket #674504 open | Monitor ticket. Follow up by 2 Apr if no response. | 26 Mar 2026 |
 | Surfshark | Appeal sent to `affiliates@surfshark.com` | Wait 7 days, follow up if no response. | 26 Mar 2026 |
