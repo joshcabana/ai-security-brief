@@ -1,0 +1,31 @@
+TO: support@partnerize.com
+SUBJECT: Publisher Account Recovery - AI Security Brief (aithreatbrief.com)
+
+Hi Partnerize Support Team,
+
+I'm writing to request recovery of my publisher account associated with AI Security Brief (aithreatbrief.com).
+
+Publisher email: Cabana.Collections2025@gmail.com
+Site: https://aithreatbrief.com
+
+The issue I'm experiencing:
+
+My publisher account verification link has expired and I'm unable to complete account recovery through the standard password reset flow. The password reset process is currently blocked by an hCaptcha challenge that is not completing successfully on my end.
+
+I'd appreciate assistance to:
+1. Re-send a fresh verification/activation link to Cabana.Collections2025@gmail.com, OR
+2. Manually verify and reactivate the publisher account
+
+About the site:
+- AI Security Brief (aithreatbrief.com) is a cybersecurity intelligence publication covering AI-enabled threats and privacy tools
+- 12 published articles, verified with Google Search Console
+- Target audience: security professionals, IT teams, threat researchers
+- The account was originally created to access the Malwarebytes affiliate programme through your platform
+
+Please let me know what information you need from me to verify ownership and complete the account recovery.
+
+Thank you,
+Josh Cabana
+Founder, AI Security Brief
+https://aithreatbrief.com
+Cabana.Collections2025@gmail.com
