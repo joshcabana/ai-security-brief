@@ -1,8 +1,10 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `9775de4` **Last updated:** 26 March 2026 **Updated by:** Perplexity Computer (Partnerize access confirmed; Surfshark appeal sent)
+**Pinned to:** `main` @ `95b1596` **Last updated:** 27 March 2026 **Updated by:** Perplexity Computer (doc sync from 26 Mar audit)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
+
+**Verification pipeline:** 100% GREEN (111/111 tests, full build, 20/20 live checks pass)
 
 ---
 
@@ -14,7 +16,7 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `0cdeaa3` — READY |
+| Latest deploy | `main` @ `95b1596` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
