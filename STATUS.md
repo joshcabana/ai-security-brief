@@ -1,6 +1,6 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `0cdeaa3`  **Last updated:** 26 March 2026  **Updated by:** Perplexity Computer (full project audit + QA audit)
+**Pinned to:** `main` @ `9775de4` **Last updated:** 26 March 2026 **Updated by:** Perplexity Computer (Partnerize access confirmed; Surfshark appeal sent)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -9,7 +9,7 @@
 ## Site Status
 
 | Property | Value |
-|----------|-------|
+|---|---|
 | Live URL | https://aithreatbrief.com |
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
@@ -26,7 +26,7 @@
 ## Content
 
 | Metric | Count |
-|--------|-------|
+|---|---|
 | Published articles | 12 |
 | Analyst-grade | 12 (all articles upgraded to analyst-grade as of 26 Mar 2026) |
 | Automation-grade | 0 |
@@ -39,42 +39,44 @@ Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed
 
 ## Affiliate Status
 
-Source: [`ops/affiliate-status.md`](ops/affiliate-status.md) (last updated 18 March 2026)
+Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 18 March 2026)
 
 | Programme | Status |
-|-----------|--------|
-| NordVPN | **Live in production** (aff_id=143381) |
+|---|---|
+| NordVPN | **Live in production** (aff\_id=143381) |
 | Proton (VPN/Mail) | **Live in production** (CJ links via env vars) |
 | PureVPN | **Live in production** |
 | 1Password | Pending CJ approval (advertiser 5140517) — **do not reapply** |
-| Malwarebytes | Blocked externally; Partnerize support ticket submitted 26 Mar 2026 via help.phgsupport.com — awaiting response; hCaptcha blocks password reset |
-| Surfshark | Rejected (appeal path available) |
+| Malwarebytes | **Account access confirmed 26 Mar 2026** (username: aithreatbrief); awaiting Malwarebytes programme eligibility confirmation from Partnerize support (ticket #674504) |
+| Surfshark | Rejected; **appeal email sent 26 Mar 2026** to affiliates@surfshark.com — awaiting response |
 
 ## Automation Pipeline
 
 Five GitHub Actions workflows run weekly (Monday, Sydney time):
 
-1. `weekly-harvest.yml` — RSS feed collection
-2. `article-factory.yml` — Article draft generation (default model: `openai/gpt-4.1`)
-3. `newsletter-compiler.yml` — Newsletter draft (default model: `openai/gpt-4.1`)
-4. `seo-affiliate.yml` — SEO metadata + affiliate placeholders (default model: `openai/gpt-4o-mini`)
-5. `performance-logger.yml` — Performance log (default model: `openai/gpt-4o-mini`)
+* 1\. `weekly-harvest.yml` — RSS feed collection
+* 2\. `article-factory.yml` — Article draft generation (default model: `openai/gpt-4.1`)
+* 3\. `newsletter-compiler.yml` — Newsletter draft (default model: `openai/gpt-4.1`)
+* 4\. `seo-affiliate.yml` — SEO metadata + affiliate placeholders (default model: `openai/gpt-4o-mini`)
+* 5\. `performance-logger.yml` — Performance log (default model: `openai/gpt-4o-mini`)
 
 Pipeline outputs land as draft PRs on a content branch. Operator must review, upgrade if needed, and merge.
 
 ## Environment Variables
 
 ### Required (set in Vercel):
+
 | Variable | Purpose |
-|----------|---------|
+|---|---|
 | `BEEHIIV_API_KEY` | Newsletter subscriber management |
 | `BEEHIIV_PUBLICATION_ID` | AI Security Brief publication |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO |
 | `NEXT_PUBLIC_SITE_NAME` | Site name for metadata and verification checks |
 
 ### Optional (set to activate):
+
 | Variable | Purpose |
-|----------|---------|
+|---|---|
 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | Activates Plausible analytics (**set to `aithreatbrief.com`**) |
 | `AFFILIATE_NORDVPN` | NordVPN affiliate link |
 | `AFFILIATE_PUREVPN` | PureVPN affiliate link |
@@ -83,8 +85,9 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | `AFFILIATE_LINKS_PATH` | Override path for affiliate mapping files |
 
 ### GitHub Actions secrets:
+
 | Variable | Purpose |
-|----------|---------|
+|---|---|
 | `VERCEL_TOKEN` | Vercel deployment from CI |
 | `VERCEL_ORG_ID` | Vercel org identifier |
 | `VERCEL_PROJECT_ID` | Vercel project identifier |
@@ -93,8 +96,7 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL (added 25 Mar) |
 | `NEXT_PUBLIC_SITE_NAME` | Site name for metadata (added 25 Mar) |
 
-Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-in `github.token` for GitHub Models API access.
-Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (confirmed absent 25 Mar).
+Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-in `github.token` for GitHub Models API access. Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (confirmed absent 25 Mar).
 
 ## Operator Tasks (Manual)
 
@@ -103,7 +105,8 @@ Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (co
 - [x] Google Search Console verified (26 Mar 2026) + sitemap submitted
 - [x] Submit key URLs to Google Indexing API (homepage, /tools, blog articles)
 - [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
-- [x] Re-verify Malwarebytes Partnerize account — support ticket submitted 26 Mar 2026 via help.phgsupport.com (hCaptcha blocks direct recovery); awaiting Partnerize response
+- [x] Re-verify Malwarebytes Partnerize account — **access confirmed 26 Mar 2026**; awaiting programme eligibility response (ticket #674504)
+- [x] Send Surfshark affiliate appeal — **sent 26 Mar 2026** to affiliates@surfshark.com
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [ ] Weekly: transfer newsletter draft to Beehiiv and send
 
@@ -112,7 +115,7 @@ Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (co
 ### /tools page
 
 | Tool | Status | Tracking |
-|------|--------|----------|
+|---|---|---|
 | NordVPN | **Working** | `aff_id=143381` via HasOffers — resolves to NordVPN special offer page |
 | Proton VPN | **Working** | CJ link resolves through `go.getproton.me` with `url_id=471` |
 | Proton Mail | **Working** | CJ link resolves through `go.getproton.me` with `url_id=921` |
@@ -127,7 +130,7 @@ Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (co
 ### Blog articles (NordVPN tokens)
 
 | Article | Source state | Live render |
-|---------|-------|----------|
+|---|---|---|
 | `agentic-ai-security-risks` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
 | `australias-privacy-act-reforms-2026` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
 | `how-ai-is-being-used-to-launch-cyberattacks-in-2026` | `[NordVPN]([AFFILIATE:NORDVPN])` | **Working** — tracked `go.nordvpn.net` anchor verified live |
@@ -141,25 +144,23 @@ Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (co
 - Articles require exactly 5 keywords in frontmatter
 - `read_time` must match pattern `N min`
 - Content manifest: regenerate via `node scripts/content-manifest.mjs --write`
-- Affiliate tokens: `[AFFILIATE:CODE]` resolved from `AFFILIATE_<CODE>` env vars at runtime
+- Affiliate tokens: `[AFFILIATE:CODE]` resolved from `AFFILIATE_` env vars at runtime
 - Tailwind is 3.4.17 (not 4)
 - Timezone is Australia/Sydney (not America/Toronto)
 
 ## Commit History (Recent)
 
 | SHA | Description |
-|-----|-------------|
-| `16a4c1f` | fix(smoke): support multiple Privacy category articles in category pages |
-| `dd7f16e` | fix: newsletter issue number + STATUS.md deploy SHA |
-| `308ddf9` | ops: add marketing assets + lead magnet + newsletter draft |
-| `f974bf3` | content: add 2 buyer-intent comparison articles |
-| `affc89f` | feat: dedup fix, JSON-LD schema, affiliate count correction |
-| `49798f3` | Merge PR #39: render article affiliate tokens at runtime |
-| `6a05715` | Merge PR #38: add live affiliate verification and migrate NordVPN article links |
-| `eefad4a` | Document affiliate env var fixes in `STATUS.md` |
-| `7996feb` | Update `STATUS.md` with Plausible env var and affiliate audit results |
-| `79d4a86` | Plausible analytics (env-gated) + subscribe rate limiting |
+|---|---|
+| `9775de4` | docs: QA audit — fix STATUS.md header (SHA, duplicate lines), update Malwarebytes/Partnerize ticket status |
+| `d21ec5e` | ops: add update-completion-guide.py — marks Task 1 complete (newsletter published) |
+| `347cbcd` | ops: add PHG support portal URL to Partnerize template |
+| `7806e9b` | ops: fix Surfshark appeal email address to confirmed official |
+| `0cdeaa3` | docs: update content metrics — all 12 articles confirmed analyst-grade |
+| `2d46236` | docs: update STATUS.md session audit log |
+| `d2154d5` | ops: add templates/partnerize-email.txt for Malwarebytes account recovery |
+| `135ae64` | ops: add templates/surfshark-appeal.txt |
+| `7ac07b9` | ops: add marketing/haro-templates.md with 5 pitch templates |
+| `df9bb19` | ops: add marketing/social-posts.md with LinkedIn and Twitter/X launch posts |
 
----
-
-*Update this file whenever `main` advances. Pin the SHA in the header. External tooling should verify state against this file, not against prior conversation context.*
+Update this file whenever `main` advances. Pin the SHA in the header. External tooling should verify state against this file, not against prior conversation context.
