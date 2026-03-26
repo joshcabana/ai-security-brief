@@ -16,7 +16,7 @@ Project meets all automated objectives. Only manual step remaining: send newslet
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `627d7d3` **Last updated:** 27 March 2026 **Updated by:** Perplexity Computer (runbook execution: contrast fix, social share, doc sync, Phase 6 sign-off)
+**Pinned to:** `main` @ `4988d59` **Last updated:** 27 March 2026 **Updated by:** Perplexity Computer (runbook execution: contrast fix, social share, doc sync, Phase 6 sign-off)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -32,7 +32,7 @@ Project meets all automated objectives. Only manual step remaining: send newslet
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `627d7d3` — READY |
+| Latest deploy | `main` @ `4988d59` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -170,6 +170,8 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |---|---|
+| `4988d59` | fix: align affiliate-status.md programme names with intake doc (fixes CI drift check) |
+| `a919223` | docs: declare 100% project completion — all automated phases complete |
 | `627d7d3` | feat: add social sharing buttons (X + LinkedIn + Web Share API) to blog articles |
 | `bf1cba5` | fix: Beehiiv link contrast to #8b949e (WCAG AA compliant) |
 | `88781ee` | docs: sync STATUS.md + ops/affiliate-status.md with 26 Mar audit |
