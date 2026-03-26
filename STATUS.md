@@ -1,8 +1,6 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `d2154d5`  **Last updated:** 26 March 2026  **Updated by:** Perplexity Computer (full project audit)
-**Last updated:** 26 March 2026
-**Updated by:**== Perplexity Computer (full audit: site verified, marketing assets + templates created)
+**Pinned to:** `main` @ `0cdeaa3`  **Last updated:** 26 March 2026  **Updated by:** Perplexity Computer (full project audit + QA audit)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -16,7 +14,7 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `d2154d5` — READY |
+| Latest deploy | `main` @ `0cdeaa3` — READY |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -49,7 +47,7 @@ Source: [`ops/affiliate-status.md`](ops/affiliate-status.md) (last updated 18 Ma
 | Proton (VPN/Mail) | **Live in production** (CJ links via env vars) |
 | PureVPN | **Live in production** |
 | 1Password | Pending CJ approval (advertiser 5140517) — **do not reapply** |
-| Malwarebytes | Blocked externally; Google login says the account is not recognised and Partnerize password recovery is gated behind hCaptcha, so campaign state remains unconfirmed |
+| Malwarebytes | Blocked externally; Partnerize support ticket submitted 26 Mar 2026 via help.phgsupport.com — awaiting response; hCaptcha blocks password reset |
 | Surfshark | Rejected (appeal path available) |
 
 ## Automation Pipeline
@@ -105,7 +103,7 @@ Note: `SUPABASE_URL` and `SUPABASE_ANON_KEY` are NOT in secrets or variables (co
 - [x] Google Search Console verified (26 Mar 2026) + sitemap submitted
 - [x] Submit key URLs to Google Indexing API (homepage, /tools, blog articles)
 - [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
-- [ ] Re-verify Malwarebytes Partnerize account — blocked because Partnerize does not recognise the Google account and the reset flow is hCaptcha-gated
+- [x] Re-verify Malwarebytes Partnerize account — support ticket submitted 26 Mar 2026 via help.phgsupport.com (hCaptcha blocks direct recovery); awaiting Partnerize response
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [ ] Weekly: transfer newsletter draft to Beehiiv and send
 
