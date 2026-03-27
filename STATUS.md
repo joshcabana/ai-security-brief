@@ -1,6 +1,6 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `9775de4` **Last updated:** 26 March 2026 **Updated by:** Perplexity Computer (Partnerize access confirmed; Surfshark appeal sent)
+**Pinned to:** `origin/main` @ `95b1596` **Last updated:** 28 March 2026 **Updated by:** Codex (fresh local verification rerun; ops doc sync; newsletter link contrast fix)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -14,14 +14,14 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `0cdeaa3` — READY |
+| Latest deploy | Production live checks passed on 28 Mar 2026 (`https://aithreatbrief.com` responded READY) |
 | Newsletter | Beehiiv (subscriber management + delivery) |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | 10 req/min per IP on `/api/subscribe` |
-| Tests | 111/111 unit tests pass; `pnpm build` passes; `pnpm verify:live` passes against production |
+| Tests | Fresh local rerun on 28 Mar 2026: `pnpm check:content`, `pnpm typecheck`, `pnpm test:unit` (117 tests), `pnpm build`, `pnpm test:smoke`, `pnpm verify:ops:contract`, `pnpm verify:live`, and `python3 -m py_compile scripts/update-completion-guide.py` all passed in this worktree. `pnpm verify:ops` failed only because local runtime env vars are still missing. |
 
 ## Content
 
@@ -39,7 +39,7 @@ Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed
 
 ## Affiliate Status
 
-Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 18 March 2026)
+Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 26 March 2026)
 
 | Programme | Status |
 |---|---|
@@ -108,7 +108,13 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] Re-verify Malwarebytes Partnerize account — **access confirmed 26 Mar 2026**; awaiting programme eligibility response (ticket #674504)
 - [x] Send Surfshark affiliate appeal — **sent 26 Mar 2026** to affiliates@surfshark.com
 - [ ] Weekly: review and merge pipeline PRs (when created)
-- [ ] Weekly: transfer newsletter draft to Beehiiv and send
+- [ ] Send the first Beehiiv issue from `drafts/newsletter-2026-03-24.md`, then confirm `logs/performance-log.md` records real open and click metrics.
+
+## Verification Notes (28 March 2026)
+
+- Fresh verification ran in a clean worktree (`codex/full-health-closeout`) branched from `origin/main @ 95b1596`.
+- `pnpm verify:ops` failed only because this machine/worktree has no `.env.local` and no machine-level values for `BEEHIIV_API_KEY`, `BEEHIIV_PUBLICATION_ID`, `NEXT_PUBLIC_SITE_URL`, or `NEXT_PUBLIC_SITE_NAME`.
+- `scripts/update-completion-guide.py` now requires explicit operator-supplied Beehiiv publication evidence env vars before it will mark Task 1 complete, so the first send remains an external manual task until Beehiiv confirms it.
 
 ## Affiliate Link Audit (23 March 2026)
 
@@ -153,7 +159,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 | SHA | Description |
 |---|---|
 | `9775de4` | docs: QA audit — fix STATUS.md header (SHA, duplicate lines), update Malwarebytes/Partnerize ticket status |
-| `d21ec5e` | ops: add update-completion-guide.py — marks Task 1 complete (newsletter published) |
+| `d21ec5e` | ops: add update-completion-guide.py — updates Task 1 completion guide copy |
 | `347cbcd` | ops: add PHG support portal URL to Partnerize template |
 | `7806e9b` | ops: fix Surfshark appeal email address to confirmed official |
 | `0cdeaa3` | docs: update content metrics — all 12 articles confirmed analyst-grade |
