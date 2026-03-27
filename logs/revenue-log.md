@@ -24,8 +24,8 @@
 | Malwarebytes | Partnerize | Up to 40% | Pending (ticket #674504) | 26 Mar 2026 |
 | Surfshark | Direct | ~40% | Appeal pending | 26 Mar 2026 |
 | Heimdal Security | Awin (inactive) / Direct (needs biz email) | 50–75% | BLOCKED | 27 Mar 2026 |
-| StationX | Direct | 30–40% (5yr cookie) | NOT APPLIED | — |
-| Norton | CJ | 37.5–45% | NOT APPLIED | — |
+| StationX | Direct | 30–40% (5yr cookie) | Applied (contact form) | 27 Mar 2026 |
+| Norton - Asia Pacific | CJ (advertiser 6306534) | 20% | Applied (pending approval) | 27 Mar 2026 |
 
 ## Monthly KPI Tracker
 
