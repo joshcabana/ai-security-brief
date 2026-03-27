@@ -16,7 +16,7 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `e4a0643` **Last updated:** 27 March 2026 **Updated by:** Perplexity Computer (newsletter scheduled, performance logger activated, final sign-off)
+**Pinned to:** `main` @ `0ac08c2` **Last updated:** 27 March 2026 15:30 AEDT **Updated by:** Perplexity Computer (Beehiiv upgraded, payments configured, W-8BEN submitted, revenue activation complete)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -32,8 +32,8 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `e4a0643` — READY |
-| Newsletter | Beehiiv (subscriber management + delivery) |
+| Latest deploy | `main` @ `0ac08c2` — READY |
+| Newsletter | Beehiiv Scale plan ($49/mo, activated 27 Mar 2026) — referral program ON |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
@@ -125,6 +125,12 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
 - [x] Re-verify Malwarebytes Partnerize account — **access confirmed 26 Mar 2026**; awaiting programme eligibility response (ticket #674504)
 - [x] Send Surfshark affiliate appeal — **sent 26 Mar 2026** to affiliates@surfshark.com
+- [x] Beehiiv upgraded to Scale plan ($49/mo) — **27 Mar 2026**
+- [x] Beehiiv Referral Program enabled ("Invite 3 → bonus deep-dive") — **27 Mar 2026**
+- [x] NordVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
+- [x] CJ Affiliate payment configured (direct deposit to Commonwealth Bank) — pre-existing
+- [x] CJ W-8BEN-E resubmitted with Australian TFN — **27 Mar 2026**
+- [x] PureVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [x] Transfer newsletter issue #1 to Beehiiv — **scheduled Mon 30 Mar 2026 1:00 PM AEDT**
 - [ ] Weekly: transfer newsletter draft to Beehiiv and send
@@ -171,6 +177,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |---|---|
+| `0ac08c2` | ops: add revenue-log.md KPI tracker for affiliate monetisation |
 | `e4a0643` | docs: newsletter scheduled, performance logger confirmed, final STATUS.md update |
 | `8172600` | docs: update STATUS.md SHA to 4988d59 after CI fix |
 | `4988d59` | fix: align affiliate-status.md programme names with intake doc (fixes CI drift check) |

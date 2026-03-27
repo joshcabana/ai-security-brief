@@ -6,10 +6,10 @@
 
 | Network | Payment Method | Status | Date Configured |
 |---------|---------------|--------|-----------------|
-| NordVPN (HasOffers) | — | NOT CONFIGURED | — |
-| CJ Affiliate (Proton, 1Password) | — | NOT CONFIGURED | — |
-| CJ W-8BEN Tax Form | — | NOT SUBMITTED | — |
-| PureVPN (direct) | — | NOT CONFIGURED | — |
+| NordVPN (HasOffers) | Wire → Commonwealth Bank (BSB 062900) | CONFIGURED | 27 Mar 2026 |
+| CJ Affiliate (Proton, 1Password) | Direct Deposit → Commonwealth Bank | CONFIGURED | Pre-existing |
+| CJ W-8BEN-E Tax Form | Australian TFN submitted | SUBMITTED (27 Mar 2026) | 27 Mar 2026 |
+| PureVPN (direct) | Wire → Commonwealth Bank (BSB 062900) | CONFIGURED ($500 min wire / $100 PayPal) | 27 Mar 2026 |
 | Commission Factory (AU) | — | NOT REGISTERED | — |
 | Amazon Associates AU | — | NOT REGISTERED | — |
 
@@ -63,7 +63,10 @@
 
 ## Notes
 
-- Revenue is $0 until payment methods are configured on all networks.
-- CJ Affiliate will withhold 30% backup tax until W-8BEN is approved.
-- PureVPN requires manual payout request between 1st–10th each month.
+- All three active networks (NordVPN, CJ, PureVPN) now have payment configured as of 27 Mar 2026.
+- CJ W-8BEN-E submitted 27 Mar 2026 — allow 24–48h for approval. Until approved, CJ may withhold 30% backup tax.
+- PureVPN requires manual payout request between 1st–10th each month. Wire minimum is $500; PayPal minimum is $100.
 - Recurring commissions (NordVPN 30%, Proton 30%, PureVPN 35%) compound monthly after first conversion.
+- Beehiiv upgraded to Scale ($49/mo) on 27 Mar 2026 — referral program enabled.
+- NordVPN dashboard shows 10 clicks (last 7 days) as of 27 Mar 2026 — first tracked activity.
+- PureVPN dashboard shows 15 clicks (last 30 days) as of 27 Mar 2026.
