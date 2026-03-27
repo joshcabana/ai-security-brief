@@ -16,7 +16,7 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `3e2b353` **Last updated:** 27 March 2026 18:00 AEDT **Updated by:** Perplexity Computer (QA audit: affiliate tokens fixed, documentation synced, full verification pass)
+**Pinned to:** `main` @ `b0a0a52` **Last updated:** 27 March 2026 18:00 AEDT **Updated by:** Perplexity Computer (QA audit: affiliate tokens fixed, documentation synced, full verification pass)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -32,7 +32,7 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `3e2b353` — READY |
+| Latest deploy | `main` @ `b0a0a52` — READY |
 | Newsletter | Beehiiv Scale plan ($49/mo, activated 27 Mar 2026) — referral program ON |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
