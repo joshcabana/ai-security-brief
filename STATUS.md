@@ -1,6 +1,6 @@
 # AI Security Brief — Project Status
 
-**Pinned to:** `origin/main` @ `95b1596` **Last updated:** 28 March 2026 **Updated by:** Codex (fresh local verification rerun; ops doc sync; newsletter link contrast fix)
+**Pinned to:** `origin/main` @ `95b1596` **Last updated:** 28 March 2026 **Updated by:** Codex (fresh audit rerun; security dependency hardening; status sync)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
@@ -21,7 +21,7 @@
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | 10 req/min per IP on `/api/subscribe` |
-| Tests | Fresh local rerun on 28 Mar 2026: `pnpm check:content`, `pnpm typecheck`, `pnpm test:unit` (117 tests), `pnpm build`, `pnpm test:smoke`, `pnpm verify:ops:contract`, `pnpm verify:live`, and `python3 -m py_compile scripts/update-completion-guide.py` all passed in this worktree. `pnpm verify:ops` failed only because local runtime env vars are still missing. |
+| Tests | Fresh local rerun on 28 Mar 2026: `pnpm lint`, `pnpm check:content`, `pnpm typecheck`, `pnpm test:unit` (118 tests), `pnpm build`, `pnpm test:smoke`, `pnpm verify:release`, `pnpm verify:ops:contract`, `pnpm verify:live`, `pnpm audit --prod`, and `python3 -m py_compile scripts/update-completion-guide.py` all passed in this worktree. `pnpm verify:ops` failed only because local runtime env vars are still missing. |
 
 ## Content
 
@@ -33,7 +33,7 @@
 
 ## Open PRs
 
-No open PRs.
+Draft PR #44 is open against `main` from `codex/full-health-closeout`: `fix(closeout): Finalize full health closeout`.
 
 Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed without merge), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
 
@@ -113,6 +113,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 ## Verification Notes (28 March 2026)
 
 - Fresh verification ran in a clean worktree (`codex/full-health-closeout`) branched from `origin/main @ 95b1596`.
+- Branch audit hardening upgraded `next` and `eslint-config-next` to `15.5.14` and `fast-xml-parser` to `^5.5.7`; `pnpm audit --prod` now reports no known vulnerabilities in this worktree.
 - `pnpm verify:ops` failed only because this machine/worktree has no `.env.local` and no machine-level values for `BEEHIIV_API_KEY`, `BEEHIIV_PUBLICATION_ID`, `NEXT_PUBLIC_SITE_URL`, or `NEXT_PUBLIC_SITE_NAME`.
 - `scripts/update-completion-guide.py` now requires explicit operator-supplied Beehiiv publication evidence env vars before it will mark Task 1 complete, so the first send remains an external manual task until Beehiiv confirms it.
 
