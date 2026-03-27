@@ -80,7 +80,7 @@
 
 | Programme | Expected Commission | Network | Priority |
 |-----------|-------------------|---------|----------|
-| Heimdal Security | 50–75% | ShareASale / CJ | HIGH |
+| Heimdal Security | 50–75% | Awin (INACTIVE) / Direct (requires biz email) | BLOCKED |
 | StationX | 30–40% (5-year cookie!) | Direct | HIGH |
 | Norton | 37.5–45% | CJ / GenDigital | MEDIUM |
 
