@@ -28,6 +28,25 @@ function resolvePath(p) {
   return isAbsolute(p) ? p : resolve(process.cwd(), p)
 }
 
+function resolveRepositoryLicense() {
+  const licensePath = resolvePath('LICENSE')
+
+  if (!existsSync(licensePath)) {
+    return {
+      license_spdx: null,
+      source_file: null,
+    }
+  }
+
+  const licenseSource = readFileSync(licensePath, 'utf8')
+  const licenseSpdx = /^MIT License/m.test(licenseSource) ? 'MIT' : null
+
+  return {
+    license_spdx: licenseSpdx,
+    source_file: 'LICENSE',
+  }
+}
+
 // ── CI environment ──────────────────────────────────────────────────────────
 const ci = {
   run_id:        process.env.GITHUB_RUN_ID        || null,
@@ -49,6 +68,7 @@ const deploy = {
   vercel_fallback: 'https://ai-security-brief.vercel.app',
   deploy_skipped:  process.env.DEPLOY_SKIPPED === 'true' || false,
 }
+const legal = resolveRepositoryLicense()
 
 // ── verify-live report ───────────────────────────────────────────────────────
 const liveReportPath = arg('live-report')
@@ -70,6 +90,7 @@ const status = {
   schema_version:  '1',
   ci,
   deploy,
+  legal,
   verify_live:     liveReport,
   overall_ok:      liveReport?.ok === true,
   redirects: {
@@ -111,6 +132,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
     `| run | [${ci.run_number || 'n/a'}](${ci.run_url || '#'}) |`,
     `| production_url | ${deploy.production_url} |`,
     `| deploy_skipped | ${deploy.deploy_skipped} |`,
+    `| license | ${legal.license_spdx || 'n/a'} |`,
     `| verify_live.ok | ${liveReport?.ok ?? 'n/a'} |`,
     `| overall_ok | **${status.overall_ok}** |`,
     '',

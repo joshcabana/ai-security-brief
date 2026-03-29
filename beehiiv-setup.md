@@ -116,6 +116,91 @@ Optional: create an embedded Beehiiv form later if you want a hosted fallback, b
 3. Schedule or publish
 4. Verify tracking is working in Beehiiv analytics
 
+## First Live Send and Metrics Runbook
+
+Use this runbook to close the remaining operator checklist after the first Beehiiv issue is scheduled or published.
+
+### 1. Verify local runtime readiness
+
+Create or update `.env.local` with the live Beehiiv and site values:
+
+```bash
+cat > .env.local <<'EOF'
+BEEHIIV_API_KEY=your-beehiiv-api-key
+BEEHIIV_PUBLICATION_ID=pub_your-publication-id
+NEXT_PUBLIC_SITE_URL=https://aithreatbrief.com
+NEXT_PUBLIC_SITE_NAME=AI Security Brief
+EOF
+chmod 600 .env.local
+npx pnpm verify:ops
+```
+
+Expected result: `verify:ops` reports all required runtime variables as set. If it fails, stop and fix the missing variable before publishing.
+
+### 2. Transfer the current newsletter draft into Beehiiv
+
+Source draft for issue #1: `drafts/newsletter-2026-03-24.md`
+
+1. Open Beehiiv and create or confirm the current post in the AI Security Brief publication.
+2. Copy the draft title, subject line, preview text, and body from `drafts/newsletter-2026-03-24.md`.
+3. Send a test email to yourself.
+4. Verify the article links, unsubscribe footer, and `/tools` CTA render correctly.
+5. Schedule or publish the post to Email and Web.
+6. Copy the resulting Beehiiv post URL in the form `https://app.beehiiv.com/posts/<post-id>`.
+
+Evidence you need from this step:
+
+- Beehiiv post URL
+- Published date in plain language, for example `30 March 2026`
+- Final post title exactly as published
+
+### 3. Apply publication evidence to the completion guide
+
+After the post is live, export the Beehiiv evidence and run the completion-guide updater:
+
+```bash
+export BEEHIIV_PUBLICATION_URL='https://app.beehiiv.com/posts/<post-id>'
+export BEEHIIV_PUBLISHED_AT='30 March 2026'
+export BEEHIIV_POST_TITLE='Your exact Beehiiv post title'
+python3 scripts/update-completion-guide.py
+```
+
+Expected result: the script updates the completion guide and prints `Publication evidence applied successfully.`
+
+### 4. Wait for real metrics, then refresh the performance log
+
+Do not log placeholder numbers. Wait until Beehiiv shows non-empty open and click metrics for the published post.
+
+Recommended path: trigger the existing GitHub workflow so the log update follows the same production automation path.
+
+GitHub CLI:
+
+```bash
+gh workflow run "Performance Logger" --ref main -f run_date=YYYY-MM-DD -f dry_run=false
+gh run list --workflow "Performance Logger" --limit 1
+gh run watch <run-id>
+```
+
+GitHub UI:
+
+1. Open the `Performance Logger` workflow in GitHub Actions.
+2. Click `Run workflow`.
+3. Set `run_date` to the Australia/Sydney date you want recorded in `logs/performance-log.md`.
+4. Leave `dry_run` as `false`.
+5. Run the workflow and wait for completion.
+
+Expected result: the workflow opens or updates the weekly performance PR with a real row in `logs/performance-log.md` showing subscribers, open rate, click rate, and top link.
+
+### 5. Verify the closeout evidence
+
+Confirm all of the following before marking the first-send checklist complete:
+
+1. `npx pnpm verify:ops` passes locally.
+2. The Beehiiv post is live on Email and Web.
+3. `scripts/update-completion-guide.py` succeeded with real publication evidence.
+4. `logs/performance-log.md` contains a row with real metrics rather than `—`.
+5. `STATUS.md` can be updated truthfully to mark the first-send task complete.
+
 ## API Key Storage
 
 Add to your `.env.local` file or hosting provider environment:

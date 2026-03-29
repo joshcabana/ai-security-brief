@@ -1,26 +1,22 @@
 ## 100% Completion Achieved
 
-Date: 27 March 2026
+Date: 29 March 2026
 
-- Phase 1 verification pipeline: 100% GREEN (111/111 tests, full build, 20/20 live checks)
-- Phase 2 docs synced (STATUS.md + ops/affiliate-status.md)
-- Phase 3 first Beehiiv newsletter: **SCHEDULED** in Beehiiv for Monday 30 March 2026 at 1:00 PM AEDT (2 free subscribers)
-- Phase 4 Beehiiv contrast fixed (`#30363d` → `#8b949e`, WCAG AA compliant)
-- Phase 5 social sharing buttons added (X + LinkedIn + Web Share API)
-- Live site: [https://aithreatbrief.com](https://aithreatbrief.com) fully aligned
-- All tests, build, smoke tests, and live verification passing
-
-Project meets all automated objectives. Newsletter issue #1 is scheduled for delivery on Monday 30 March 2026. Performance logger workflow ran (run 23597905337) but correctly skipped metrics collection — scheduled for Sunday runs, first metrics will appear after the newsletter is delivered. Next automatic run: Sunday 5 April 2026.
+- `main` is GREEN at `9f47de4` after merges of PR #44 (security hardening) and PR #45 (workflow runtime hardening)
+- Post-merge `Verify and Deploy` runs `23699328485` and `23699603955` both passed `verify`, `deploy`, `verify_live`, and `status`
+- Live production checks passed again on 29 March 2026: `/` returned `200`, same-site invalid subscribe returned `400`, and the removed cheatsheet asset returned `404`
+- Signup protection is live: same-site request validation plus Upstash-backed distributed rate limiting at 5 req/min per IP
+- First Beehiiv issue remains scheduled for Monday 30 March 2026 at 1:00 PM AEDT; first real metrics will appear after delivery
 
 ---
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `origin/main` @ `196e49c` **Last updated:** 29 March 2026 **Updated by:** Codex (merge sync; security hardening branch verification)
+**Pinned to:** `origin/main` @ `9f47de4` **Last updated:** 29 March 2026 **Updated by:** Codex (post-merge truth sync; docs and status guardrails)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
-**Verification pipeline:** production remains GREEN on `main`; branch hardening rerun is GREEN (`npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, `npx pnpm test:smoke`).
+**Verification pipeline:** production remains GREEN on `main`; `Verify and Deploy` runs `23699328485` and `23699603955` both completed successfully after the PR #44 and PR #45 merges.
 
 ---
 
@@ -32,14 +28,15 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | `main` @ `b0a0a52` — READY |
+| Repository license | MIT (`LICENSE`) |
+| Latest deploy | `main` @ `9f47de4` — READY (`Verify and Deploy` run `23699603955`) |
 | Newsletter | Beehiiv Scale plan ($49/mo, activated 27 Mar 2026) — referral program ON |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
-| Rate limiting | Live `main`: 10 req/min per IP on `/api/subscribe`; draft PR #44 upgrades this to Upstash-backed distributed 5 req/min limiting before merge. |
-| Tests | Production verification on 27-28 Mar 2026 remained GREEN (`pnpm verify:live` + live checks). Branch hardening rerun on 29 Mar 2026 passed `npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, and `npx pnpm test:smoke`. |
+| Rate limiting | Upstash-backed distributed 5 req/min per IP on `/api/subscribe` |
+| Tests | Post-merge `main` runs `23699328485` and `23699603955` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 29 Mar 2026 returned `200 /`, `400` for same-site invalid subscribe, and `404 /ai-threat-landscape-2026-cheatsheet.pdf`. |
 
 ## Content
 
@@ -51,9 +48,11 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 
 ## Open PRs
 
-Draft PR #44 is open against `main` from `codex/full-health-closeout`: `fix(closeout): Finalize branch hardening`.
+None.
 
-Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed without merge), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
+Most recent merges:
+- #45 — `ci(actions): Upgrade pnpm setup to v5`
+- #44 — `fix(closeout): Finalize branch hardening`
 
 ## Affiliate Status
 
@@ -133,14 +132,14 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] PureVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [x] Transfer newsletter issue #1 to Beehiiv — **scheduled Mon 30 Mar 2026 1:00 PM AEDT**
-- [ ] Weekly: transfer newsletter draft to Beehiiv and send
+- [ ] Weekly: transfer newsletter draft to Beehiiv and send. Follow `beehiiv-setup.md` → `First Live Send and Metrics Runbook`.
 
 ## Verification Notes (29 March 2026)
 
-- Draft PR #44 now includes Upstash-backed distributed signup rate limiting, RSS sanitization before any LLM exposure, guarded `<TEXT>` harvest prompts, HSTS preload, and removal of the public lead magnet PDF.
-- Branch smoke coverage now verifies `/ai-threat-landscape-2026-cheatsheet.pdf` returns `404` and the sixth same-IP subscribe attempt returns `429`.
-- Local branch verification passed on 29 Mar 2026: `npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, and `npx pnpm test:smoke`.
-- `next build` still prints expected Upstash env warnings in worktrees without live `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` values because `Redis.fromEnv()` is evaluated when the route module loads.
+- PR #44 merged into `main` as `b6d322c35707ab53b03058dfd5d7c38f7b892276`; the shipped fix validates subscribe input before Beehiiv or Upstash readiness checks and keeps the removed cheatsheet asset at `404`.
+- PR #45 merged into `main` as `9f47de4e05d96cabaac033fef158dd07793af064`; all workflows now use `pnpm/action-setup@v5`, removing the deprecated action runtime from CI.
+- Post-merge `Verify and Deploy` runs `23699328485` and `23699603955` both completed successfully on `main`.
+- Live spot checks on 29 March 2026 confirmed `GET /` returned `200`, same-site `POST /api/subscribe` with an invalid email returned `400`, and `GET /ai-threat-landscape-2026-cheatsheet.pdf` returned `404`.
 
 ## Affiliate Link Audit (23 March 2026)
 
@@ -184,6 +183,10 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |---|---|
+| `9f47de4` | Merge pull request #45 from joshcabana/codex/actions-node24 |
+| `21178be` | ci(actions): Upgrade pnpm setup to v5 |
+| `b6d322c` | Merge pull request #44 from joshcabana/codex/full-health-closeout |
+| `c59ec9b` | fix(ci): Validate subscribe requests before env checks |
 | `bda8fac` | fix(security): Harden signup and feed ingestion |
 | `0ac08c2` | ops: add revenue-log.md KPI tracker for affiliate monetisation |
 | `e4a0643` | docs: newsletter scheduled, performance logger confirmed, final STATUS.md update |

@@ -156,6 +156,14 @@ pnpm verify:release
 
 ### Review-Ready QA
 
+Run the canonical local PR gate:
+
+```bash
+pnpm verify:pr
+```
+
+For targeted reruns or when you want the failing sub-step isolated:
+
 ```bash
 pnpm lint
 pnpm verify:release
@@ -164,6 +172,7 @@ pnpm verify:live
 pnpm audit --prod
 ```
 
+- `pnpm verify:pr` runs `pnpm lint`, `pnpm verify:release`, `pnpm verify:ops:contract`, and `pnpm audit --prod` in sequence.
 - `pnpm lint` runs ESLint across the repository source files.
 - `pnpm verify:release` runs the full local content, type, unit-test, build, and smoke-test gate.
 - `pnpm verify:ops:contract` verifies that `.env.example` still matches the required runtime contract.
@@ -251,5 +260,4 @@ ai-security-brief/
 
 ## License
 
-No open-source license file is currently published in this repository. Until one is added, treat the code
-and content as proprietary and all rights reserved.
+This repository publishes an [MIT License](LICENSE).
