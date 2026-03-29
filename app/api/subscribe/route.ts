@@ -339,6 +339,44 @@ function getUpstreamMessage(upstreamPayload: unknown): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  let payload: SubscribeRequestPayload | null = null;
+
+  try {
+    payload = (await request.json()) as SubscribeRequestPayload;
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: 'The signup request body was invalid JSON.' },
+      { status: 400 },
+    );
+  }
+
+  const email = payload?.email?.trim().toLowerCase();
+  const source = normalizeSource(payload?.source);
+  const honeypotFilled = hasFilledHoneypot(payload?.website);
+
+  if (!isVerifiedSignupRequest(request)) {
+    logRequestRejection('origin_mismatch', request, source);
+    return NextResponse.json(
+      { ok: false, message: INVALID_REQUEST_MESSAGE },
+      { status: 403 },
+    );
+  }
+
+  if (honeypotFilled) {
+    logRequestRejection('honeypot_filled', request, source);
+    return NextResponse.json(
+      { ok: false, message: INVALID_REQUEST_MESSAGE },
+      { status: 400 },
+    );
+  }
+
+  if (!email || !EMAIL_REGEX.test(email)) {
+    return NextResponse.json(
+      { ok: false, message: 'Enter a valid email address to subscribe.' },
+      { status: 400 },
+    );
+  }
+
   const { apiKey, publicationId, apiBaseUrl, configured } = getBeehiivConfig();
 
   if (!configured || !apiKey || !publicationId) {
@@ -389,44 +427,6 @@ export async function POST(request: Request): Promise<Response> {
           'Retry-After': getRetryAfterSeconds(rateLimitResult.reset),
         },
       },
-    );
-  }
-
-  let payload: SubscribeRequestPayload | null = null;
-
-  try {
-    payload = (await request.json()) as SubscribeRequestPayload;
-  } catch {
-    return NextResponse.json(
-      { ok: false, message: 'The signup request body was invalid JSON.' },
-      { status: 400 },
-    );
-  }
-
-  const email = payload?.email?.trim().toLowerCase();
-  const source = normalizeSource(payload?.source);
-  const honeypotFilled = hasFilledHoneypot(payload?.website);
-
-  if (!isVerifiedSignupRequest(request)) {
-    logRequestRejection('origin_mismatch', request, source);
-    return NextResponse.json(
-      { ok: false, message: INVALID_REQUEST_MESSAGE },
-      { status: 403 },
-    );
-  }
-
-  if (honeypotFilled) {
-    logRequestRejection('honeypot_filled', request, source);
-    return NextResponse.json(
-      { ok: false, message: INVALID_REQUEST_MESSAGE },
-      { status: 400 },
-    );
-  }
-
-  if (!email || !EMAIL_REGEX.test(email)) {
-    return NextResponse.json(
-      { ok: false, message: 'Enter a valid email address to subscribe.' },
-      { status: 400 },
     );
   }
 

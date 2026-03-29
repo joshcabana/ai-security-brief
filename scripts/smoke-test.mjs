@@ -321,6 +321,10 @@ async function main() {
 
   try {
     await waitForServer(`http://127.0.0.1:${coldStartPort}/`, 'cold-start production server');
+    const coldStartSameSiteHeaders = {
+      'Content-Type': 'application/json',
+      origin: `http://127.0.0.1:${coldStartPort}`,
+    };
 
     const homeResponse = await fetch(`http://127.0.0.1:${coldStartPort}/`);
     assert.equal(homeResponse.status, 200);
@@ -365,7 +369,7 @@ async function main() {
 
     const missingConfigResult = await requestJson(`http://127.0.0.1:${coldStartPort}/api/subscribe`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: coldStartSameSiteHeaders,
       body: JSON.stringify({ email: 'reader@example.com' }),
     });
     assert.equal(missingConfigResult.response.status, 503);
