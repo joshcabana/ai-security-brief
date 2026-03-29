@@ -2,29 +2,34 @@
 
 Public operational status for affiliate programme applications.
 
-Updated: 26 March 2026
+Updated: 27 March 2026 16:30 AEDT (payments configured, new programmes applied)
 
 ## Current status
 
-| Programme | Status | Notes |
-| --- | --- | --- |
-| NordVPN | **Live in production** | Tracked link deployed in 4 articles + `/tools` via PR #24 (`aff_id=143381`) |
-| PureVPN | **Live in production** | Tracked link deployed in OpenClaw article + `/tools` via PR #25 (`affiliate_id=49384204`) |
-| 1Password / CJ | **Application pending advertiser approval** | CJ dashboard verified live on 18 March 2026 (CID 7901635). 1Password (advertiser 5140517) is in Pending Applications. Do not reapply. Email confirmation is no longer an active blocker. |
-| Malwarebytes | Account access confirmed, programme eligibility pending | Partnerize access for `aithreatbrief` was confirmed on 26 March 2026. Awaiting Malwarebytes programme eligibility confirmation from Partnerize support (ticket #674504). hive0163 article slot reserved. |
-| Proton | **Live in production** | CJ links deployed on `/tools` via runtime env vars (`AFFILIATE_PROTON_VPN`, `AFFILIATE_PROTON_MAIL`). CJ advertiser 5227916 provides 29 live links. Direct Proton Partners approval also available as fallback path. |
-| Surfshark | Rejected, appeal sent | A rejection email landed after signup. An appeal with live-site evidence was sent on 26 March 2026 to `affiliates@surfshark.com`. Awaiting response. |
-| CyberGhost | Rejected at login gate, support follow-up sent | Kape signup completed, immediate login failed with `Cannot login. Account rejected.`, and a follow-up was sent to `updates@cyberghost.ro` |
-| Jasper AI | No public signup path, enquiry sent | Public affiliate host is not usable and an availability enquiry was sent to `affiliates@jasper.ai` |
+| Programme | Status | Action Required | Last Updated |
+|---|---|---|---|
+| NordVPN | **Live in production** (`aff_id=143381`) | None — verified in 4 articles + `/tools` | 26 Mar 2026 |
+| Proton | **Live in production** (CJ VPN `url_id=471`, Mail `url_id=921`) | None — both Proton VPN and Proton Mail verified on `/tools` | 26 Mar 2026 |
+| PureVPN | **Live in production** (`affiliate_id=49384204`) | None — verified on `/tools` | 26 Mar 2026 |
+| 1Password | Pending CJ approval (advertiser 5140517) | Wait only. Do NOT reapply. | 26 Mar 2026 |
+| Malwarebytes | Partnerize access confirmed (username: `aithreatbrief`), ticket #674504 open | Monitor ticket. Follow up by 2 Apr if no response. | 26 Mar 2026 |
+| Surfshark | Appeal sent to `affiliates@surfshark.com` | Wait 7 days, follow up if no response. | 26 Mar 2026 |
+| CyberGhost | Rejected | Follow up via `updates@cyberghost.ro` or de-scope after 14 days. | 26 Mar 2026 |
+| Jasper AI | No public signup path | De-scope (low priority). | 26 Mar 2026 |
+| Norton - Asia Pacific | **Applied on CJ** (advertiser 6306534) | Pending manual approval. 20% commission, 7-day EPC ~$132. | 27 Mar 2026 |
+| StationX | **Contact form submitted** | Awaiting response. 30–40% commission, 1800-day cookie. | 27 Mar 2026 |
+| Heimdal Security | BLOCKED | Awin profile inactive. Direct form requires business email. Revisit if biz email set up. | 27 Mar 2026 |
 
 ## Next actions
 
-1. **1Password: wait for CJ advertiser approval.** Application is already pending (advertiser 5140517). Do not reapply. Post-approval link path saved locally: `/member/7566978/publisher/links/search/#!advertiserIds=5140517`.
-2. Monitor Partnerize ticket `#674504` and confirm Malwarebytes programme eligibility once support responds.
-3. Follow up on PureVPN PAP portal access (PAP credentials are needed for commission reporting, not for link tracking which is already live).
-4. Wait for the Surfshark appeal response before deciding whether to reapply or de-prioritise the programme.
-5. Record a go / no-go decision for CyberGhost and Jasper if no useful reply lands after the current follow-up window.
-6. Watch Gmail for 1Password approval, Malwarebytes eligibility confirmation, Surfshark appeal updates, and any CyberGhost / Jasper replies.
+1. **1Password:** Wait for CJ advertiser approval (advertiser 5140517). Do not reapply. Post-approval link path: `/member/7566978/publisher/links/search/#!advertiserIds=5140517`.
+2. **Malwarebytes:** Monitor Partnerize ticket #674504 for programme eligibility confirmation. Follow up by 2 April 2026 if no response.
+3. **Surfshark:** Appeal sent 26 Mar 2026. If no response by 2 Apr, follow up or de-scope.
+4. **CyberGhost / Jasper:** De-scope if no reply by 9 April 2026.
+5. Watch Gmail (cabana.collections2025@gmail.com) for approval notifications from 1Password, Malwarebytes, Surfshark, Norton, StationX.
+6. **Norton:** Applied 27 Mar via CJ. Manual approval. Monitor CJ dashboard.
+7. **StationX:** Contact form submitted 27 Mar. If no response by 3 Apr, follow up at contact@stationx.net.
+8. **Heimdal:** Blocked — revisit if/when a business email (e.g. joshua@aithreatbrief.com) is configured.
 
 ## Security rules
 
