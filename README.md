@@ -154,6 +154,22 @@ pnpm verify:release
 
 `pnpm test:smoke` starts the production server, checks the key public routes, and exercises the subscribe API against a mock Beehiiv server.
 
+### Review-Ready QA
+
+```bash
+pnpm lint
+pnpm verify:release
+pnpm verify:ops:contract
+pnpm verify:live
+pnpm audit --prod
+```
+
+- `pnpm lint` runs ESLint across the repository source files.
+- `pnpm verify:release` runs the full local content, type, unit-test, build, and smoke-test gate.
+- `pnpm verify:ops:contract` verifies that `.env.example` still matches the required runtime contract.
+- `pnpm verify:live` validates the production deployment contract against `https://aithreatbrief.com`.
+- `pnpm audit --prod` checks production dependencies for known vulnerabilities.
+
 ### Ops Verification
 
 ```bash

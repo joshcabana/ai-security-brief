@@ -12,6 +12,10 @@ test('security headers expose the expected baseline response protections', () =>
   assert.deepEqual(getSecurityHeaders(), SECURITY_HEADERS);
   assert.equal(getExpectedSecurityHeaderValue('X-Frame-Options'), 'DENY');
   assert.equal(getExpectedSecurityHeaderValue('Referrer-Policy'), 'strict-origin-when-cross-origin');
+  assert.equal(
+    getExpectedSecurityHeaderValue('Strict-Transport-Security'),
+    'max-age=63072000; includeSubDomains; preload',
+  );
   assert.equal(getExpectedSecurityHeaderValue('Unknown-Header'), null);
 });
 

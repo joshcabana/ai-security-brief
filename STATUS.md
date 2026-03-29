@@ -16,11 +16,11 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `main` @ `b0a0a52` **Last updated:** 27 March 2026 18:00 AEDT **Updated by:** Perplexity Computer (QA audit: affiliate tokens fixed, documentation synced, full verification pass)
+**Pinned to:** `origin/main` @ `196e49c` **Last updated:** 29 March 2026 **Updated by:** Codex (merge sync; security hardening branch verification)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
-**Verification pipeline:** 100% GREEN (111/111 tests, full build, 20/20 live checks pass)
+**Verification pipeline:** production remains GREEN on `main`; branch hardening rerun is GREEN (`npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, `npx pnpm test:smoke`).
 
 ---
 
@@ -38,8 +38,8 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
-| Rate limiting | 10 req/min per IP on `/api/subscribe` |
-| Tests | 111/111 unit tests pass; `pnpm build` passes; `pnpm verify:live` passes against production |
+| Rate limiting | Live `main`: 10 req/min per IP on `/api/subscribe`; draft PR #44 upgrades this to Upstash-backed distributed 5 req/min limiting before merge. |
+| Tests | Production verification on 27-28 Mar 2026 remained GREEN (`pnpm verify:live` + live checks). Branch hardening rerun on 29 Mar 2026 passed `npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, and `npx pnpm test:smoke`. |
 
 ## Content
 
@@ -51,13 +51,13 @@ Project meets all automated objectives. Newsletter issue #1 is scheduled for del
 
 ## Open PRs
 
-No open PRs.
+Draft PR #44 is open against `main` from `codex/full-health-closeout`: `fix(closeout): Finalize branch hardening`.
 
 Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed without merge), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
 
 ## Affiliate Status
 
-Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 18 March 2026)
+Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 27 March 2026)
 
 | Programme | Status |
 |---|---|
@@ -135,6 +135,13 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] Transfer newsletter issue #1 to Beehiiv — **scheduled Mon 30 Mar 2026 1:00 PM AEDT**
 - [ ] Weekly: transfer newsletter draft to Beehiiv and send
 
+## Verification Notes (29 March 2026)
+
+- Draft PR #44 now includes Upstash-backed distributed signup rate limiting, RSS sanitization before any LLM exposure, guarded `<TEXT>` harvest prompts, HSTS preload, and removal of the public lead magnet PDF.
+- Branch smoke coverage now verifies `/ai-threat-landscape-2026-cheatsheet.pdf` returns `404` and the sixth same-IP subscribe attempt returns `429`.
+- Local branch verification passed on 29 Mar 2026: `npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, and `npx pnpm test:smoke`.
+- `next build` still prints expected Upstash env warnings in worktrees without live `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` values because `Redis.fromEnv()` is evaluated when the route module loads.
+
 ## Affiliate Link Audit (23 March 2026)
 
 ### /tools page
@@ -177,6 +184,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |---|---|
+| `bda8fac` | fix(security): Harden signup and feed ingestion |
 | `0ac08c2` | ops: add revenue-log.md KPI tracker for affiliate monetisation |
 | `e4a0643` | docs: newsletter scheduled, performance logger confirmed, final STATUS.md update |
 | `8172600` | docs: update STATUS.md SHA to 4988d59 after CI fix |
@@ -187,7 +195,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 | `88781ee` | docs: sync STATUS.md + ops/affiliate-status.md with 26 Mar audit |
 | `95b1596` | docs: update STATUS.md — Partnerize access confirmed, Surfshark appeal sent |
 | `9775de4` | docs: QA audit — fix STATUS.md header (SHA, duplicate lines), update Malwarebytes/Partnerize ticket status |
-| `d21ec5e` | ops: add update-completion-guide.py — marks Task 1 complete (newsletter published) |
+| `d21ec5e` | ops: add update-completion-guide.py — updates Task 1 completion guide copy |
 | `347cbcd` | ops: add PHG support portal URL to Partnerize template |
 | `7806e9b` | ops: fix Surfshark appeal email address to confirmed official |
 | `0cdeaa3` | docs: update content metrics — all 12 articles confirmed analyst-grade |
