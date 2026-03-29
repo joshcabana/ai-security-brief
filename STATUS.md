@@ -1,8 +1,26 @@
+## 100% Completion Achieved
+
+Date: 27 March 2026
+
+- Phase 1 verification pipeline: 100% GREEN (111/111 tests, full build, 20/20 live checks)
+- Phase 2 docs synced (STATUS.md + ops/affiliate-status.md)
+- Phase 3 first Beehiiv newsletter: **SCHEDULED** in Beehiiv for Monday 30 March 2026 at 1:00 PM AEDT (2 free subscribers)
+- Phase 4 Beehiiv contrast fixed (`#30363d` → `#8b949e`, WCAG AA compliant)
+- Phase 5 social sharing buttons added (X + LinkedIn + Web Share API)
+- Live site: [https://aithreatbrief.com](https://aithreatbrief.com) fully aligned
+- All tests, build, smoke tests, and live verification passing
+
+Project meets all automated objectives. Newsletter issue #1 is scheduled for delivery on Monday 30 March 2026. Performance logger workflow ran (run 23597905337) but correctly skipped metrics collection — scheduled for Sunday runs, first metrics will appear after the newsletter is delivered. Next automatic run: Sunday 5 April 2026.
+
+---
+
 # AI Security Brief — Project Status
 
-**Pinned to:** `origin/main` @ `95b1596` **Last updated:** 28 March 2026 **Updated by:** Codex (fresh audit rerun; security dependency hardening; status sync)
+**Pinned to:** `origin/main` @ `196e49c` **Last updated:** 29 March 2026 **Updated by:** Codex (merge sync; security hardening branch verification)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
+
+**Verification pipeline:** production remains GREEN on `main`; branch hardening rerun is GREEN (`npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, `npx pnpm test:smoke`).
 
 ---
 
@@ -14,14 +32,14 @@
 | Alt domains | aisecbrief.com, www.aithreatbrief.com |
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
-| Latest deploy | Production live checks passed on 28 Mar 2026 (`https://aithreatbrief.com` responded READY) |
-| Newsletter | Beehiiv (subscriber management + delivery) |
+| Latest deploy | `main` @ `b0a0a52` — READY |
+| Newsletter | Beehiiv Scale plan ($49/mo, activated 27 Mar 2026) — referral program ON |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
-| Rate limiting | 10 req/min per IP on `/api/subscribe` |
-| Tests | Fresh local rerun on 28 Mar 2026: `pnpm lint`, `pnpm check:content`, `pnpm typecheck`, `pnpm test:unit` (118 tests), `pnpm build`, `pnpm test:smoke`, `pnpm verify:release`, `pnpm verify:ops:contract`, `pnpm verify:live`, `pnpm audit --prod`, and `python3 -m py_compile scripts/update-completion-guide.py` all passed in this worktree. `pnpm verify:ops` failed only because local runtime env vars are still missing. |
+| Rate limiting | Live `main`: 10 req/min per IP on `/api/subscribe`; draft PR #44 upgrades this to Upstash-backed distributed 5 req/min limiting before merge. |
+| Tests | Production verification on 27-28 Mar 2026 remained GREEN (`pnpm verify:live` + live checks). Branch hardening rerun on 29 Mar 2026 passed `npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, and `npx pnpm test:smoke`. |
 
 ## Content
 
@@ -33,13 +51,13 @@
 
 ## Open PRs
 
-Draft PR #44 is open against `main` from `codex/full-health-closeout`: `fix(closeout): Finalize full health closeout`.
+Draft PR #44 is open against `main` from `codex/full-health-closeout`: `fix(closeout): Finalize branch hardening`.
 
 Closed this session: #37 (superseded), #41 (draft — duplicate articles, closed without merge), #42 (CI failed, dev tooling), #43 (merged — closeout hardening).
 
 ## Affiliate Status
 
-Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 26 March 2026)
+Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-brief/blob/main/ops/affiliate-status.md) (last updated 27 March 2026)
 
 | Programme | Status |
 |---|---|
@@ -107,15 +125,22 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
 - [x] Re-verify Malwarebytes Partnerize account — **access confirmed 26 Mar 2026**; awaiting programme eligibility response (ticket #674504)
 - [x] Send Surfshark affiliate appeal — **sent 26 Mar 2026** to affiliates@surfshark.com
+- [x] Beehiiv upgraded to Scale plan ($49/mo) — **27 Mar 2026**
+- [x] Beehiiv Referral Program enabled ("Invite 3 → bonus deep-dive") — **27 Mar 2026**
+- [x] NordVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
+- [x] CJ Affiliate payment configured (direct deposit to Commonwealth Bank) — pre-existing
+- [x] CJ W-8BEN-E resubmitted with Australian TFN — **27 Mar 2026**
+- [x] PureVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
 - [ ] Weekly: review and merge pipeline PRs (when created)
-- [ ] Send the first Beehiiv issue from `drafts/newsletter-2026-03-24.md`, then confirm `logs/performance-log.md` records real open and click metrics.
+- [x] Transfer newsletter issue #1 to Beehiiv — **scheduled Mon 30 Mar 2026 1:00 PM AEDT**
+- [ ] Weekly: transfer newsletter draft to Beehiiv and send
 
-## Verification Notes (28 March 2026)
+## Verification Notes (29 March 2026)
 
-- Fresh verification ran in a clean worktree (`codex/full-health-closeout`) branched from `origin/main @ 95b1596`.
-- Branch audit hardening upgraded `next` and `eslint-config-next` to `15.5.14` and `fast-xml-parser` to `^5.5.7`; `pnpm audit --prod` now reports no known vulnerabilities in this worktree.
-- `pnpm verify:ops` failed only because this machine/worktree has no `.env.local` and no machine-level values for `BEEHIIV_API_KEY`, `BEEHIIV_PUBLICATION_ID`, `NEXT_PUBLIC_SITE_URL`, or `NEXT_PUBLIC_SITE_NAME`.
-- `scripts/update-completion-guide.py` now requires explicit operator-supplied Beehiiv publication evidence env vars before it will mark Task 1 complete, so the first send remains an external manual task until Beehiiv confirms it.
+- Draft PR #44 now includes Upstash-backed distributed signup rate limiting, RSS sanitization before any LLM exposure, guarded `<TEXT>` harvest prompts, HSTS preload, and removal of the public lead magnet PDF.
+- Branch smoke coverage now verifies `/ai-threat-landscape-2026-cheatsheet.pdf` returns `404` and the sixth same-IP subscribe attempt returns `429`.
+- Local branch verification passed on 29 Mar 2026: `npx pnpm typecheck`, `npx pnpm test:unit` (129 tests), `npx pnpm build`, and `npx pnpm test:smoke`.
+- `next build` still prints expected Upstash env warnings in worktrees without live `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` values because `Redis.fromEnv()` is evaluated when the route module loads.
 
 ## Affiliate Link Audit (23 March 2026)
 
@@ -159,6 +184,16 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | SHA | Description |
 |---|---|
+| `bda8fac` | fix(security): Harden signup and feed ingestion |
+| `0ac08c2` | ops: add revenue-log.md KPI tracker for affiliate monetisation |
+| `e4a0643` | docs: newsletter scheduled, performance logger confirmed, final STATUS.md update |
+| `8172600` | docs: update STATUS.md SHA to 4988d59 after CI fix |
+| `4988d59` | fix: align affiliate-status.md programme names with intake doc (fixes CI drift check) |
+| `a919223` | docs: declare 100% project completion — all automated phases complete |
+| `627d7d3` | feat: add social sharing buttons (X + LinkedIn + Web Share API) to blog articles |
+| `bf1cba5` | fix: Beehiiv link contrast to #8b949e (WCAG AA compliant) |
+| `88781ee` | docs: sync STATUS.md + ops/affiliate-status.md with 26 Mar audit |
+| `95b1596` | docs: update STATUS.md — Partnerize access confirmed, Surfshark appeal sent |
 | `9775de4` | docs: QA audit — fix STATUS.md header (SHA, duplicate lines), update Malwarebytes/Partnerize ticket status |
 | `d21ec5e` | ops: add update-completion-guide.py — updates Task 1 completion guide copy |
 | `347cbcd` | ops: add PHG support portal URL to Partnerize template |
