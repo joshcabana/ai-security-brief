@@ -21,6 +21,7 @@ yarn-debug.log*
 # Local env files
 .env
 .env*.local
+protected-assets/
 
 # Vercel
 .vercel

@@ -58,6 +58,8 @@ test('verify:ops --contract-only ignores .env.local and passes for the current c
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
+      'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
+      'UPSTASH_REDIS_REST_TOKEN=test-upstash-token',
       '',
     ].join('\n'),
     '.env.local': 'SUPABASE_URL=https://stale.example.com\n',
@@ -89,6 +91,8 @@ test('verify:ops --contract-only reports contract drift without failing', async 
       'BEEHIIV_API_KEY=your-beehiiv-api-key-here',
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
+      'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
+      'UPSTASH_REDIS_REST_TOKEN=test-upstash-token',
       'NEXT_PUBLIC_BEEHIIV_PUBLICATION_ID=stale-public-id',
       'EXTRA_KEY=unexpected',
       '',
@@ -125,6 +129,8 @@ test('verify:ops --contract-only allows documented optional affiliate env keys',
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
+      'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
+      'UPSTASH_REDIS_REST_TOKEN=test-upstash-token',
       'AFFILIATE_NORDVPN=',
       'AFFILIATE_PUREVPN=',
       'AFFILIATE_PROTON=',
@@ -154,6 +160,8 @@ test('verify:ops exits 1 when required runtime vars are missing', async () => {
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
+      'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
+      'UPSTASH_REDIS_REST_TOKEN=test-upstash-token',
       '',
     ].join('\n'),
   });
@@ -166,6 +174,8 @@ test('verify:ops exits 1 when required runtime vars are missing', async () => {
     assert.match(result.stdout, /MISSING\s+BEEHIIV_PUBLICATION_ID/);
     assert.match(result.stdout, /MISSING\s+NEXT_PUBLIC_SITE_URL/);
     assert.match(result.stdout, /MISSING\s+NEXT_PUBLIC_SITE_NAME/);
+    assert.match(result.stdout, /MISSING\s+UPSTASH_REDIS_REST_URL/);
+    assert.match(result.stdout, /MISSING\s+UPSTASH_REDIS_REST_TOKEN/);
   } finally {
     await workspace.cleanup();
   }
@@ -178,6 +188,8 @@ test('verify:ops warns on banned runtime vars but stays ready when required vars
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
+      'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
+      'UPSTASH_REDIS_REST_TOKEN=test-upstash-token',
       '',
     ].join('\n'),
     '.env.local': [
@@ -185,6 +197,8 @@ test('verify:ops warns on banned runtime vars but stays ready when required vars
       'BEEHIIV_PUBLICATION_ID=pub_123456',
       'NEXT_PUBLIC_SITE_URL=https://ai-security-brief.vercel.app',
       'NEXT_PUBLIC_SITE_NAME=The AI Security Brief',
+      'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
+      'UPSTASH_REDIS_REST_TOKEN=test-upstash-token',
       'SUPABASE_URL=https://stale.example.com',
       '',
     ].join('\n'),

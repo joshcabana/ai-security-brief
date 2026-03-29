@@ -51,6 +51,13 @@ test('lint script uses eslint CLI instead of interactive next lint', () => {
   );
 });
 
+test('verify:pr script runs the canonical PR QA gate in sequence', () => {
+  assert.equal(
+    packageJson.scripts?.['verify:pr'],
+    'pnpm lint && pnpm verify:release && pnpm verify:ops:contract && pnpm audit --prod',
+  );
+});
+
 test('eslint flat config exists and extends next core web vitals', () => {
   assert.equal(existsSync(eslintConfigPath), true);
 
@@ -64,12 +71,21 @@ test('dependency versions stay on patched security releases', () => {
   const nextVersion = packageJson.dependencies?.next;
   const eslintConfigNextVersion = packageJson.devDependencies?.['eslint-config-next'];
   const fastXmlParserVersion = packageJson.dependencies?.['fast-xml-parser'];
+  const sanitizeHtmlVersion = packageJson.dependencies?.['sanitize-html'];
+  const upstashRedisVersion = packageJson.dependencies?.['@upstash/redis'];
+  const upstashRatelimitVersion = packageJson.dependencies?.['@upstash/ratelimit'];
 
   assertIsString(nextVersion);
   assertIsString(eslintConfigNextVersion);
   assertIsString(fastXmlParserVersion);
+  assertIsString(sanitizeHtmlVersion);
+  assertIsString(upstashRedisVersion);
+  assertIsString(upstashRatelimitVersion);
   assert.equal(nextVersion, eslintConfigNextVersion);
 
   assertVersionAtLeast(nextVersion, '15.5.14');
   assertVersionAtLeast(fastXmlParserVersion, '5.5.7');
+  assertVersionAtLeast(sanitizeHtmlVersion, '2.17.2');
+  assertVersionAtLeast(upstashRedisVersion, '1.37.0');
+  assertVersionAtLeast(upstashRatelimitVersion, '2.0.8');
 });
