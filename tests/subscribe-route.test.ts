@@ -128,10 +128,33 @@ test('subscribe route returns 400 for invalid JSON payloads', async () => {
   assert.equal((await response.json()).message, 'The signup request body was invalid JSON.');
 });
 
+test('subscribe route returns 400 for invalid JSON payloads before service configuration checks', async () => {
+  delete process.env.BEEHIIV_API_KEY;
+  delete process.env.BEEHIIV_PUBLICATION_ID;
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  const response = await POST(createSameSiteRequest('{"email"'));
+
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).message, 'The signup request body was invalid JSON.');
+});
+
 test('subscribe route returns 400 for invalid email addresses', async () => {
   setBeehiivEnv();
   setUpstashEnv();
   allowRateLimit();
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'not-an-email' })));
+
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).message, 'Enter a valid email address to subscribe.');
+});
+
+test('subscribe route returns 400 for invalid email addresses before rate limit configuration checks', async () => {
+  setBeehiivEnv();
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
 
   const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'not-an-email' })));
 
