@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
@@ -52,4 +53,29 @@ test('deploy workflow sanitises the Vercel deploy URL and keeps production live 
   assert.match(deployJob, /grep -v 'https:\/\/vercel\.com\//);
   assert.match(deployJob, /Failed to parse deployment URL from Vercel CLI output\./);
   assert.match(productionVerificationJob, /continue-on-error:\s+true/);
+});
+
+test('workflows use pnpm action-setup v5 instead of the deprecated v4 runtime', () => {
+  const workflowDirectory = new URL('../.github/workflows/', import.meta.url);
+  const workflowFileNames = readdirSync(workflowDirectory).filter((fileName) => fileName.endsWith('.yml'));
+
+  for (const workflowFileName of workflowFileNames) {
+    const workflowSource = readFileSync(new URL(workflowFileName, workflowDirectory), 'utf8');
+
+    assert.doesNotMatch(
+      workflowSource,
+      /pnpm\/action-setup@v4/,
+      `Expected ${workflowFileName} to avoid the deprecated pnpm action runtime.`,
+    );
+
+    if (!workflowSource.includes('name: Setup pnpm')) {
+      continue;
+    }
+
+    assert.match(
+      workflowSource,
+      /pnpm\/action-setup@v5/,
+      `Expected ${workflowFileName} to use pnpm action-setup v5.`,
+    );
+  }
 });
