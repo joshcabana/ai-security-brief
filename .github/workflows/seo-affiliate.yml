@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup pnpm
         if: ${{ steps.gate.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch' }}
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: 10.23.0
 
