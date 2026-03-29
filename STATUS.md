@@ -2,8 +2,8 @@
 
 Date: 29 March 2026
 
-- `main` is GREEN at `9f47de4` after merges of PR #44 (security hardening) and PR #45 (workflow runtime hardening)
-- Post-merge `Verify and Deploy` runs `23699328485` and `23699603955` both passed `verify`, `deploy`, `verify_live`, and `status`
+- `main` is GREEN at `32ac4b3` after merges of PR #44 (security hardening), PR #45 (workflow runtime hardening), and PR #46 (repo truth sync)
+- Post-merge `Verify and Deploy` runs `23699328485`, `23699603955`, and `23699971717` all passed `verify`, `deploy`, `verify_live`, and `status`
 - Live production checks passed again on 29 March 2026: `/` returned `200`, same-site invalid subscribe returned `400`, and the removed cheatsheet asset returned `404`
 - Signup protection is live: same-site request validation plus Upstash-backed distributed rate limiting at 5 req/min per IP
 - First Beehiiv issue remains scheduled for Monday 30 March 2026 at 1:00 PM AEDT; first real metrics will appear after delivery
@@ -12,11 +12,11 @@ Date: 29 March 2026
 
 # AI Security Brief — Project Status
 
-**Pinned to:** `origin/main` @ `9f47de4` **Last updated:** 29 March 2026 **Updated by:** Codex (post-merge truth sync; docs and status guardrails)
+**Pinned baseline:** `origin/main` @ `32ac4b3` **Last updated:** 29 March 2026 **Updated by:** Codex (post-merge truth sync; release truth baseline)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
 
-**Verification pipeline:** production remains GREEN on `main`; `Verify and Deploy` runs `23699328485` and `23699603955` both completed successfully after the PR #44 and PR #45 merges.
+**Verification pipeline:** production remains GREEN on `main`; `Verify and Deploy` runs `23699328485`, `23699603955`, and `23699971717` all completed successfully after the PR #44, PR #45, and PR #46 merges.
 
 ---
 
@@ -29,14 +29,15 @@ Date: 29 March 2026
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
 | Repository license | MIT (`LICENSE`) |
-| Latest deploy | `main` @ `9f47de4` — READY (`Verify and Deploy` run `23699603955`) |
+| Latest deploy | `main` @ `32ac4b3` — READY (`Verify and Deploy` run `23699971717`) |
 | Newsletter | Beehiiv Scale plan ($49/mo, activated 27 Mar 2026) — referral program ON |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
 | Search Console | **Verified** (26 Mar 2026). Sitemap submitted. |
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | Upstash-backed distributed 5 req/min per IP on `/api/subscribe` |
-| Tests | Post-merge `main` runs `23699328485` and `23699603955` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 29 Mar 2026 returned `200 /`, `400` for same-site invalid subscribe, and `404 /ai-threat-landscape-2026-cheatsheet.pdf`. |
+| Public status surface | `/status` and `/status.json` (runtime snapshot) |
+| Tests | Post-merge `main` runs `23699328485`, `23699603955`, and `23699971717` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 29 Mar 2026 returned `200 /`, `400` for same-site invalid subscribe, and `404 /ai-threat-landscape-2026-cheatsheet.pdf`. |
 
 ## Content
 
@@ -51,6 +52,7 @@ Date: 29 March 2026
 None.
 
 Most recent merges:
+- #46 — `docs(status): Sync repo truth with merged main`
 - #45 — `ci(actions): Upgrade pnpm setup to v5`
 - #44 — `fix(closeout): Finalize branch hardening`
 
@@ -136,9 +138,10 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 ## Verification Notes (29 March 2026)
 
+- PR #46 merged into `main` as `32ac4b326c60cf25600053da92c2fe503b6dc738`; `README.md`, `STATUS.md`, `beehiiv-setup.md`, and generated status metadata now match the merged repository truth.
 - PR #44 merged into `main` as `b6d322c35707ab53b03058dfd5d7c38f7b892276`; the shipped fix validates subscribe input before Beehiiv or Upstash readiness checks and keeps the removed cheatsheet asset at `404`.
 - PR #45 merged into `main` as `9f47de4e05d96cabaac033fef158dd07793af064`; all workflows now use `pnpm/action-setup@v5`, removing the deprecated action runtime from CI.
-- Post-merge `Verify and Deploy` runs `23699328485` and `23699603955` both completed successfully on `main`.
+- Post-merge `Verify and Deploy` runs `23699328485`, `23699603955`, and `23699971717` all completed successfully on `main`.
 - Live spot checks on 29 March 2026 confirmed `GET /` returned `200`, same-site `POST /api/subscribe` with an invalid email returned `400`, and `GET /ai-threat-landscape-2026-cheatsheet.pdf` returned `404`.
 
 ## Affiliate Link Audit (23 March 2026)

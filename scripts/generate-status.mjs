@@ -13,6 +13,7 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { resolve, isAbsolute } from 'path'
+import { buildStatusSnapshot } from '../lib/status-data.mjs'
 
 const BOLD  = '\x1b[1m'
 const GREEN = '\x1b[32m'
@@ -86,8 +87,7 @@ if (liveReportPath && existsSync(resolvePath(liveReportPath))) {
 
 // ── Assemble status.json ──────────────────────────────────────────────────────
 const status = {
-  generated_at:    new Date().toISOString(),
-  schema_version:  '1',
+  ...buildStatusSnapshot({}),
   ci,
   deploy,
   legal,

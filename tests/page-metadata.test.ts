@@ -71,6 +71,12 @@ test('verified metadata and privacy analytics declarations match the live contra
       ogDescription:
         'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams and builders.',
     },
+    {
+      path: '/status',
+      canonicalPath: '/status',
+      ogDescription:
+        'Public operational status for AI Security Brief: pinned main baseline, deployment context, and release verification signals.',
+    },
   ]);
   assert.match(PRIVACY_ANALYTICS_DECLARATION, /plausible analytics/i);
 });
