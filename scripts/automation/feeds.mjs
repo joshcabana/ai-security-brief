@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { XMLParser } from 'fast-xml-parser';
+import sanitizeHtml from 'sanitize-html';
 import { getLocalTimeParts, shiftDateString } from './common.mjs';
 
 export const CURATED_FEEDS = [
@@ -86,17 +87,53 @@ function normaliseWhitespace(value) {
   return decodeEntities(String(value)).replace(/\s+/g, ' ').trim();
 }
 
-function stripHtml(value) {
+function stripMarkdown(value) {
+  return value
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/`{1,3}([^`]+)`{1,3}/g, '$1')
+    .replace(/[*_~]+/g, ' ')
+    .replace(/^>\s+/gm, '')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/\|/g, ' ');
+}
+
+function stripInvisibleCharacters(value) {
+  return value.replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200D\u2060\uFEFF]/g, ' ');
+}
+
+function stripHiddenHtml(value) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(
+      /<[^>]*(?:aria-hidden\s*=\s*["']?true["']?|hidden\b|style\s*=\s*["'][^"']*(?:display\s*:\s*none|visibility\s*:\s*hidden)[^"']*["'])[^>]*>[\s\S]*?<\/[^>]+>/gi,
+      ' ',
+    );
+}
+
+function sanitizeFeedText(value) {
+  const withoutCdata = String(value).replace(/<!\[CDATA\[|\]\]>/g, ' ');
+  const withoutHiddenHtml = stripHiddenHtml(withoutCdata);
+
+  // Strip all rich text before any feed content is passed into the LLM pipeline.
+  const sanitizedHtml = sanitizeHtml(withoutHiddenHtml, {
+    allowedTags: [],
+    allowedAttributes: {},
+    disallowedTagsMode: 'discard',
+    parser: {
+      lowerCaseAttributeNames: false,
+    },
+  });
+
   return normaliseWhitespace(
-    String(value)
-      .replace(/<!\[CDATA\[|\]\]>/g, '')
-      .replace(/<[^>]+>/g, ' '),
+    stripInvisibleCharacters(stripMarkdown(sanitizedHtml)),
   );
 }
 
 function extractText(value) {
   if (typeof value === 'string') {
-    return stripHtml(value);
+    return sanitizeFeedText(value);
   }
 
   if (Array.isArray(value)) {
@@ -105,7 +142,7 @@ function extractText(value) {
 
   if (value && typeof value === 'object') {
     if (typeof value['#text'] === 'string') {
-      return stripHtml(value['#text']);
+      return sanitizeFeedText(value['#text']);
     }
 
     return normaliseWhitespace(Object.values(value).map((entry) => extractText(entry)).join(' '));

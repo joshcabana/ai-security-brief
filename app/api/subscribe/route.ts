@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getRateLimitKey, isRateLimited } from '@/lib/rate-limit';
+import { ratelimit } from '@/lib/rate-limit';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_SOURCE = 'unknown';
@@ -39,6 +39,11 @@ type BeehiivErrorPayload = {
   errors?: Array<{ message?: string }>;
 };
 
+type RateLimitResponse = {
+  success: boolean;
+  reset: number;
+};
+
 class BeehiivRequestTimeoutError extends Error {
   constructor(url: string, timeoutMs: number) {
     super(
@@ -70,6 +75,36 @@ function getBeehiivConfig(): BeehiivConfig {
     apiBaseUrl,
     configured: Boolean(apiKey && publicationId),
   };
+}
+
+function isRateLimitConfigured(): boolean {
+  return Boolean(
+    process.env.UPSTASH_REDIS_REST_URL?.trim() &&
+      process.env.UPSTASH_REDIS_REST_TOKEN?.trim(),
+  );
+}
+
+function getRequestIp(request: Request): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+
+  if (!forwardedFor) {
+    return 'anonymous';
+  }
+
+  const [requestIp] = forwardedFor.split(',');
+  const normalizedRequestIp = requestIp?.trim();
+
+  if (!normalizedRequestIp) {
+    return 'anonymous';
+  }
+
+  return normalizedRequestIp;
+}
+
+function getRetryAfterSeconds(resetAt: number): string {
+  const secondsUntilReset = Math.ceil((resetAt - Date.now()) / 1000);
+
+  return String(Math.max(secondsUntilReset, 1));
 }
 
 function getAllowedOrigins(request: Request): string[] {
@@ -304,15 +339,6 @@ function getUpstreamMessage(upstreamPayload: unknown): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  // Rate limit check
-  const rateLimitKey = getRateLimitKey(request);
-  if (isRateLimited(rateLimitKey)) {
-    return NextResponse.json(
-      { ok: false, message: 'Too many signup attempts. Please try again in a minute.' },
-      { status: 429, headers: { 'Retry-After': '60' } },
-    );
-  }
-
   const { apiKey, publicationId, apiBaseUrl, configured } = getBeehiivConfig();
 
   if (!configured || !apiKey || !publicationId) {
@@ -323,6 +349,46 @@ export async function POST(request: Request): Promise<Response> {
           'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
       },
       { status: 503 },
+    );
+  }
+
+  if (!isRateLimitConfigured()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          'Newsletter signup is not configured yet. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN first.',
+      },
+      { status: 503 },
+    );
+  }
+
+  const requestIp = getRequestIp(request);
+  let rateLimitResult: RateLimitResponse;
+
+  try {
+    rateLimitResult = (await ratelimit.limit(requestIp)) as RateLimitResponse;
+  } catch (error) {
+    logFailure('rate_limit', error instanceof Error ? error.message : String(error));
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          'Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.',
+      },
+      { status: 503 },
+    );
+  }
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { ok: false, message: 'Too many signup attempts. Please try again in a minute.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': getRetryAfterSeconds(rateLimitResult.reset),
+        },
+      },
     );
   }
 
@@ -343,12 +409,18 @@ export async function POST(request: Request): Promise<Response> {
 
   if (!isVerifiedSignupRequest(request)) {
     logRequestRejection('origin_mismatch', request, source);
-    return NextResponse.json({ ok: false, message: INVALID_REQUEST_MESSAGE }, { status: 403 });
+    return NextResponse.json(
+      { ok: false, message: INVALID_REQUEST_MESSAGE },
+      { status: 403 },
+    );
   }
 
   if (honeypotFilled) {
     logRequestRejection('honeypot_filled', request, source);
-    return NextResponse.json({ ok: false, message: INVALID_REQUEST_MESSAGE }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, message: INVALID_REQUEST_MESSAGE },
+      { status: 400 },
+    );
   }
 
   if (!email || !EMAIL_REGEX.test(email)) {

@@ -212,6 +212,80 @@ async function startMockBeehiivServer() {
   };
 }
 
+function getRateLimitKeyPrefix(requestBody) {
+  try {
+    const commands = JSON.parse(requestBody);
+    const rateLimitCommand = Array.isArray(commands)
+      ? commands.find((command) => Array.isArray(command) && command[0] === 'evalsha')
+      : null;
+    const currentWindowKey = rateLimitCommand?.[3];
+
+    if (typeof currentWindowKey !== 'string') {
+      return null;
+    }
+
+    return currentWindowKey.replace(/:\d+$/, '');
+  } catch {
+    return null;
+  }
+}
+
+async function startMockUpstashServer() {
+  const port = await findFreePort();
+  const requestCounts = new Map();
+  const server = createHttpServer(async (request, response) => {
+    if (request.method !== 'POST' || request.url !== '/pipeline') {
+      response.writeHead(404, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify({ message: 'Not found' }));
+      return;
+    }
+
+    let requestBody = '';
+    for await (const chunk of request) {
+      requestBody += chunk.toString();
+    }
+
+    const commands = JSON.parse(requestBody);
+    const keyPrefix = getRateLimitKeyPrefix(requestBody) ?? '@upstash/ratelimit:anonymous';
+    const nextCount = (requestCounts.get(keyPrefix) ?? 0) + 1;
+    requestCounts.set(keyPrefix, nextCount);
+    const pipelineResults = Array.isArray(commands)
+      ? commands.map((command) => {
+          if (!Array.isArray(command)) {
+            return { result: null };
+          }
+
+          if (command[0] === 'zincrby') {
+            return { result: nextCount };
+          }
+
+          if (command[0] === 'evalsha') {
+            return {
+              result: [
+                5 - nextCount,
+                5,
+              ],
+            };
+          }
+
+          return { result: 'OK' };
+        })
+      : [{ result: null }];
+
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify(pipelineResults));
+  });
+
+  await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
+
+  return {
+    baseUrl: `http://127.0.0.1:${port}`,
+    async stop() {
+      await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+    },
+  };
+}
+
 function extractArticleLinks(html, knownSlugs) {
   return knownSlugs.filter((slug) => html.includes(`/blog/${slug}`));
 }
@@ -264,6 +338,11 @@ async function main() {
     const privacyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog?category=Privacy`).then((response) => response.text());
     assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), privacyArticles.map((a) => a.slug));
 
+    const removedLeadMagnetResponse = await fetch(
+      `http://127.0.0.1:${coldStartPort}/ai-threat-landscape-2026-cheatsheet.pdf`,
+    );
+    assert.equal(removedLeadMagnetResponse.status, 404);
+
     for (const article of manifest.articles) {
       const articleHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog/${article.slug}`).then((response) => response.text());
       assert.match(articleHtml, new RegExp(article.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
@@ -299,11 +378,14 @@ async function main() {
   }
 
   const mockBeehiiv = await startMockBeehiivServer();
+  const mockUpstash = await startMockUpstashServer();
   const configuredPort = await findFreePort();
   const configuredApp = startApp(configuredPort, {
     BEEHIIV_API_KEY: 'smoke-test-key',
     BEEHIIV_PUBLICATION_ID: 'test-publication',
     BEEHIIV_API_BASE_URL: mockBeehiiv.baseUrl,
+    UPSTASH_REDIS_REST_URL: mockUpstash.baseUrl,
+    UPSTASH_REDIS_REST_TOKEN: 'smoke-test-token',
   });
 
   try {
@@ -361,14 +443,46 @@ async function main() {
 
     const successResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
       method: 'POST',
-      headers: sameSiteHeaders,
+      headers: {
+        ...sameSiteHeaders,
+        'x-forwarded-for': '198.51.100.10',
+      },
       body: JSON.stringify({ email: 'success@example.com' }),
     });
     assert.equal(successResult.response.status, 200);
     assert.equal(successResult.payload.message, "You're in. Check your inbox for Beehiiv's confirmation email.");
+
+    for (let attemptNumber = 1; attemptNumber <= 5; attemptNumber += 1) {
+      const allowedResponse = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
+        method: 'POST',
+        headers: {
+          ...sameSiteHeaders,
+          'x-forwarded-for': '203.0.113.25',
+        },
+        body: JSON.stringify({ email: `burst-${attemptNumber}@example.com` }),
+      });
+
+      assert.equal(allowedResponse.response.status, 200);
+    }
+
+    const rateLimitedResult = await requestJson(`http://127.0.0.1:${configuredPort}/api/subscribe`, {
+      method: 'POST',
+      headers: {
+        ...sameSiteHeaders,
+        'x-forwarded-for': '203.0.113.25',
+      },
+      body: JSON.stringify({ email: 'burst-6@example.com' }),
+    });
+
+    assert.equal(rateLimitedResult.response.status, 429);
+    assert.equal(
+      rateLimitedResult.payload.message,
+      'Too many signup attempts. Please try again in a minute.',
+    );
   } finally {
     await configuredApp.stop();
     await mockBeehiiv.stop();
+    await mockUpstash.stop();
   }
 }
 
