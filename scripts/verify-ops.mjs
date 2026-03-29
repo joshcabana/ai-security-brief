@@ -37,6 +37,14 @@ const REQUIRED = [
     key: 'NEXT_PUBLIC_SITE_NAME',
     hint: 'Display name, e.g. "The AI Security Brief"',
   },
+  {
+    key: 'UPSTASH_REDIS_REST_URL',
+    hint: 'Upstash Redis REST URL for distributed rate limiting',
+  },
+  {
+    key: 'UPSTASH_REDIS_REST_TOKEN',
+    hint: 'Upstash Redis REST token for distributed rate limiting',
+  },
 ]
 
 const OPTIONAL = [

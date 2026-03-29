@@ -1,23 +1,61 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { POST } from '../app/api/subscribe/route';
-import { resetRateLimit } from '../lib/rate-limit';
+import { ratelimit } from '../lib/rate-limit';
 
 const originalEnv = { ...process.env };
 const originalFetch = globalThis.fetch;
 const originalMathRandom = Math.random;
 const originalSetTimeout = globalThis.setTimeout;
 const originalClearTimeout = globalThis.clearTimeout;
+const originalRateLimit = ratelimit.limit.bind(ratelimit);
 
-function createSameSiteRequest(body: string): Request {
+type MockRateLimitResult = Awaited<ReturnType<typeof ratelimit.limit>>;
+
+function createSameSiteRequest(body: string, extraHeaders: HeadersInit = {}): Request {
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    origin: 'http://localhost',
+  });
+
+  const normalizedExtraHeaders = new Headers(extraHeaders);
+
+  for (const [key, value] of normalizedExtraHeaders.entries()) {
+    if (value !== 'undefined') {
+      headers.set(key, value);
+    }
+  }
+
   return new Request('http://localhost/api/subscribe', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      origin: 'http://localhost',
-    },
+    headers,
     body,
   });
+}
+
+function setBeehiivEnv(): void {
+  process.env.BEEHIIV_API_KEY = 'test-key';
+  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+}
+
+function setUpstashEnv(): void {
+  process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
+  process.env.UPSTASH_REDIS_REST_TOKEN = 'test-upstash-token';
+}
+
+function createRateLimitResult(success: boolean, reset: number, remaining: number): MockRateLimitResult {
+  return {
+    success,
+    limit: 5,
+    remaining,
+    reset,
+    pending: Promise.resolve(),
+  };
+}
+
+function allowRateLimit(): void {
+  ratelimit.limit = (async () =>
+    createRateLimitResult(true, Date.now() + 60_000, 4)) as unknown as typeof ratelimit.limit;
 }
 
 function restoreEnvironment() {
@@ -26,10 +64,10 @@ function restoreEnvironment() {
   Math.random = originalMathRandom;
   globalThis.setTimeout = originalSetTimeout;
   globalThis.clearTimeout = originalClearTimeout;
+  ratelimit.limit = originalRateLimit;
 }
 
 test.afterEach(() => {
-  resetRateLimit();
   restoreEnvironment();
 });
 
@@ -46,9 +84,55 @@ test('subscribe route returns 503 when Beehiiv is not configured', async () => {
   });
 });
 
+test('subscribe route returns 503 when Upstash rate limiting is not configured', async () => {
+  setBeehiivEnv();
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
+
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), {
+    ok: false,
+    message:
+      'Newsletter signup is not configured yet. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN first.',
+  });
+});
+
+test('subscribe route returns 503 when Upstash rate limiting is unreachable', async () => {
+  setBeehiivEnv();
+  setUpstashEnv();
+
+  ratelimit.limit = (async () => {
+    throw new Error('upstash unavailable');
+  }) as typeof ratelimit.limit;
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
+
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), {
+    ok: false,
+    message:
+      'Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.',
+  });
+});
+
 test('subscribe route returns 400 for invalid JSON payloads', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+
+  const response = await POST(createSameSiteRequest('{"email"'));
+
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).message, 'The signup request body was invalid JSON.');
+});
+
+test('subscribe route returns 400 for invalid JSON payloads before service configuration checks', async () => {
+  delete process.env.BEEHIIV_API_KEY;
+  delete process.env.BEEHIIV_PUBLICATION_ID;
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
 
   const response = await POST(createSameSiteRequest('{"email"'));
 
@@ -57,8 +141,20 @@ test('subscribe route returns 400 for invalid JSON payloads', async () => {
 });
 
 test('subscribe route returns 400 for invalid email addresses', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'not-an-email' })));
+
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).message, 'Enter a valid email address to subscribe.');
+});
+
+test('subscribe route returns 400 for invalid email addresses before rate limit configuration checks', async () => {
+  setBeehiivEnv();
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
 
   const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'not-an-email' })));
 
@@ -67,8 +163,9 @@ test('subscribe route returns 400 for invalid email addresses', async () => {
 });
 
 test('subscribe route returns 403 for off-site requests', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
 
   const response = await POST(
     new Request('http://localhost/api/subscribe', {
@@ -86,8 +183,9 @@ test('subscribe route returns 403 for off-site requests', async () => {
 });
 
 test('subscribe route accepts same-site referer headers when origin is absent', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
 
   globalThis.fetch = async () =>
     new Response(JSON.stringify({ data: { id: 'sub_referer' } }), {
@@ -114,8 +212,9 @@ test('subscribe route accepts same-site referer headers when origin is absent', 
 });
 
 test('subscribe route returns 400 when the honeypot field is filled', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
 
   let fetchCalled = false;
   globalThis.fetch = async () => {
@@ -133,8 +232,10 @@ test('subscribe route returns 400 when the honeypot field is filled', async () =
 });
 
 test('subscribe route surfaces upstream Beehiiv errors', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+
   globalThis.fetch = async () =>
     new Response(
       JSON.stringify({ errors: [{ message: 'Mock Beehiiv rejected the signup request.' }] }),
@@ -151,8 +252,10 @@ test('subscribe route surfaces upstream Beehiiv errors', async () => {
 });
 
 test('subscribe route returns 502 when Beehiiv cannot be reached', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+
   globalThis.fetch = async () => {
     throw new Error('network down');
   };
@@ -167,8 +270,9 @@ test('subscribe route returns 502 when Beehiiv cannot be reached', async () => {
 });
 
 test('subscribe route retries once when Beehiiv responds with 429 before succeeding', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
   Math.random = () => 0;
 
   let attemptCount = 0;
@@ -203,9 +307,81 @@ test('subscribe route retries once when Beehiiv responds with 429 before succeed
   });
 });
 
+test('subscribe route uses the first forwarded IP for distributed rate limiting', async () => {
+  setBeehiivEnv();
+  setUpstashEnv();
+
+  let capturedIdentifier = '';
+  ratelimit.limit = (async (identifier: string) => {
+    capturedIdentifier = identifier;
+
+    return createRateLimitResult(true, Date.now() + 60_000, 4);
+  }) as unknown as typeof ratelimit.limit;
+
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ data: { id: 'sub_forwarded' } }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  const response = await POST(
+    createSameSiteRequest(
+      JSON.stringify({ email: 'reader@example.com' }),
+      { 'x-forwarded-for': '198.51.100.10, 10.0.0.1' },
+    ),
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(capturedIdentifier, '198.51.100.10');
+});
+
+test('subscribe route returns 429 after five rapid requests from the same IP', async () => {
+  setBeehiivEnv();
+  setUpstashEnv();
+
+  const requestCounts = new Map<string, number>();
+  ratelimit.limit = (async (identifier: string) => {
+    const nextCount = (requestCounts.get(identifier) ?? 0) + 1;
+    requestCounts.set(identifier, nextCount);
+
+    return createRateLimitResult(nextCount <= 5, Date.now() + 60_000, Math.max(5 - nextCount, 0));
+  }) as unknown as typeof ratelimit.limit;
+
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ data: { id: 'sub_rate_limited' } }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+  for (let attemptNumber = 1; attemptNumber <= 5; attemptNumber += 1) {
+    const response = await POST(
+      createSameSiteRequest(
+        JSON.stringify({ email: `reader+${attemptNumber}@example.com` }),
+        { 'x-forwarded-for': '198.51.100.10' },
+      ),
+    );
+
+    assert.equal(response.status, 200);
+  }
+
+  const limitedResponse = await POST(
+    createSameSiteRequest(
+      JSON.stringify({ email: 'reader+6@example.com' }),
+      { 'x-forwarded-for': '198.51.100.10' },
+    ),
+  );
+  const retryAfter = Number(limitedResponse.headers.get('retry-after'));
+
+  assert.equal(limitedResponse.status, 429);
+  assert.equal(Number.isFinite(retryAfter), true);
+  assert.equal(retryAfter >= 1 && retryAfter <= 60, true);
+  assert.equal((await limitedResponse.json()).message, 'Too many signup attempts. Please try again in a minute.');
+});
+
 test('subscribe route returns 504 when Beehiiv times out', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
 
   globalThis.setTimeout = ((handler: TimerHandler) => {
     queueMicrotask(() => {
@@ -240,8 +416,10 @@ test('subscribe route returns 504 when Beehiiv times out', async () => {
 });
 
 test('subscribe route returns 200 on a successful Beehiiv response', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+
   globalThis.fetch = async (input, init) => {
     assert.ok(init?.body);
     assert.deepEqual(JSON.parse(String(init.body)), {
@@ -275,9 +453,11 @@ test('subscribe route returns 200 on a successful Beehiiv response', async () =>
 });
 
 test('subscribe route defaults the placement source to unknown when omitted', async () => {
-  process.env.BEEHIIV_API_KEY = 'test-key';
-  process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
   process.env.NEXT_PUBLIC_SITE_URL = 'https://aithreatbrief.com';
+
   globalThis.fetch = async (input, init) => {
     assert.equal(String(input), 'https://api.beehiiv.com/v2/publications/test-publication/subscriptions');
     assert.ok(init?.body);

@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
     "test:unit": "node --import tsx --test tests/*.test.ts",
     "test:smoke": "node scripts/smoke-test.mjs",
+    "verify:pr": "pnpm lint && pnpm verify:release && pnpm verify:ops:contract && pnpm audit --prod",
     "verify:live": "node scripts/verify-live.mjs",
     "verify:ops": "node scripts/verify-ops.mjs",
     "verify:ops:contract": "node scripts/verify-ops.mjs --contract-only",
@@ -28,22 +29,25 @@
     "lint": "eslint . --ext .js,.mjs,.ts,.tsx"
   },
   "dependencies": {
-    "fast-xml-parser": "^5.3.2",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
+    "fast-xml-parser": "^5.5.7",
     "gray-matter": "^4.0.3",
-    "next": "15.5.12",
+    "next": "15.5.14",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
-    "remark-html": "^16.0.1"
+    "remark-html": "^16.0.1",
+    "sanitize-html": "^2.17.2"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.21",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9.0.0",
-    "eslint-config-next": "15.5.12",
+    "eslint-config-next": "15.5.14",
     "postcss": "^8.5.0",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.6",
