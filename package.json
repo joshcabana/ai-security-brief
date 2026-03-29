@@ -23,6 +23,7 @@
     "verify:live": "node scripts/verify-live.mjs",
     "verify:ops": "node scripts/verify-ops.mjs",
     "verify:ops:contract": "node scripts/verify-ops.mjs --contract-only",
+    "verify:status-doc": "node scripts/verify-status-doc.mjs",
     "verify:release": "pnpm check:content && pnpm typecheck && pnpm test:unit && pnpm build && pnpm test:smoke",
     "build": "next build",
     "start": "next start",

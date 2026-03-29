@@ -33,7 +33,9 @@ test('README and STATUS reflect the published MIT license and canonical PR gate'
   assert.match(readmeSource, /pnpm verify:pr/);
   assert.match(readmeSource, /This repository publishes an \[MIT License\]\(LICENSE\)\./);
   assert.doesNotMatch(readmeSource, /No open-source license file is currently published/);
+  assert.match(statusSource, /\*\*Pinned baseline:\*\* `origin\/main` @ `[0-9a-f]{7,40}`/);
   assert.equal(statusSource.includes('| Repository license | MIT (`LICENSE`) |'), true);
+  assert.equal(statusSource.includes('| Public status surface | `/status` and `/status.json` (runtime snapshot) |'), true);
 });
 
 test('STATUS documents the active distributed subscribe rate limit', () => {

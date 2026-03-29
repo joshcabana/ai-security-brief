@@ -47,11 +47,18 @@ test('deploy workflow verifies preview deployments on pull requests and uploads 
 test('deploy workflow sanitises the Vercel deploy URL and keeps production live verification warn-only', () => {
   const deployJob = extractJobBlock('deploy');
   const productionVerificationJob = extractJobBlock('verify_live');
+  const verifyJob = extractJobBlock('verify');
 
   assert.match(deployJob, /needs\.deploy_gate\.outputs\.enabled == 'true' && github\.ref == 'refs\/heads\/main'/);
   assert.match(deployJob, /DEPLOYMENT_OUTPUT=.*2>&1/);
   assert.match(deployJob, /grep -v 'https:\/\/vercel\.com\//);
   assert.match(deployJob, /Failed to parse deployment URL from Vercel CLI output\./);
+  assert.match(verifyJob, /name:\s+Verify STATUS\.md baseline/);
+  assert.match(verifyJob, /run:\s+pnpm verify:status-doc/);
+  assert.match(
+    verifyJob,
+    /EXPECTED_STATUS_BASELINE_SHA:\s+\$\{\{ github\.event_name == 'pull_request' && github\.event\.pull_request\.base\.sha \|\| github\.event\.before \}\}/,
+  );
   assert.match(productionVerificationJob, /continue-on-error:\s+true/);
 });
 
