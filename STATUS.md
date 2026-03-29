@@ -37,7 +37,7 @@ Date: 29 March 2026
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | Upstash-backed distributed 5 req/min per IP on `/api/subscribe` |
 | Public status surface | `/status` and `/status.json` (runtime snapshot) |
-| Tests | Post-merge `main` runs `23699328485`, `23699603955`, and `23699971717` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 29 Mar 2026 returned `200 /`, `400` for same-site invalid subscribe, and `404 /ai-threat-landscape-2026-cheatsheet.pdf`. |
+| Tests | Post-merge `main` runs `23699328485`, `23699603955`, and `23699971717` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 29 Mar 2026 returned `200 /`, `400` for same-site invalid subscribe, and `404` for the retired public cheatsheet path. |
 
 ## Content
 
@@ -142,7 +142,7 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - PR #44 merged into `main` as `b6d322c35707ab53b03058dfd5d7c38f7b892276`; the shipped fix validates subscribe input before Beehiiv or Upstash readiness checks and keeps the removed cheatsheet asset at `404`.
 - PR #45 merged into `main` as `9f47de4e05d96cabaac033fef158dd07793af064`; all workflows now use `pnpm/action-setup@v5`, removing the deprecated action runtime from CI.
 - Post-merge `Verify and Deploy` runs `23699328485`, `23699603955`, and `23699971717` all completed successfully on `main`.
-- Live spot checks on 29 March 2026 confirmed `GET /` returned `200`, same-site `POST /api/subscribe` with an invalid email returned `400`, and `GET /ai-threat-landscape-2026-cheatsheet.pdf` returned `404`.
+- Live spot checks on 29 March 2026 confirmed `GET /` returned `200`, same-site `POST /api/subscribe` with an invalid email returned `400`, and the retired public cheatsheet path returned `404`.
 
 ## Affiliate Link Audit (23 March 2026)
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { POST } from '../app/api/subscribe/route';
+import { internals as protectedDownloadInternals } from '../lib/protected-download';
 import { ratelimit } from '../lib/rate-limit';
 
 const originalEnv = { ...process.env };
@@ -9,8 +10,10 @@ const originalMathRandom = Math.random;
 const originalSetTimeout = globalThis.setTimeout;
 const originalClearTimeout = globalThis.clearTimeout;
 const originalRateLimit = ratelimit.limit.bind(ratelimit);
+const originalHeadBlob = protectedDownloadInternals.headBlob;
 
 type MockRateLimitResult = Awaited<ReturnType<typeof ratelimit.limit>>;
+type MockBlobHeadResult = Awaited<ReturnType<typeof protectedDownloadInternals.headBlob>>;
 
 function createSameSiteRequest(body: string, extraHeaders: HeadersInit = {}): Request {
   const headers = new Headers({
@@ -36,11 +39,29 @@ function createSameSiteRequest(body: string, extraHeaders: HeadersInit = {}): Re
 function setBeehiivEnv(): void {
   process.env.BEEHIIV_API_KEY = 'test-key';
   process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
+  setProtectedAssetDownloadUrl();
 }
 
 function setUpstashEnv(): void {
   process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
   process.env.UPSTASH_REDIS_REST_TOKEN = 'test-upstash-token';
+}
+
+function setProtectedAssetDownloadUrl(
+  downloadUrl: string = 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
+): void {
+  protectedDownloadInternals.headBlob = (async (pathname: string) =>
+    ({
+      size: 2048,
+      uploadedAt: new Date('2026-03-29T00:00:00.000Z'),
+      pathname,
+      contentType: 'application/pdf',
+      contentDisposition: 'attachment; filename="ai-threat-landscape-2026-cheatsheet.pdf"',
+      url: `https://blob.example.com/${pathname}`,
+      downloadUrl,
+      cacheControl: 'private, max-age=0',
+      etag: 'test-etag',
+    }) satisfies MockBlobHeadResult) as typeof protectedDownloadInternals.headBlob;
 }
 
 function createRateLimitResult(success: boolean, reset: number, remaining: number): MockRateLimitResult {
@@ -65,6 +86,7 @@ function restoreEnvironment() {
   globalThis.setTimeout = originalSetTimeout;
   globalThis.clearTimeout = originalClearTimeout;
   ratelimit.limit = originalRateLimit;
+  protectedDownloadInternals.headBlob = originalHeadBlob;
 }
 
 test.afterEach(() => {
@@ -72,6 +94,8 @@ test.afterEach(() => {
 });
 
 test('subscribe route returns 503 when Beehiiv is not configured', async () => {
+  setUpstashEnv();
+  allowRateLimit();
   delete process.env.BEEHIIV_API_KEY;
   delete process.env.BEEHIIV_PUBLICATION_ID;
 
@@ -81,21 +105,6 @@ test('subscribe route returns 503 when Beehiiv is not configured', async () => {
   assert.deepEqual(await response.json(), {
     ok: false,
     message: 'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
-  });
-});
-
-test('subscribe route returns 503 when Upstash rate limiting is not configured', async () => {
-  setBeehiivEnv();
-  delete process.env.UPSTASH_REDIS_REST_URL;
-  delete process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
-
-  assert.equal(response.status, 503);
-  assert.deepEqual(await response.json(), {
-    ok: false,
-    message:
-      'Newsletter signup is not configured yet. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN first.',
   });
 });
 
@@ -114,6 +123,25 @@ test('subscribe route returns 503 when Upstash rate limiting is unreachable', as
     ok: false,
     message:
       'Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.',
+  });
+});
+
+test('subscribe route returns 503 when the protected asset download URL cannot be prepared', async () => {
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+
+  protectedDownloadInternals.headBlob = (async () => {
+    throw new Error('blob unavailable');
+  }) as typeof protectedDownloadInternals.headBlob;
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
+
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), {
+    ok: false,
+    message:
+      'Newsletter signup is temporarily unavailable. The protected download asset could not be prepared. Confirm the Vercel Blob file exists and try again.',
   });
 });
 
@@ -151,7 +179,7 @@ test('subscribe route returns 400 for invalid email addresses', async () => {
   assert.equal((await response.json()).message, 'Enter a valid email address to subscribe.');
 });
 
-test('subscribe route returns 400 for invalid email addresses before rate limit configuration checks', async () => {
+test('subscribe route returns 400 for invalid email addresses before rate limiting runs', async () => {
   setBeehiivEnv();
   delete process.env.UPSTASH_REDIS_REST_URL;
   delete process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -160,6 +188,26 @@ test('subscribe route returns 400 for invalid email addresses before rate limit 
 
   assert.equal(response.status, 400);
   assert.equal((await response.json()).message, 'Enter a valid email address to subscribe.');
+});
+
+test('subscribe route enforces rate limits before Beehiiv configuration checks', async () => {
+  setUpstashEnv();
+  delete process.env.BEEHIIV_API_KEY;
+  delete process.env.BEEHIIV_PUBLICATION_ID;
+
+  ratelimit.limit = (async () =>
+    createRateLimitResult(false, Date.now() + 60_000, 0)) as unknown as typeof ratelimit.limit;
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
+  const retryAfter = Number(response.headers.get('retry-after'));
+
+  assert.equal(response.status, 429);
+  assert.equal(Number.isFinite(retryAfter), true);
+  assert.equal(retryAfter >= 1 && retryAfter <= 60, true);
+  assert.deepEqual(await response.json(), {
+    ok: false,
+    message: 'Too many signup attempts. Please try again in a minute.',
+  });
 });
 
 test('subscribe route returns 403 for off-site requests', async () => {
@@ -426,6 +474,12 @@ test('subscribe route returns 200 on a successful Beehiiv response', async () =>
       email: 'reader@example.com',
       reactivate_existing: false,
       referring_site: 'http://localhost',
+      custom_fields: [
+        {
+          name: 'Protected Download URL',
+          value: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
+        },
+      ],
       send_welcome_email: true,
       utm_source: 'website',
       utm_medium: 'organic',
@@ -464,6 +518,12 @@ test('subscribe route defaults the placement source to unknown when omitted', as
     assert.deepEqual(JSON.parse(String(init.body)), {
       email: 'reader@example.com',
       reactivate_existing: false,
+      custom_fields: [
+        {
+          name: 'Protected Download URL',
+          value: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
+        },
+      ],
       send_welcome_email: true,
       utm_source: 'website',
       utm_medium: 'organic',
@@ -484,4 +544,41 @@ test('subscribe route defaults the placement source to unknown when omitted', as
     ok: true,
     message: "You're in. Check your inbox for Beehiiv's confirmation email.",
   });
+});
+
+test('subscribe route enrolls the Beehiiv welcome automation when configured', async () => {
+  setBeehiivEnv();
+  setUpstashEnv();
+  allowRateLimit();
+  process.env.BEEHIIV_WELCOME_AUTOMATION_ID = 'aut_welcome_123';
+
+  globalThis.fetch = async (input, init) => {
+    assert.equal(String(input), 'https://api.beehiiv.com/v2/publications/test-publication/subscriptions');
+    assert.ok(init?.body);
+    assert.deepEqual(JSON.parse(String(init.body)), {
+      email: 'reader@example.com',
+      reactivate_existing: false,
+      referring_site: 'http://localhost',
+      custom_fields: [
+        {
+          name: 'Protected Download URL',
+          value: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
+        },
+      ],
+      send_welcome_email: false,
+      automation_ids: ['aut_welcome_123'],
+      utm_source: 'website',
+      utm_medium: 'organic',
+      utm_campaign: 'site-signup',
+      utm_content: 'unknown',
+    });
+    return new Response(JSON.stringify({ data: { id: 'sub_automation' } }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
+
+  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
+
+  assert.equal(response.status, 200);
 });

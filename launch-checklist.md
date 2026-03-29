@@ -62,8 +62,10 @@
 4. Set environment variables:
    - `BEEHIIV_API_KEY` → your Beehiiv API key (added in Step 4)
    - `BEEHIIV_PUBLICATION_ID` → your Beehiiv publication ID
+   - `BLOB_READ_WRITE_TOKEN` → your Vercel Blob runtime token for protected asset delivery
    - `NEXT_PUBLIC_SITE_URL` → your production site URL
    - `NEXT_PUBLIC_SITE_NAME` → `AI Security Brief`
+   - Optional: `BEEHIIV_WELCOME_AUTOMATION_ID` → your Beehiiv welcome automation ID if you want the subscribe route to enroll an automation instead of sending the default welcome email
 5. Deploy → Note your `.vercel.app` preview URL
 6. Add custom domain in Vercel → Project Settings → Domains → Add your purchased domain
 7. Set up GitHub Actions secrets:
@@ -84,10 +86,14 @@
 6. Generate API key: Settings → Integrations → API
 7. Copy API key to `.env.local` as `BEEHIIV_API_KEY`
 8. Copy Publication ID to `.env.local` as `BEEHIIV_PUBLICATION_ID`
-9. Verify `/newsletter` can create a real signup through `/api/subscribe`
-10. Create Issue #1 using content from `newsletter-issue-001.md`
-11. Preview → Test send to yourself
-12. Publish or schedule Issue #1
+9. Upload `protected-assets/ai-threat-landscape-2026-cheatsheet.pdf` into Vercel Blob with that exact pathname
+10. Ensure your Beehiiv welcome email or automation renders the custom field `Protected Download URL`
+11. Optional: if using a Beehiiv automation, add `BEEHIIV_WELCOME_AUTOMATION_ID` to `.env.local` and Vercel before testing
+12. Verify `/newsletter` can create a real signup through `/api/subscribe`
+13. Confirm the subscriber receives the intended Beehiiv welcome flow and that the signed PDF link works
+14. Create Issue #1 using content from `newsletter-issue-001.md`
+15. Preview → Test send to yourself
+16. Publish or schedule Issue #1
 
 ---
 
@@ -97,8 +103,11 @@
 ```
 BEEHIIV_API_KEY=your-beehiiv-api-key
 BEEHIIV_PUBLICATION_ID=your-publication-id
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-read-write-token
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 NEXT_PUBLIC_SITE_NAME=AI Security Brief
+# Optional: only if you want the subscribe route to enroll a Beehiiv automation
+# BEEHIIV_WELCOME_AUTOMATION_ID=aut_your-welcome-automation-id
 ```
 
 **Run the local release checks before you publish anything:**
@@ -110,8 +119,11 @@ pnpm verify:release
 ```bash
 vercel env add BEEHIIV_API_KEY
 vercel env add BEEHIIV_PUBLICATION_ID
+vercel env add BLOB_READ_WRITE_TOKEN
 vercel env add NEXT_PUBLIC_SITE_URL
 vercel env add NEXT_PUBLIC_SITE_NAME
+# Optional
+# vercel env add BEEHIIV_WELCOME_AUTOMATION_ID
 ```
 
 ---

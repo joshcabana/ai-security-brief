@@ -11,6 +11,8 @@ const packageJson = JSON.parse(await readFile(path.join(repoDir, 'package.json')
 const packageManagerSpec = typeof packageJson.packageManager === 'string'
   ? packageJson.packageManager
   : 'pnpm@10.23.0';
+const protectedAssetPath = 'protected-assets/ai-threat-landscape-2026-cheatsheet.pdf';
+const protectedAssetDownloadUrl = 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=smoke-test';
 
 function findFreePort() {
   return new Promise((resolve, reject) => {
@@ -180,6 +182,13 @@ async function startMockBeehiivServer() {
     }
 
     const payload = JSON.parse(requestBody);
+    assert.deepEqual(payload.custom_fields, [
+      {
+        name: 'Protected Download URL',
+        value: protectedAssetDownloadUrl,
+      },
+    ]);
+
     if (payload.email === 'error@example.com') {
       response.writeHead(422, { 'Content-Type': 'application/json' });
       response.end(JSON.stringify({ errors: [{ message: 'Mock Beehiiv rejected the signup request.' }] }));
@@ -286,6 +295,48 @@ async function startMockUpstashServer() {
   };
 }
 
+async function startMockBlobServer() {
+  const port = await findFreePort();
+  const server = createHttpServer((request, response) => {
+    const requestUrl = new URL(request.url ?? '/', `http://127.0.0.1:${port}`);
+    const pathname = requestUrl.searchParams.get('url');
+
+    if (request.method !== 'GET' || pathname !== protectedAssetPath) {
+      response.writeHead(404, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify({ error: { code: 'not_found', message: 'Not found' } }));
+      return;
+    }
+
+    if (request.headers.authorization !== 'Bearer vercel_blob_rw_store123_smoke-test') {
+      response.writeHead(403, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify({ error: { code: 'forbidden', message: 'Forbidden' } }));
+      return;
+    }
+
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify({
+      pathname: protectedAssetPath,
+      url: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf',
+      downloadUrl: protectedAssetDownloadUrl,
+      size: 2048,
+      contentType: 'application/pdf',
+      contentDisposition: 'attachment; filename="ai-threat-landscape-2026-cheatsheet.pdf"',
+      cacheControl: 'private, max-age=0',
+      uploadedAt: '2026-03-29T00:00:00.000Z',
+      etag: 'smoke-test-etag',
+    }));
+  });
+
+  await new Promise((resolve) => server.listen(port, '127.0.0.1', resolve));
+
+  return {
+    baseUrl: `http://127.0.0.1:${port}`,
+    async stop() {
+      await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+    },
+  };
+}
+
 function extractArticleLinks(html, knownSlugs) {
   return knownSlugs.filter((slug) => html.includes(`/blog/${slug}`));
 }
@@ -342,10 +393,7 @@ async function main() {
     const privacyHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog?category=Privacy`).then((response) => response.text());
     assert.deepEqual(extractArticleLinks(privacyHtml, articleSlugs), privacyArticles.map((a) => a.slug));
 
-    const removedLeadMagnetResponse = await fetch(
-      `http://127.0.0.1:${coldStartPort}/ai-threat-landscape-2026-cheatsheet.pdf`,
-    );
-    assert.equal(removedLeadMagnetResponse.status, 404);
+    assert.doesNotMatch(homeHtml, /protected-assets\//);
 
     for (const article of manifest.articles) {
       const articleHtml = await fetch(`http://127.0.0.1:${coldStartPort}/blog/${article.slug}`).then((response) => response.text());
@@ -375,7 +423,7 @@ async function main() {
     assert.equal(missingConfigResult.response.status, 503);
     assert.equal(
       missingConfigResult.payload.message,
-      'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
+      'Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.',
     );
   } finally {
     await coldStartApp.stop();
@@ -383,6 +431,7 @@ async function main() {
 
   const mockBeehiiv = await startMockBeehiivServer();
   const mockUpstash = await startMockUpstashServer();
+  const mockBlob = await startMockBlobServer();
   const configuredPort = await findFreePort();
   const configuredApp = startApp(configuredPort, {
     BEEHIIV_API_KEY: 'smoke-test-key',
@@ -390,6 +439,8 @@ async function main() {
     BEEHIIV_API_BASE_URL: mockBeehiiv.baseUrl,
     UPSTASH_REDIS_REST_URL: mockUpstash.baseUrl,
     UPSTASH_REDIS_REST_TOKEN: 'smoke-test-token',
+    BLOB_READ_WRITE_TOKEN: 'vercel_blob_rw_store123_smoke-test',
+    VERCEL_BLOB_API_URL: mockBlob.baseUrl,
   });
 
   try {
@@ -487,6 +538,7 @@ async function main() {
     await configuredApp.stop();
     await mockBeehiiv.stop();
     await mockUpstash.stop();
+    await mockBlob.stop();
   }
 }
 

@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
+import { getProtectedAssetDownloadUrl } from '@/lib/protected-download';
 import { ratelimit } from '@/lib/rate-limit';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_SOURCE = 'unknown';
 const DEFAULT_API_BASE_URL = 'https://api.beehiiv.com';
+const PROTECTED_ASSET_PATH = 'protected-assets/ai-threat-landscape-2026-cheatsheet.pdf';
+const PROTECTED_DOWNLOAD_FIELD_NAME = 'Protected Download URL';
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_RETRY_ATTEMPTS = 2;
 const RETRY_BASE_DELAY_MS = 250;
@@ -24,6 +27,11 @@ type SubscribeRequestPayload = {
   website?: string;
 };
 
+type BeehiivCustomField = {
+  name: string;
+  value: string;
+};
+
 type BeehiivSubscribeBody = {
   email: string;
   reactivate_existing: boolean;
@@ -33,6 +41,8 @@ type BeehiivSubscribeBody = {
   utm_campaign: string;
   utm_content: string;
   referring_site?: string;
+  custom_fields?: BeehiivCustomField[];
+  automation_ids?: string[];
 };
 
 type BeehiivErrorPayload = {
@@ -75,13 +85,6 @@ function getBeehiivConfig(): BeehiivConfig {
     apiBaseUrl,
     configured: Boolean(apiKey && publicationId),
   };
-}
-
-function isRateLimitConfigured(): boolean {
-  return Boolean(
-    process.env.UPSTASH_REDIS_REST_URL?.trim() &&
-      process.env.UPSTASH_REDIS_REST_TOKEN?.trim(),
-  );
 }
 
 function getRequestIp(request: Request): string {
@@ -162,6 +165,16 @@ function normalizeSource(source: unknown): string {
 
 function getReferringSite(request: Request): string {
   return getSubmittedOrigin(request) ?? getAllowedOrigins(request)[0] ?? '';
+}
+
+function getBeehiivWelcomeAutomationIds(): string[] {
+  const automationId = process.env.BEEHIIV_WELCOME_AUTOMATION_ID?.trim();
+
+  if (!automationId) {
+    return [];
+  }
+
+  return [automationId];
 }
 
 function isVerifiedSignupRequest(request: Request): boolean {
@@ -377,30 +390,6 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  const { apiKey, publicationId, apiBaseUrl, configured } = getBeehiivConfig();
-
-  if (!configured || !apiKey || !publicationId) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
-      },
-      { status: 503 },
-    );
-  }
-
-  if (!isRateLimitConfigured()) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          'Newsletter signup is not configured yet. Add UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN first.',
-      },
-      { status: 503 },
-    );
-  }
-
   const requestIp = getRequestIp(request);
   let rateLimitResult: RateLimitResponse;
 
@@ -430,16 +419,54 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  const { apiKey, publicationId, apiBaseUrl, configured } = getBeehiivConfig();
+
+  if (!configured || !apiKey || !publicationId) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          'Newsletter signup is not configured yet. Add BEEHIIV_API_KEY and BEEHIIV_PUBLICATION_ID first.',
+      },
+      { status: 503 },
+    );
+  }
+
+  let protectedAssetDownloadUrl = '';
+
+  try {
+    protectedAssetDownloadUrl = await getProtectedAssetDownloadUrl(PROTECTED_ASSET_PATH);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logFailure('protected_asset', errorMessage);
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          'Newsletter signup is temporarily unavailable. The protected download asset could not be prepared. Confirm the Vercel Blob file exists and try again.',
+      },
+      { status: 503 },
+    );
+  }
+
   const referringSite = getReferringSite(request);
+  const welcomeAutomationIds = getBeehiivWelcomeAutomationIds();
   const upstreamBody: BeehiivSubscribeBody = {
     email,
     reactivate_existing: false,
-    send_welcome_email: true,
+    send_welcome_email: welcomeAutomationIds.length === 0,
     utm_source: 'website',
     utm_medium: 'organic',
     utm_campaign: 'site-signup',
     utm_content: source,
+    custom_fields: [
+      {
+        name: PROTECTED_DOWNLOAD_FIELD_NAME,
+        value: protectedAssetDownloadUrl,
+      },
+    ],
     ...(referringSite ? { referring_site: referringSite } : {}),
+    ...(welcomeAutomationIds.length > 0 ? { automation_ids: welcomeAutomationIds } : {}),
   };
 
   let upstreamResponse: Response;
