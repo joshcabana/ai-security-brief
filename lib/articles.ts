@@ -98,7 +98,9 @@ export async function parseArticleSource(fileName: string, source: string): Prom
   const { data, content } = matter(source);
   const title = assertString(data.title, 'title', fileName);
   const keywords = assertStringArray(data.keywords, 'keywords', fileName);
-  const resolvedBody = replaceAffiliateTokens(content.trim(), process.env);
+  const category = assertString(data.category, 'category', fileName);
+  const isAffiliateEnabled = category !== 'AI Threats';
+  const resolvedBody = replaceAffiliateTokens(content.trim(), isAffiliateEnabled ? process.env : {});
   const slug = assertString(data.slug, 'slug', fileName);
   const article = {
     title,
@@ -106,7 +108,7 @@ export async function parseArticleSource(fileName: string, source: string): Prom
     date: assertDateString(data.date, 'date', fileName),
     author: assertString(data.author, 'author', fileName),
     excerpt: assertString(data.excerpt, 'excerpt', fileName),
-    category: assertString(data.category, 'category', fileName),
+    category,
     featured: assertBoolean(data.featured, 'featured', fileName),
     metaTitle: assertString(data.meta_title, 'meta_title', fileName),
     metaDescription: assertString(data.meta_description, 'meta_description', fileName),

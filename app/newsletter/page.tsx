@@ -7,10 +7,10 @@ import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
 export const metadata: Metadata = createPageMetadata({
   canonicalPath: '/newsletter',
-  title: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
+  title: 'Newsletter — Weekly AI Security Briefings',
   description:
-    'Subscribe to the AI Security Brief newsletter for weekly threat intelligence, privacy tool reviews, and cybersecurity analysis.',
-  openGraphTitle: 'Newsletter — Weekly AI Threat Intelligence & Security Briefings',
+    'Subscribe to the AI Security Brief newsletter for weekly AI security briefings, privacy tool reviews, and practical analysis.',
+  openGraphTitle: 'Newsletter — Weekly AI Security Briefings',
   openGraphDescription:
     'Free weekly briefings on AI-powered threats, privacy tool reviews, and defensive strategies for security teams and builders.',
   twitterTitle: 'AI Security Brief Newsletter',
@@ -21,7 +21,7 @@ export const metadata: Metadata = createPageMetadata({
 const benefits = [
   {
     icon: '🎯',
-    title: 'Curated Threat Intelligence',
+    title: 'Curated Security Briefings',
     description:
       'A focused digest of major AI security incidents, model abuse patterns, and defensive shifts worth tracking.',
   },
@@ -107,7 +107,7 @@ export default async function NewsletterPage() {
 
           <div className="section-label mb-5 justify-center">
             <span className="inline-flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-widest" style={{ color: '#00b4ff' }}>
-              Weekly Intelligence
+              Weekly Briefings
             </span>
           </div>
 
@@ -116,7 +116,7 @@ export default async function NewsletterPage() {
           </h1>
 
           <p className="text-xl leading-relaxed mb-10" style={{ color: '#8b949e' }}>
-            Subscribe for weekly threat intelligence, privacy shifts, and practical tooling notes for teams operating in the AI era.
+            Subscribe for weekly AI security briefings, privacy shifts, and practical tooling notes for teams operating in the AI era.
           </p>
 
           <div
@@ -162,7 +162,7 @@ export default async function NewsletterPage() {
                 What you get
               </span>
             </div>
-            <h2 className="text-white">Intelligence that earns your inbox</h2>
+            <h2 className="text-white">Briefings worth your inbox</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger">

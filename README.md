@@ -98,6 +98,8 @@ The app will be available at `http://localhost:3000`.
 | `AFFILIATE_PROTON` | Optional | Legacy Proton fallback |
 | `AFFILIATE_PROTON_VPN` | Optional | Runtime link for Proton VPN |
 | `AFFILIATE_PROTON_MAIL` | Optional | Runtime link for Proton Mail |
+| `AFFILIATE_SURFSHARK` | Optional | Runtime link for Surfshark VPN |
+| `AFFILIATE_INCOGNI` | Optional | Runtime link for Incogni data removal |
 
 `verify:ops` also flags stale runtime variables such as `NEXT_PUBLIC_BEEHIIV_PUBLICATION_ID`, `SUPABASE_URL`, and `SUPABASE_ANON_KEY`.
 

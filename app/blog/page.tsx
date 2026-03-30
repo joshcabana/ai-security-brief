@@ -45,8 +45,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       >
         <div className="absolute inset-0 bg-grid opacity-40 pointer-events-none" aria-hidden="true" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="section-label mb-3">Intelligence Archive</div>
-          <h1 className="text-white mb-4">Threat Intelligence &amp; Analysis</h1>
+          <div className="section-label mb-3">Briefing Archive</div>
+          <h1 className="text-white mb-4">AI Threats, Privacy &amp; Analysis</h1>
           <p className="text-lg max-w-2xl" style={{ color: '#8b949e' }}>
             Long-form briefings on AI-powered threats, privacy defence, and security tooling, with citations and practical context for technical teams.
           </p>

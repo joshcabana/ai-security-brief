@@ -31,7 +31,7 @@ function parseLiveProgramsFromStatusDoc(markdown) {
       continue;
     }
 
-    if (cells[1].includes('Live in production')) {
+    if (cells[1].includes('Live')) {
       livePrograms.add(normalizeProgramName(cells[0]));
     }
   }
@@ -51,7 +51,7 @@ function parseLiveProgramsFromIntakeDoc(markdown) {
 
     const statusText = match[2].split('—')[0]?.trim() ?? match[2].trim();
 
-    if (statusText.includes('Live in production')) {
+    if (statusText.includes('Live')) {
       livePrograms.add(normalizeProgramName(match[1]));
     }
   }

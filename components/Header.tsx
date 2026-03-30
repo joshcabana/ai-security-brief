@@ -48,7 +48,7 @@ export default function Header() {
                   letterSpacing: '0.18em',
                 }}
               >
-                THREAT INTELLIGENCE
+                AI SECURITY BRIEFINGS
               </span>
             </div>
           </Link>

@@ -7,7 +7,7 @@ export const metadata: Metadata = createPageMetadata({
   canonicalPath: '/about',
   title: 'About',
   description:
-    'About AI Security Brief — independent intelligence on AI-powered cyber threats, privacy tools, and security strategies.',
+    'About AI Security Brief — AI-assisted security briefings on AI threats, privacy tools, and defensive strategy, reviewed before publication.',
 });
 
 const coverageAreas = [
@@ -21,7 +21,7 @@ const coverageAreas = [
     icon: '🔒',
     title: 'Privacy Tools & Defence',
     description:
-      'Hands-on reviews of VPNs, encrypted email, password managers, and endpoint protection — evaluated for real-world security value.',
+      'Practical reviews of VPNs, encrypted email, password managers, and endpoint protection, assessed using public documentation, audit history, and operator relevance.',
   },
   {
     icon: '🧠',
@@ -51,7 +51,7 @@ export default function AboutPage() {
         />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="section-label mb-3">About</div>
-          <h1 className="text-white mb-4">Independent AI Security Intelligence</h1>
+          <h1 className="text-white mb-4">AI Security Briefings for Technical Teams</h1>
           <p className="text-lg leading-relaxed" style={{ color: '#8b949e' }}>
             AI Security Brief is an independent publication built for technology professionals tracking AI-powered cyber threats, privacy risk, and the defensive tooling that holds up under pressure.
           </p>
@@ -63,7 +63,7 @@ export default function AboutPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Our mission</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              The security landscape is shifting fast. AI is amplifying both sides — giving defenders better detection while handing attackers scalable tools for phishing, reconnaissance, and evasion. Most coverage either hypes the threat or buries it in vendor marketing. We cut through both. AI Security Brief delivers research-led analysis written for practitioners, not press releases.
+              The security landscape is shifting fast. AI is amplifying both sides — giving defenders better detection while handing attackers scalable tools for phishing, reconnaissance, and evasion. Most coverage either hypes the threat or buries it in vendor marketing. We cut through both. AI Security Brief covers AI-powered threats, privacy risk, and defensive tooling with source-backed analysis for practitioners. We use automation to monitor developments quickly, then review and refine pieces before publication.
             </p>
           </section>
 
@@ -95,7 +95,7 @@ export default function AboutPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Publishing cadence</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              We publish new articles weekly, covering the latest developments across AI threats, privacy tooling, and security strategy. Each piece is informed by vendor advisories, official documentation, and reputable security reporting. AI-assisted drafting accelerates our workflow, and every article is reviewed and edited by a human before publication. Subscribers receive a weekly newsletter digest via Beehiiv with the latest briefings delivered straight to their inbox.
+              We publish new articles weekly, covering the latest developments across AI threats, privacy tooling, and security strategy. Each piece is informed by vendor advisories, official documentation, and reputable security reporting. We use AI to accelerate source triage, drafting, and editorial workflow. Published pieces are reviewed and edited by a human before publication. Subscribers receive a weekly newsletter digest via Beehiiv with the latest briefings delivered straight to their inbox.
             </p>
           </section>
 
@@ -145,7 +145,7 @@ export default function AboutPage() {
           >
             <h3 className="text-xl font-bold text-white mb-3">Stay briefed</h3>
             <p className="text-sm mb-6" style={{ color: '#8b949e' }}>
-              Subscribe for weekly AI security intelligence, tool reviews, and threat analysis.
+              Subscribe for weekly AI security briefings, tool reviews, and practical threat analysis.
             </p>
             <NewsletterForm variant="default" buttonText="Subscribe" source="about-page" />
           </div>
