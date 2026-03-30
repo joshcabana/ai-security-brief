@@ -80,13 +80,13 @@ export default function CorrectionsPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">What happens next</h2>
             <p className="text-sm leading-relaxed mb-6" style={{ color: '#8b949e' }}>
-              Here's our correction process:
+              Here&apos;s our correction process:
             </p>
             <div className="space-y-4">
               <div>
                 <h3 className="text-base font-bold text-white mb-2">1. Acknowledge within 3 business days</h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-                  We'll confirm receipt of your report and let you know we're looking into it.
+                  We&apos;ll confirm receipt of your report and let you know we&apos;re looking into it.
                 </p>
               </div>
               <div>
@@ -98,7 +98,7 @@ export default function CorrectionsPage() {
               <div>
                 <h3 className="text-base font-bold text-white mb-2">3. Update the article</h3>
                 <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-                  If your report is valid, we'll update the article and add a visible correction note explaining what changed and why.
+                  If your report is valid, we&apos;ll update the article and add a visible correction note explaining what changed and why.
                 </p>
               </div>
               <div>
@@ -131,7 +131,7 @@ export default function CorrectionsPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Why transparency matters</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              Publishing corrections publicly isn't fun, but it's essential. It shows we take accuracy seriously, we listen to our readers, and we're willing to admit when we get things wrong. Trust isn't built by pretending perfection — it's built by acknowledging mistakes and fixing them quickly.
+              Publishing corrections publicly isn&apos;t fun, but it&apos;s essential. It shows we take accuracy seriously, we listen to our readers, and we&apos;re willing to admit when we get things wrong. Trust isn&apos;t built by pretending perfection — it&apos;s built by acknowledging mistakes and fixing them quickly.
             </p>
           </section>
         </div>

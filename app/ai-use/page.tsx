@@ -31,7 +31,7 @@ export default function AIUsePage() {
           <div className="section-label mb-3">Transparency</div>
           <h1 className="text-white mb-4">AI Use Policy</h1>
           <p className="text-lg leading-relaxed" style={{ color: '#8b949e' }}>
-            AI is a research accelerator, not a substitute for judgment. We disclose where it's used and maintain editorial accountability.
+            AI is a research accelerator, not a substitute for judgment. We disclose where it&apos;s used and maintain editorial accountability.
           </p>
         </div>
       </div>
@@ -41,7 +41,7 @@ export default function AIUsePage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">How we use AI</h2>
             <p className="text-sm leading-relaxed mb-4" style={{ color: '#8b949e' }}>
-              AI accelerates our research workflow where it adds genuine value. It helps us process volumes of technical documentation, distill complexity, and draft frameworks for human review. But it never replaces the judgment calls that define editorial integrity: selecting what matters, verifying facts, and deciding what's safe to publish.
+              AI accelerates our research workflow where it adds genuine value. It helps us process volumes of technical documentation, distill complexity, and draft frameworks for human review. But it never replaces the judgment calls that define editorial integrity: selecting what matters, verifying facts, and deciding what&apos;s safe to publish.
             </p>
           </section>
 
@@ -97,7 +97,7 @@ export default function AIUsePage() {
                 }}
               >
                 <p className="mb-2">
-                  <strong style={{ color: '#00b4ff' }}>No invented sources, statistics, or CVEs.</strong> Every fact is traced back to a primary source. If a source doesn't exist, it doesn't appear in our coverage.
+                  <strong style={{ color: '#00b4ff' }}>No invented sources, statistics, or CVEs.</strong> Every fact is traced back to a primary source. If a source doesn&apos;t exist, it doesn&apos;t appear in our coverage.
                 </p>
               </div>
               <div
@@ -147,7 +147,7 @@ export default function AIUsePage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Questions?</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              If you'd like to understand more about how we use AI, how we verify facts, or how our review process works, we're happy to explain. Transparency is part of our editorial practice, not a compliance checkbox.
+              If you&apos;d like to understand more about how we use AI, how we verify facts, or how our review process works, we&apos;re happy to explain. Transparency is part of our editorial practice, not a compliance checkbox.
             </p>
           </section>
         </div>

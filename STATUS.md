@@ -12,7 +12,7 @@ Date: 31 March 2026
 
 # AI Security Brief — Project Status
 
-**Pinned baseline:** `origin/main` @ `a0ef25a` **Last updated:** 31 March 2026 **Updated by:** AI Security Brief Handover
+**Pinned baseline:** `origin/main` @ `95e8d93` **Last updated:** 31 March 2026 **Updated by:** AI Security Brief Handover
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions. Public `/status` surfaces use runtime deployment metadata as the authoritative deploy identity and use this document for operator context.
 

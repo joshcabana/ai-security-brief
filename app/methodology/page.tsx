@@ -150,7 +150,7 @@ export default function MethodologyPage() {
           <div style={{ height: '1px', background: '#21262d' }} aria-hidden="true" />
 
           <section>
-            <h2 className="text-white text-xl font-bold mb-4">What "reviewed" means</h2>
+            <h2 className="text-white text-xl font-bold mb-4">What &quot;reviewed&quot; means</h2>
             <p className="text-sm leading-relaxed mb-6" style={{ color: '#8b949e' }}>
               Before publication, every article undergoes a review checklist:
             </p>
@@ -176,7 +176,7 @@ export default function MethodologyPage() {
                   ✓
                 </span>
                 <span>
-                  <strong style={{ color: '#8b949e' }}>Mitigations actionable:</strong> If we recommend a defence or fix, we ensure it's practical and actually addresses the threat.
+                  <strong style={{ color: '#8b949e' }}>Mitigations actionable:</strong> If we recommend a defence or fix, we ensure it&apos;s practical and actually addresses the threat.
                 </span>
               </li>
               <li className="flex items-start">
@@ -195,7 +195,7 @@ export default function MethodologyPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Conflicts and monetization</h2>
             <p className="text-sm leading-relaxed mb-4" style={{ color: '#8b949e' }}>
-              We're transparent about how we're funded:
+              We&apos;re transparent about how we&apos;re funded:
             </p>
             <ul className="space-y-3 text-sm" style={{ color: '#8b949e' }}>
               <li className="flex items-start">
@@ -234,7 +234,7 @@ export default function MethodologyPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Got questions about our standards?</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              We're committed to transparency. If you want to know more about how we source a particular article, how we verify facts, or how our review process works, reach out at{' '}
+              We&apos;re committed to transparency. If you want to know more about how we source a particular article, how we verify facts, or how our review process works, reach out at{' '}
               <Link href="mailto:hello@aisecuritybrief.com" className="font-medium transition-colors duration-200 hover:text-[#00b4ff]" style={{ color: '#00b4ff' }}>
                 hello@aisecuritybrief.com
               </Link>.
