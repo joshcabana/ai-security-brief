@@ -1,20 +1,29 @@
 ---
-title: "Security Researchers Sound the Alarm on Vulnerabilities in AI-Generated Code"
-slug: "security-researchers-sound-the-alarm-on-vulnerabilities-in-ai-generated-code"
-date: "2026-03-30"
-author: "AI Security Brief"
-excerpt: "A surge in vulnerabilities linked to AI-generated code has prompted security researchers to call for urgent improvements in code review and development practices. This article explores the risks, trends, and defensive strategies for organizations leveraging AI in software development."
-category: "AI Threats"
+title: Security Researchers Sound the Alarm on Vulnerabilities in AI-Generated Code
+slug: security-researchers-sound-the-alarm-on-vulnerabilities-in-ai-generated-code
+date: '2026-03-30'
+author: AI Security Brief
+excerpt: >-
+  A surge in vulnerabilities linked to AI-generated code has prompted security
+  researchers to call for urgent improvements in code review and development
+  practices. This article explores the risks, trends, and defensive strategies
+  for organizations leveraging AI in software development.
+category: AI Threats
 featured: false
-meta_title: "AI-Generated Code Under Scrutiny: Security Researchers Warn of Rising Vulnerabilities"
-meta_description: "Security researchers report a significant increase in vulnerabilities tied to AI-generated code. Discover the risks, trends, and best practices for securing AI-assisted software development."
+meta_title: >-
+  AI-Generated Code Under Scrutiny: Security Researchers Warn of Rising
+  Vulnerabilities
+meta_description: >-
+  Security researchers report a significant increase in vulnerabilities tied to
+  AI-generated code. Discover the risks, trends, and best practices for securing
+  AI-assisted software development.
 keywords:
-  - "AI-generated code"
-  - "software vulnerabilities"
-  - "secure code review"
-  - "AI security"
-  - "CVE trends"
-read_time: "5 min"
+  - AI-generated code
+  - software vulnerabilities
+  - secure code review
+  - AI security
+  - CVE trends
+read_time: 5 min
 ---
 # Security Researchers Sound the Alarm on Vulnerabilities in AI-Generated Code
 
