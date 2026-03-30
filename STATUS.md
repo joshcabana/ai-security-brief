@@ -1,22 +1,22 @@
-## 100% Completion Achieved
+## Launch Promotion Blocked
 
-Date: 29 March 2026
+Date: 31 March 2026
 
-- `main` is GREEN at `b48d832` after the latest status and ops hardening merge on 29 March 2026
-- Latest post-merge `Verify and Deploy` run `23700345233` passed `verify`, `deploy`, `verify_live`, and `status`
-- Live production checks passed again on 29 March 2026: `/` returned `200`, same-site invalid subscribe returned `400`, and the removed cheatsheet asset returned `404`
-- Signup protection is live: same-site request validation plus Upstash-backed distributed rate limiting at 5 req/min per IP
-- First Beehiiv issue remains scheduled for Monday 30 March 2026 at 1:00 PM AEDT; first real metrics will appear after delivery
+- `main` remains pinned at `2d16a240`, but valid same-site newsletter signup is currently failing with `503` in production
+- Latest post-merge `Verify and Deploy` run `23728134983` passed `verify`, `deploy`, `verify_live`, and `status`, but those gates did not exercise a real valid signup request
+- Live checks on 31 March 2026 confirmed `/` still returns `200` and same-site invalid subscribe still returns `400`, while valid same-site subscribe returns `503`
+- PR #51 preview returns the same `503` with message `Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.`
+- Do not merge PR #51 until `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are restored in Vercel for preview and production and a live inbox smoke test passes
 
 ---
 
 # AI Security Brief — Project Status
 
-**Pinned baseline:** `origin/main` @ `b48d832` **Last updated:** 29 March 2026 **Updated by:** Codex (main baseline refresh; launch hardening follow-through)
+**Pinned baseline:** `origin/main` @ `2d16a240` **Last updated:** 31 March 2026 **Updated by:** Codex (launch promotion baseline refresh)
 
 > This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions. Public `/status` surfaces use runtime deployment metadata as the authoritative deploy identity and use this document for operator context.
 
-**Verification pipeline:** production remains GREEN on `main`; the latest `Verify and Deploy` run `23700345233` completed successfully on commit `b48d832`.
+**Verification pipeline:** CI remains GREEN on `main`, but live valid signup is BLOCKED; the latest `Verify and Deploy` run `23728134983` completed successfully on commit `2d16a240` without covering the real-subscriber happy path.
 
 ---
 
@@ -29,7 +29,7 @@ Date: 29 March 2026
 | Framework | Next.js 15 + Tailwind 3.4.17 |
 | Hosting | Vercel (auto-deploys on push to `main`) |
 | Repository license | MIT (`LICENSE`) |
-| Latest deploy | `main` @ `b48d832` — READY (`Verify and Deploy` run `23700345233`) |
+| Latest deploy | `main` @ `2d16a240` — READY in Vercel, but launch-blocked because valid same-site `/api/subscribe` requests currently return `503` |
 | Newsletter | Beehiiv Scale plan ($49/mo, activated 27 Mar 2026) — referral program ON |
 | Analytics | Plausible live; homepage browser DOM exposes `https://plausible.io/js/script.js` with `data-domain="aithreatbrief.com"` |
 | Monitoring | UptimeRobot HTTP(S) monitors configured for `/` and `/tools`, 5-minute cadence, email alerts enabled |
@@ -37,7 +37,7 @@ Date: 29 March 2026
 | Affiliate rendering | `/tools` and NordVPN article links verified live on 23 March 2026 |
 | Rate limiting | Upstash-backed distributed 5 req/min per IP on `/api/subscribe` |
 | Public status surface | `/status` and `/status.json` (runtime snapshot) |
-| Tests | Latest post-merge `main` run `23700345233` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 29 Mar 2026 returned `200 /`, `400` for same-site invalid subscribe, and `404` for the retired public cheatsheet path. |
+| Tests | Latest post-merge `main` run `23728134983` passed `verify`, `deploy`, `verify_live`, and `status`. Live spot checks on 31 March 2026 still show `200 /`, `400` on same-site invalid subscribe, and `404` for the retired public cheatsheet path, but a real valid signup now returns `503`. |
 
 ## Content
 
@@ -49,9 +49,10 @@ Date: 29 March 2026
 
 ## Open PRs
 
-None.
+- #51 — draft: `fix(newsletter): Remove app-managed lead magnet delivery`
 
 Most recent merges:
+- #49 — `fix(launch): Harden protected signup delivery`
 - #47 — latest status and ops hardening merge on `main`
 - #46 — `docs(status): Sync repo truth with merged main`
 - #45 — `ci(actions): Upgrade pnpm setup to v5`
@@ -92,6 +93,8 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 | `BEEHIIV_PUBLICATION_ID` | AI Security Brief publication |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO |
 | `NEXT_PUBLIC_SITE_NAME` | Site name for metadata and verification checks |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL for distributed rate limiting on valid signup requests |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token for distributed rate limiting on valid signup requests |
 
 ### Optional (set to activate):
 
@@ -136,15 +139,22 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] PureVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [x] Transfer newsletter issue #1 to Beehiiv — **scheduled Mon 30 Mar 2026 1:00 PM AEDT**
+- [ ] Restore `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in Vercel preview + production; valid signups are currently blocked with `503`
 - [ ] Weekly: transfer newsletter draft to Beehiiv and send. Follow `beehiiv-setup.md` → `First Live Send and Metrics Runbook`.
 
-## Verification Notes (29 March 2026)
+## Verification Notes (31 March 2026)
+
+- A live same-site `POST https://aithreatbrief.com/api/subscribe` with a valid email returned `503` on 31 March 2026 with message `Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.` This is now the active launch blocker on `main`.
+- The PR #51 preview deployment at `ai-security-brief-git-codex-launch-c5dcf5-josh-cabanas-projects.vercel.app` returns the same `503` on a valid same-site signup after bypassing Vercel preview protection, confirming the failure is not specific to Beehiiv-only delivery changes.
+- Vercel project configuration currently exposes Beehiiv and site metadata env vars, but no `UPSTASH_REDIS_REST_URL` or `UPSTASH_REDIS_REST_TOKEN`, and there are no attached Vercel marketplace resources for this project.
+- PR #49 merged into `main` as `2d16a240d7eb8c1ed241e70bbb2f722a00eaa588`; the latest launch hardening baseline is live and the corresponding `Verify and Deploy` run `23728134983` completed successfully on 30 March 2026.
+- PR #51 is currently open as a draft release-promotion follow-up to remove app-managed lead magnet delivery and keep Beehiiv email content as the sole cheatsheet delivery path.
 
 - PR #46 merged into `main` as `32ac4b326c60cf25600053da92c2fe503b6dc738`; `README.md`, `STATUS.md`, `beehiiv-setup.md`, and generated status metadata now match the merged repository truth.
-- The latest `main` baseline is `b48d8326cc306dd791efb3ae3d42b962944e7b84`, with successful `Verify and Deploy` run `23700345233` on 29 March 2026.
+- The previous `main` baseline was `b48d8326cc306dd791efb3ae3d42b962944e7b84`, with successful `Verify and Deploy` run `23700345233` on 29 March 2026.
 - PR #44 merged into `main` as `b6d322c35707ab53b03058dfd5d7c38f7b892276`; the shipped fix validates subscribe input before Beehiiv or Upstash readiness checks and keeps the removed cheatsheet asset at `404`.
 - PR #45 merged into `main` as `9f47de4e05d96cabaac033fef158dd07793af064`; all workflows now use `pnpm/action-setup@v5`, removing the deprecated action runtime from CI.
-- Latest post-merge `Verify and Deploy` run `23700345233` completed successfully on `main`.
+- Latest post-merge `Verify and Deploy` run `23728134983` completed successfully on `main`.
 - Live spot checks on 29 March 2026 confirmed `GET /` returned `200`, same-site `POST /api/subscribe` with an invalid email returned `400`, and the retired public cheatsheet path returned `404`.
 
 ## Affiliate Link Audit (23 March 2026)
