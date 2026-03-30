@@ -34,6 +34,16 @@ interface StatusDocumentSnapshot {
   content_rows: StatusRow[];
   open_pull_requests: string[];
   recent_merges: string[];
+  drift: {
+    detected: boolean;
+    summary: string;
+    document_pinned_baseline_ref: string;
+    document_pinned_baseline_sha: string;
+    document_latest_deploy: string | null;
+    runtime_git_commit_ref: string | null;
+    runtime_git_commit_sha: string | null;
+    runtime_latest_deploy: string | null;
+  };
 }
 
 function renderStatusRows(rows: StatusRow[]) {
@@ -159,6 +169,14 @@ export default async function StatusPage() {
 
           <div>
             <div className="section-label mb-4">Document Baseline</div>
+            {baseline.drift.detected && (
+              <div
+                className="mb-4 rounded-2xl border px-4 py-4 text-sm leading-7"
+                style={{ borderColor: 'rgba(255, 166, 87, 0.35)', background: 'rgba(255, 166, 87, 0.08)', color: '#ffa657' }}
+              >
+                {baseline.drift.summary}
+              </div>
+            )}
             <dl className="space-y-3">{renderStatusRows(baselineRows)}</dl>
           </div>
 

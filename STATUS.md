@@ -14,7 +14,7 @@ Date: 29 March 2026
 
 **Pinned baseline:** `origin/main` @ `b48d832` **Last updated:** 29 March 2026 **Updated by:** Codex (main baseline refresh; launch hardening follow-through)
 
-> This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions.
+> This file is the single source of truth for project state. Update it on every meaningful commit to `main`. External tools (Perplexity, Codex, etc.) should read this file instead of inferring state from prior sessions. Public `/status` surfaces use runtime deployment metadata as the authoritative deploy identity and use this document for operator context.
 
 **Verification pipeline:** production remains GREEN on `main`; the latest `Verify and Deploy` run `23700345233` completed successfully on commit `b48d832`.
 

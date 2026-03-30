@@ -80,3 +80,58 @@ test('generate-status records repository license metadata from LICENSE', () => {
     rmSync(tempDirectoryPath, { recursive: true, force: true });
   }
 });
+
+test('generate-status prefers CI runtime identity over stale STATUS.md deploy prose', () => {
+  const tempDirectoryPath = mkdtempSync(path.join(tmpdir(), 'ai-security-brief-status-runtime-'));
+  const outputPath = path.join(tempDirectoryPath, 'status.json');
+  const command = spawnSync(process.execPath, [generateStatusScriptPath, '--output', outputPath], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      GITHUB_SHA: '1234567890abcdef1234567890abcdef12345678',
+      GITHUB_REF_NAME: 'main',
+    },
+  });
+
+  try {
+    assert.equal(command.status, 0, command.stderr);
+
+    const statusJson = JSON.parse(readFileSync(outputPath, 'utf8')) as {
+      status_document: {
+        pinned_baseline_ref: string;
+        pinned_baseline_sha: string;
+        verification_pipeline: string;
+        site_status: {
+          latest_deploy: string;
+        };
+        drift: {
+          detected: boolean;
+          runtime_git_commit_ref: string | null;
+          runtime_git_commit_sha: string | null;
+        };
+      };
+      runtime: {
+        git_commit_ref: string | null;
+        git_commit_sha: string | null;
+        target_env: string | null;
+      };
+    };
+
+    assert.equal(statusJson.runtime.git_commit_ref, 'main');
+    assert.equal(statusJson.runtime.git_commit_sha, '1234567890abcdef1234567890abcdef12345678');
+    assert.equal(statusJson.runtime.target_env, 'production');
+    assert.equal(statusJson.status_document.pinned_baseline_ref, 'origin/main');
+    assert.equal(statusJson.status_document.pinned_baseline_sha, '1234567890abcdef1234567890abcdef12345678');
+    assert.equal(
+      statusJson.status_document.site_status.latest_deploy,
+      '`main` @ `1234567890abcdef1234567890abcdef12345678` — runtime reported active deployment',
+    );
+    assert.match(statusJson.status_document.verification_pipeline, /Runtime currently reports active deploy `main` @ `1234567890abcdef1234567890abcdef12345678`/);
+    assert.equal(statusJson.status_document.drift.detected, true);
+    assert.equal(statusJson.status_document.drift.runtime_git_commit_ref, 'main');
+    assert.equal(statusJson.status_document.drift.runtime_git_commit_sha, '1234567890abcdef1234567890abcdef12345678');
+  } finally {
+    rmSync(tempDirectoryPath, { recursive: true, force: true });
+  }
+});

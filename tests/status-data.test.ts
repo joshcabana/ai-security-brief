@@ -1,50 +1,92 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 import test from 'node:test';
-import { buildStatusSnapshot, parseStatusDocument } from '../lib/status-data.mjs';
+import { buildStatusSnapshot } from '../lib/status-data.mjs';
 
-const repoRoot = process.cwd();
-const statusPath = path.join(repoRoot, 'STATUS.md');
-const originalEnv = { ...process.env };
+const baselineStatusSource = `# AI Security Brief — Project Status
 
-test.afterEach(() => {
-  process.env = { ...originalEnv };
-});
+**Pinned baseline:** \`origin/main\` @ \`b48d8326cc306dd791efb3ae3d42b962944e7b84\` **Last updated:** 29 March 2026 **Updated by:** Codex
 
-test('parseStatusDocument extracts the pinned baseline and markdown tables from STATUS.md', () => {
-  const parsedStatus = parseStatusDocument(readFileSync(statusPath, 'utf8'));
+**Verification pipeline:** production remains GREEN on \`main\`; the latest run completed successfully on commit \`b48d832\`.
 
-  assert.equal(parsedStatus.pinned_baseline_ref, 'origin/main');
-  assert.match(parsedStatus.pinned_baseline_sha, /^[0-9a-f]{7,40}$/);
-  assert.equal(parsedStatus.site_status.live_url, 'https://aithreatbrief.com');
-  assert.equal(parsedStatus.content.published_articles, '12');
-  assert.equal(parsedStatus.open_pull_requests.length, 0);
-  assert.ok(parsedStatus.recent_merges.length >= 2);
-});
+## Site Status
 
-test('buildStatusSnapshot formats runtime deployment fields from Vercel environment variables', () => {
-  process.env.NEXT_PUBLIC_SITE_NAME = 'AI Security Brief';
-  process.env.NEXT_PUBLIC_SITE_URL = 'https://aithreatbrief.com';
-  process.env.VERCEL_TARGET_ENV = 'production';
-  process.env.VERCEL_URL = 'ai-security-brief-status.vercel.app';
-  process.env.VERCEL_BRANCH_URL = 'ai-security-brief-git-status-ops-hardening.vercel.app';
-  process.env.VERCEL_PROJECT_PRODUCTION_URL = 'aithreatbrief.com';
-  process.env.VERCEL_GIT_COMMIT_SHA = '32ac4b326c60cf25600053da92c2fe503b6dc738';
-  process.env.VERCEL_GIT_COMMIT_REF = 'main';
-  process.env.VERCEL_GIT_PREVIOUS_SHA = '9f47de4e05d96cabaac033fef158dd07793af064';
+| Property | Value |
+|---|---|
+| Live URL | https://aithreatbrief.com |
+| Latest deploy | \`main\` @ \`b48d8326cc306dd791efb3ae3d42b962944e7b84\` — READY |
 
-  const statusSnapshot = buildStatusSnapshot({});
+## Content
 
-  assert.equal(statusSnapshot.site.url, 'https://aithreatbrief.com');
-  assert.equal(statusSnapshot.runtime.target_env, 'production');
-  assert.equal(statusSnapshot.runtime.deployment_url, 'https://ai-security-brief-status.vercel.app');
+| Metric | Count |
+|---|---|
+| Published articles | 12 |
+
+## Open PRs
+
+None.
+
+Most recent merges:
+- #47 — latest status and ops hardening merge on \`main\`
+
+## Notes
+
+Runtime metadata overlays deploy identity in public status surfaces.
+`;
+
+test('buildStatusSnapshot overlays deploy identity from runtime and reports drift when STATUS.md lags', () => {
+  const snapshot = buildStatusSnapshot({
+    statusSource: baselineStatusSource,
+    runtimeOverrides: {
+      git_commit_ref: 'main',
+      git_commit_sha: '1234567890abcdef1234567890abcdef12345678',
+      production_url: 'https://aithreatbrief.com',
+      target_env: 'production',
+    },
+  });
+
+  assert.equal(snapshot.status_document.pinned_baseline_ref, 'origin/main');
+  assert.equal(snapshot.status_document.pinned_baseline_sha, '1234567890abcdef1234567890abcdef12345678');
   assert.equal(
-    statusSnapshot.runtime.branch_url,
-    'https://ai-security-brief-git-status-ops-hardening.vercel.app',
+    snapshot.status_document.site_status.latest_deploy,
+    '`main` @ `1234567890abcdef1234567890abcdef12345678` — runtime reported active deployment',
   );
-  assert.equal(statusSnapshot.runtime.production_url, 'https://aithreatbrief.com');
-  assert.equal(statusSnapshot.runtime.git_commit_sha, '32ac4b326c60cf25600053da92c2fe503b6dc738');
-  assert.equal(statusSnapshot.runtime.git_commit_ref, 'main');
-  assert.equal(statusSnapshot.runtime.git_previous_sha, '9f47de4e05d96cabaac033fef158dd07793af064');
+  assert.match(
+    snapshot.status_document.verification_pipeline,
+    /Runtime currently reports active deploy `main` @ `1234567890abcdef1234567890abcdef12345678`/,
+  );
+  assert.equal(snapshot.status_document.drift.detected, true);
+  assert.equal(snapshot.status_document.drift.document_pinned_baseline_sha, 'b48d8326cc306dd791efb3ae3d42b962944e7b84');
+  assert.equal(snapshot.status_document.drift.runtime_git_commit_sha, '1234567890abcdef1234567890abcdef12345678');
+});
+
+test('buildStatusSnapshot does not report drift when STATUS.md and runtime deploy identity match', () => {
+  const snapshot = buildStatusSnapshot({
+    statusSource: baselineStatusSource,
+    runtimeOverrides: {
+      git_commit_ref: 'main',
+      git_commit_sha: 'b48d8326cc306dd791efb3ae3d42b962944e7b84',
+      production_url: 'https://aithreatbrief.com',
+    },
+  });
+
+  assert.equal(snapshot.status_document.pinned_baseline_sha, 'b48d8326cc306dd791efb3ae3d42b962944e7b84');
+  assert.equal(snapshot.status_document.drift.detected, false);
+  assert.match(snapshot.status_document.drift.summary, /matches the runtime deployment/);
+});
+
+test('buildStatusSnapshot leaves STATUS.md deploy identity untouched when runtime metadata is unavailable', () => {
+  const snapshot = buildStatusSnapshot({
+    statusSource: baselineStatusSource,
+    runtimeOverrides: {
+      git_commit_ref: null,
+      git_commit_sha: null,
+      production_url: 'https://aithreatbrief.com',
+    },
+  });
+
+  assert.equal(snapshot.status_document.pinned_baseline_ref, 'origin/main');
+  assert.equal(snapshot.status_document.pinned_baseline_sha, 'b48d8326cc306dd791efb3ae3d42b962944e7b84');
+  assert.equal(snapshot.status_document.site_status.latest_deploy, '`main` @ `b48d8326cc306dd791efb3ae3d42b962944e7b84` — READY');
+  assert.equal(snapshot.status_document.drift.detected, false);
+  assert.match(snapshot.status_document.drift.summary, /Runtime git metadata is unavailable/);
 });
