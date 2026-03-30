@@ -30,6 +30,10 @@ const REQUIRED = [
     hint: 'Beehiiv dashboard → Settings → Publication ID (starts with pub_)',
   },
   {
+    key: 'BLOB_READ_WRITE_TOKEN',
+    hint: 'Vercel project → Storage → Blob or Environment Variables → provide the runtime token for signed protected downloads',
+  },
+  {
     key: 'NEXT_PUBLIC_SITE_URL',
     hint: 'Your Vercel deployment URL, e.g. https://ai-security-brief.vercel.app',
   },
@@ -48,6 +52,7 @@ const REQUIRED = [
 ]
 
 const OPTIONAL = [
+  'BEEHIIV_WELCOME_AUTOMATION_ID',
   'AFFILIATE_NORDVPN',
   'AFFILIATE_PUREVPN',
   'AFFILIATE_PROTON',

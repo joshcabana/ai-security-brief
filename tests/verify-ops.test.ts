@@ -56,6 +56,7 @@ test('verify:ops --contract-only ignores .env.local and passes for the current c
     '.env.example': [
       'BEEHIIV_API_KEY=your-beehiiv-api-key-here',
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
+      'BLOB_READ_WRITE_TOKEN=vercel_blob_rw_store123',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
       'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
@@ -109,11 +110,13 @@ test('verify:ops --contract-only reports contract drift without failing', async 
     });
 
     assert.equal(result.status, 0);
+    assert.match(result.stdout, /MISSING IN \.env\.example\s+BLOB_READ_WRITE_TOKEN/);
     assert.match(result.stdout, /MISSING IN \.env\.example\s+NEXT_PUBLIC_SITE_NAME/);
     assert.match(result.stdout, /BANNED IN \.env\.example\s+NEXT_PUBLIC_BEEHIIV_PUBLICATION_ID/);
     assert.match(result.stdout, /UNEXPECTED EXTRA KEY\s+EXTRA_KEY/);
 
     const summary = await readFile(summaryPath, 'utf8');
+    assert.match(summary, /missing required key `BLOB_READ_WRITE_TOKEN`/);
     assert.match(summary, /missing required key `NEXT_PUBLIC_SITE_NAME`/);
     assert.match(summary, /banned key `NEXT_PUBLIC_BEEHIIV_PUBLICATION_ID` present/);
     assert.match(summary, /unexpected extra key `EXTRA_KEY`/);
@@ -122,11 +125,13 @@ test('verify:ops --contract-only reports contract drift without failing', async 
   }
 });
 
-test('verify:ops --contract-only allows documented optional affiliate env keys', async () => {
+test('verify:ops --contract-only allows documented optional env keys', async () => {
   const workspace = await createWorkspace({
     '.env.example': [
       'BEEHIIV_API_KEY=your-beehiiv-api-key-here',
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
+      'BEEHIIV_WELCOME_AUTOMATION_ID=',
+      'BLOB_READ_WRITE_TOKEN=vercel_blob_rw_store123',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
       'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
@@ -158,6 +163,7 @@ test('verify:ops exits 1 when required runtime vars are missing', async () => {
     '.env.example': [
       'BEEHIIV_API_KEY=your-beehiiv-api-key-here',
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
+      'BLOB_READ_WRITE_TOKEN=vercel_blob_rw_store123',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
       'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
@@ -172,6 +178,7 @@ test('verify:ops exits 1 when required runtime vars are missing', async () => {
     assert.equal(result.status, 1);
     assert.match(result.stdout, /MISSING\s+BEEHIIV_API_KEY/);
     assert.match(result.stdout, /MISSING\s+BEEHIIV_PUBLICATION_ID/);
+    assert.match(result.stdout, /MISSING\s+BLOB_READ_WRITE_TOKEN/);
     assert.match(result.stdout, /MISSING\s+NEXT_PUBLIC_SITE_URL/);
     assert.match(result.stdout, /MISSING\s+NEXT_PUBLIC_SITE_NAME/);
     assert.match(result.stdout, /MISSING\s+UPSTASH_REDIS_REST_URL/);
@@ -186,6 +193,7 @@ test('verify:ops warns on banned runtime vars but stays ready when required vars
     '.env.example': [
       'BEEHIIV_API_KEY=your-beehiiv-api-key-here',
       'BEEHIIV_PUBLICATION_ID=your-publication-id-here',
+      'BLOB_READ_WRITE_TOKEN=vercel_blob_rw_store123',
       'NEXT_PUBLIC_SITE_URL=https://your-domain.com',
       'NEXT_PUBLIC_SITE_NAME=AI Security Brief',
       'UPSTASH_REDIS_REST_URL=https://example.upstash.io',
@@ -195,6 +203,7 @@ test('verify:ops warns on banned runtime vars but stays ready when required vars
     '.env.local': [
       'BEEHIIV_API_KEY=test-beehiiv-key',
       'BEEHIIV_PUBLICATION_ID=pub_123456',
+      'BLOB_READ_WRITE_TOKEN=vercel_blob_rw_store123',
       'NEXT_PUBLIC_SITE_URL=https://ai-security-brief.vercel.app',
       'NEXT_PUBLIC_SITE_NAME=The AI Security Brief',
       'UPSTASH_REDIS_REST_URL=https://example.upstash.io',

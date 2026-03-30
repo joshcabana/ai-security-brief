@@ -66,6 +66,12 @@ const EXCLUDED_PATTERNS = [
   /\bjobs?\b/i,
 ];
 
+const FEED_SANITIZE_OPTIONS = Object.freeze({
+  allowedTags: [],
+  allowedAttributes: {},
+  stripComments: true,
+});
+
 function ensureArray(value) {
   if (!value) {
     return [];
@@ -116,15 +122,8 @@ function sanitizeFeedText(value) {
   const withoutCdata = String(value).replace(/<!\[CDATA\[|\]\]>/g, ' ');
   const withoutHiddenHtml = stripHiddenHtml(withoutCdata);
 
-  // Strip all rich text before any feed content is passed into the LLM pipeline.
-  const sanitizedHtml = sanitizeHtml(withoutHiddenHtml, {
-    allowedTags: [],
-    allowedAttributes: {},
-    disallowedTagsMode: 'discard',
-    parser: {
-      lowerCaseAttributeNames: false,
-    },
-  });
+  // Sanitizing feed text to plain text prevents indirect prompt injection before any LLM use.
+  const sanitizedHtml = sanitizeHtml(withoutHiddenHtml, FEED_SANITIZE_OPTIONS);
 
   return normaliseWhitespace(
     stripInvisibleCharacters(stripMarkdown(sanitizedHtml)),
