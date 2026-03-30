@@ -77,23 +77,23 @@ THE BRIEF — [DATE]
 ## Step 4: Connect the Site Signup Route
 
 1. Generate a Beehiiv API key with subscriber write access
-2. Upload the protected PDF into Vercel Blob with the exact pathname `protected-assets/ai-threat-landscape-2026-cheatsheet.pdf`
+2. Upload the protected PDF to your chosen delivery host and copy the final shareable URL
 3. Add these values to your local or hosted runtime environment:
    - `BEEHIIV_API_KEY`
    - `BEEHIIV_PUBLICATION_ID`
-   - `BLOB_READ_WRITE_TOKEN`
    - Optional: `BEEHIIV_WELCOME_AUTOMATION_ID` if you want the subscribe route to enroll a Beehiiv welcome automation instead of sending the default welcome email
 4. Keep the site form pointing at `/api/subscribe`
 5. Submit a test signup from `/newsletter` and verify Beehiiv records the subscriber
 6. Confirm the form shows a real success or failure message instead of a silent fallback
+7. Paste the final PDF URL directly into the Beehiiv welcome email or welcome automation content
 
 Optional: create an embedded Beehiiv form later if you want a hosted fallback, but the site no longer depends on iframe embed code.
 
 ### Protected Welcome Download Contract
 
-- The subscribe route generates a protected Blob download URL for `protected-assets/ai-threat-landscape-2026-cheatsheet.pdf` after a successful Beehiiv subscription.
-- The signed URL is passed into Beehiiv through the custom field named `Protected Download URL`.
-- Your Beehiiv welcome email or welcome automation must render the `Protected Download URL` custom field so subscribers receive the signed PDF link.
+- The subscribe route only validates the request, rate limits the caller, and creates the Beehiiv subscription.
+- The PDF link is managed directly inside Beehiiv's welcome email or welcome automation content.
+- The app no longer signs or injects lead-magnet URLs at subscribe time.
 - If `BEEHIIV_WELCOME_AUTOMATION_ID` is set, the route suppresses Beehiiv's default welcome email and enrolls the subscriber into that automation to avoid duplicate welcome sends.
 
 ## Step 5: Enable API Access
@@ -138,7 +138,6 @@ Create or update `.env.local` with the live Beehiiv and site values:
 cat > .env.local <<'EOF'
 BEEHIIV_API_KEY=your-beehiiv-api-key
 BEEHIIV_PUBLICATION_ID=pub_your-publication-id
-BLOB_READ_WRITE_TOKEN=vercel_blob_rw_store123
 NEXT_PUBLIC_SITE_URL=https://aithreatbrief.com
 NEXT_PUBLIC_SITE_NAME=AI Security Brief
 # Optional: uncomment if you are using a Beehiiv automation instead of the default welcome email
@@ -220,7 +219,6 @@ Add to your `.env.local` file or hosting provider environment:
 ```
 BEEHIIV_API_KEY=your_api_key_here
 BEEHIIV_PUBLICATION_ID=your_pub_id_here
-BLOB_READ_WRITE_TOKEN=your_vercel_blob_read_write_token_here
 # Optional: route welcome emails through a Beehiiv automation instead of the default welcome email
 # BEEHIIV_WELCOME_AUTOMATION_ID=aut_your_welcome_automation_id
 ```

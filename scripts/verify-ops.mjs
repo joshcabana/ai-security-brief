@@ -30,10 +30,6 @@ const REQUIRED = [
     hint: 'Beehiiv dashboard → Settings → Publication ID (starts with pub_)',
   },
   {
-    key: 'BLOB_READ_WRITE_TOKEN',
-    hint: 'Vercel project → Storage → Blob or Environment Variables → provide the runtime token for signed protected downloads',
-  },
-  {
     key: 'NEXT_PUBLIC_SITE_URL',
     hint: 'Your Vercel deployment URL, e.g. https://ai-security-brief.vercel.app',
   },

@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getProtectedAssetDownloadUrl } from '@/lib/protected-download';
 import { ratelimit } from '@/lib/rate-limit';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DEFAULT_SOURCE = 'unknown';
 const DEFAULT_API_BASE_URL = 'https://api.beehiiv.com';
-const PROTECTED_ASSET_PATH = 'protected-assets/ai-threat-landscape-2026-cheatsheet.pdf';
-const PROTECTED_DOWNLOAD_FIELD_NAME = 'Protected Download URL';
 const REQUEST_TIMEOUT_MS = 10000;
 const MAX_RETRY_ATTEMPTS = 2;
 const RETRY_BASE_DELAY_MS = 250;
@@ -27,11 +24,6 @@ type SubscribeRequestPayload = {
   website?: string;
 };
 
-type BeehiivCustomField = {
-  name: string;
-  value: string;
-};
-
 type BeehiivSubscribeBody = {
   email: string;
   reactivate_existing: boolean;
@@ -41,7 +33,6 @@ type BeehiivSubscribeBody = {
   utm_campaign: string;
   utm_content: string;
   referring_site?: string;
-  custom_fields?: BeehiivCustomField[];
   automation_ids?: string[];
 };
 
@@ -432,23 +423,6 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  let protectedAssetDownloadUrl = '';
-
-  try {
-    protectedAssetDownloadUrl = await getProtectedAssetDownloadUrl(PROTECTED_ASSET_PATH);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logFailure('protected_asset', errorMessage);
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          'Newsletter signup is temporarily unavailable. The protected download asset could not be prepared. Confirm the Vercel Blob file exists and try again.',
-      },
-      { status: 503 },
-    );
-  }
-
   const referringSite = getReferringSite(request);
   const welcomeAutomationIds = getBeehiivWelcomeAutomationIds();
   const upstreamBody: BeehiivSubscribeBody = {
@@ -459,12 +433,6 @@ export async function POST(request: Request): Promise<Response> {
     utm_medium: 'organic',
     utm_campaign: 'site-signup',
     utm_content: source,
-    custom_fields: [
-      {
-        name: PROTECTED_DOWNLOAD_FIELD_NAME,
-        value: protectedAssetDownloadUrl,
-      },
-    ],
     ...(referringSite ? { referring_site: referringSite } : {}),
     ...(welcomeAutomationIds.length > 0 ? { automation_ids: welcomeAutomationIds } : {}),
   };
