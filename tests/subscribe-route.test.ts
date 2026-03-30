@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { POST } from '../app/api/subscribe/route';
-import { internals as protectedDownloadInternals } from '../lib/protected-download';
 import { ratelimit } from '../lib/rate-limit';
 
 const originalEnv = { ...process.env };
@@ -10,10 +9,8 @@ const originalMathRandom = Math.random;
 const originalSetTimeout = globalThis.setTimeout;
 const originalClearTimeout = globalThis.clearTimeout;
 const originalRateLimit = ratelimit.limit.bind(ratelimit);
-const originalHeadBlob = protectedDownloadInternals.headBlob;
 
 type MockRateLimitResult = Awaited<ReturnType<typeof ratelimit.limit>>;
-type MockBlobHeadResult = Awaited<ReturnType<typeof protectedDownloadInternals.headBlob>>;
 
 function createSameSiteRequest(body: string, extraHeaders: HeadersInit = {}): Request {
   const headers = new Headers({
@@ -39,29 +36,11 @@ function createSameSiteRequest(body: string, extraHeaders: HeadersInit = {}): Re
 function setBeehiivEnv(): void {
   process.env.BEEHIIV_API_KEY = 'test-key';
   process.env.BEEHIIV_PUBLICATION_ID = 'test-publication';
-  setProtectedAssetDownloadUrl();
 }
 
 function setUpstashEnv(): void {
   process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
   process.env.UPSTASH_REDIS_REST_TOKEN = 'test-upstash-token';
-}
-
-function setProtectedAssetDownloadUrl(
-  downloadUrl: string = 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
-): void {
-  protectedDownloadInternals.headBlob = (async (pathname: string) =>
-    ({
-      size: 2048,
-      uploadedAt: new Date('2026-03-29T00:00:00.000Z'),
-      pathname,
-      contentType: 'application/pdf',
-      contentDisposition: 'attachment; filename="ai-threat-landscape-2026-cheatsheet.pdf"',
-      url: `https://blob.example.com/${pathname}`,
-      downloadUrl,
-      cacheControl: 'private, max-age=0',
-      etag: 'test-etag',
-    }) satisfies MockBlobHeadResult) as typeof protectedDownloadInternals.headBlob;
 }
 
 function createRateLimitResult(success: boolean, reset: number, remaining: number): MockRateLimitResult {
@@ -86,7 +65,6 @@ function restoreEnvironment() {
   globalThis.setTimeout = originalSetTimeout;
   globalThis.clearTimeout = originalClearTimeout;
   ratelimit.limit = originalRateLimit;
-  protectedDownloadInternals.headBlob = originalHeadBlob;
 }
 
 test.afterEach(() => {
@@ -123,25 +101,6 @@ test('subscribe route returns 503 when Upstash rate limiting is unreachable', as
     ok: false,
     message:
       'Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.',
-  });
-});
-
-test('subscribe route returns 503 when the protected asset download URL cannot be prepared', async () => {
-  setBeehiivEnv();
-  setUpstashEnv();
-  allowRateLimit();
-
-  protectedDownloadInternals.headBlob = (async () => {
-    throw new Error('blob unavailable');
-  }) as typeof protectedDownloadInternals.headBlob;
-
-  const response = await POST(createSameSiteRequest(JSON.stringify({ email: 'reader@example.com' })));
-
-  assert.equal(response.status, 503);
-  assert.deepEqual(await response.json(), {
-    ok: false,
-    message:
-      'Newsletter signup is temporarily unavailable. The protected download asset could not be prepared. Confirm the Vercel Blob file exists and try again.',
   });
 });
 
@@ -474,12 +433,6 @@ test('subscribe route returns 200 on a successful Beehiiv response', async () =>
       email: 'reader@example.com',
       reactivate_existing: false,
       referring_site: 'http://localhost',
-      custom_fields: [
-        {
-          name: 'Protected Download URL',
-          value: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
-        },
-      ],
       send_welcome_email: true,
       utm_source: 'website',
       utm_medium: 'organic',
@@ -518,12 +471,6 @@ test('subscribe route defaults the placement source to unknown when omitted', as
     assert.deepEqual(JSON.parse(String(init.body)), {
       email: 'reader@example.com',
       reactivate_existing: false,
-      custom_fields: [
-        {
-          name: 'Protected Download URL',
-          value: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
-        },
-      ],
       send_welcome_email: true,
       utm_source: 'website',
       utm_medium: 'organic',
@@ -559,12 +506,6 @@ test('subscribe route enrolls the Beehiiv welcome automation when configured', a
       email: 'reader@example.com',
       reactivate_existing: false,
       referring_site: 'http://localhost',
-      custom_fields: [
-        {
-          name: 'Protected Download URL',
-          value: 'https://blob.example.com/protected-assets/ai-threat-landscape-2026-cheatsheet.pdf?download=1&token=test',
-        },
-      ],
       send_welcome_email: false,
       automation_ids: ['aut_welcome_123'],
       utm_source: 'website',
