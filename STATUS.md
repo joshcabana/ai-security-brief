@@ -90,7 +90,6 @@ Pipeline outputs land as draft PRs on a content branch. Operator must review, up
 |---|---|
 | `BEEHIIV_API_KEY` | Newsletter subscriber management |
 | `BEEHIIV_PUBLICATION_ID` | AI Security Brief publication |
-| `BLOB_READ_WRITE_TOKEN` | Signed protected Blob download delivery for newsletter subscribers |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL for SEO |
 | `NEXT_PUBLIC_SITE_NAME` | Site name for metadata and verification checks |
 
