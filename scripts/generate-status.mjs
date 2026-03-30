@@ -87,7 +87,18 @@ if (liveReportPath && existsSync(resolvePath(liveReportPath))) {
 
 // ── Assemble status.json ──────────────────────────────────────────────────────
 const status = {
-  ...buildStatusSnapshot({}),
+  ...buildStatusSnapshot({
+    runtimeOverrides: {
+      target_env:
+        process.env.VERCEL_TARGET_ENV ??
+        process.env.VERCEL_ENV ??
+        (ci.commit_ref === 'main' ? 'production' : null),
+      production_url: deploy.production_url,
+      git_commit_sha: process.env.VERCEL_GIT_COMMIT_SHA ?? ci.commit_sha,
+      git_commit_ref: process.env.VERCEL_GIT_COMMIT_REF ?? ci.commit_ref,
+      git_previous_sha: process.env.VERCEL_GIT_PREVIOUS_SHA ?? null,
+    },
+  }),
   ci,
   deploy,
   legal,
