@@ -5,8 +5,8 @@ Date: 31 March 2026
 - `main` remains pinned at `2d16a240`, but valid same-site newsletter signup is currently failing with `503` in production
 - Latest post-merge `Verify and Deploy` run `23728134983` passed `verify`, `deploy`, `verify_live`, and `status`, but those gates did not exercise a real valid signup request
 - Live checks on 31 March 2026 confirmed `/` still returns `200` and same-site invalid subscribe still returns `400`, while valid same-site subscribe returns `503`
-- PR #51 preview returns the same `503` with message `Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.`
-- Do not merge PR #51 until `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are restored in Vercel for preview and production and a live inbox smoke test passes
+- PR #51 has been merged to `main` as of 31 March 2026. The `503` signup blocker persists post-merge because Upstash env vars remain unset in Vercel.
+- **Active blocker:** Set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in Vercel production (and preview) environment variables, then verify a valid signup returns `200`
 
 ---
 
@@ -49,9 +49,8 @@ Date: 31 March 2026
 
 ## Open PRs
 
-- #51 — draft: `fix(newsletter): Remove app-managed lead magnet delivery`
-
 Most recent merges:
+- #51 — `fix(newsletter): Remove app-managed lead magnet delivery`
 - #49 — `fix(launch): Harden protected signup delivery`
 - #47 — latest status and ops hardening merge on `main`
 - #46 — `docs(status): Sync repo truth with merged main`
@@ -64,12 +63,12 @@ Source: [`ops/affiliate-status.md`](https://github.com/joshcabana/ai-security-br
 
 | Programme | Status |
 |---|---|
-| NordVPN | **Live in production** (aff\_id=143381) |
+| NordVPN | **Live in production** |
 | Proton (VPN/Mail) | **Live in production** (CJ links via env vars) |
 | PureVPN | **Live in production** |
-| 1Password | Pending CJ approval (advertiser 5140517) — **do not reapply** |
-| Malwarebytes | **Account access confirmed 26 Mar 2026** (username: aithreatbrief); awaiting Malwarebytes programme eligibility confirmation from Partnerize support (ticket #674504) |
-| Surfshark | Rejected; **appeal email sent 26 Mar 2026** to affiliates@surfshark.com — awaiting response |
+| 1Password | Pending CJ approval — **do not reapply** |
+| Malwarebytes | **Account access confirmed 26 Mar 2026**; awaiting programme eligibility confirmation from Partnerize support |
+| Surfshark | Rejected; **appeal sent 26 Mar 2026** — awaiting response |
 
 ## Automation Pipeline
 
@@ -129,14 +128,14 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 - [x] Google Search Console verified (26 Mar 2026) + sitemap submitted
 - [x] Submit key URLs to Google Indexing API (homepage, /tools, blog articles)
 - [x] Validate affiliate tracking for 4 live programmes on `/tools` (NordVPN, Proton VPN, Proton Mail, PureVPN)
-- [x] Re-verify Malwarebytes Partnerize account — **access confirmed 26 Mar 2026**; awaiting programme eligibility response (ticket #674504)
-- [x] Send Surfshark affiliate appeal — **sent 26 Mar 2026** to affiliates@surfshark.com
+- [x] Re-verify Malwarebytes Partnerize account — **access confirmed 26 Mar 2026**; awaiting programme eligibility response
+- [x] Send Surfshark affiliate appeal — **sent 26 Mar 2026**
 - [x] Beehiiv upgraded to Scale plan ($49/mo) — **27 Mar 2026**
 - [x] Beehiiv Referral Program enabled ("Invite 3 → bonus deep-dive") — **27 Mar 2026**
-- [x] NordVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
-- [x] CJ Affiliate payment configured (direct deposit to Commonwealth Bank) — pre-existing
-- [x] CJ W-8BEN-E resubmitted with Australian TFN — **27 Mar 2026**
-- [x] PureVPN payment configured (wire to Commonwealth Bank) — **27 Mar 2026**
+- [x] NordVPN payment configured — **27 Mar 2026**
+- [x] CJ Affiliate payment configured — pre-existing
+- [x] CJ tax form resubmitted — **27 Mar 2026**
+- [x] PureVPN payment configured — **27 Mar 2026**
 - [ ] Weekly: review and merge pipeline PRs (when created)
 - [x] Transfer newsletter issue #1 to Beehiiv — **scheduled Mon 30 Mar 2026 1:00 PM AEDT**
 - [ ] Restore `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in Vercel preview + production; valid signups are currently blocked with `503`
@@ -145,10 +144,9 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 ## Verification Notes (31 March 2026)
 
 - A live same-site `POST https://aithreatbrief.com/api/subscribe` with a valid email returned `503` on 31 March 2026 with message `Newsletter signup is temporarily unavailable. Check rate limiting service connectivity and try again.` This is now the active launch blocker on `main`.
-- The PR #51 preview deployment at `ai-security-brief-git-codex-launch-c5dcf5-josh-cabanas-projects.vercel.app` returns the same `503` on a valid same-site signup after bypassing Vercel preview protection, confirming the failure is not specific to Beehiiv-only delivery changes.
+- PR #51 was merged to `main` on 31 March 2026 (`7c5ed53`), removing app-managed lead magnet delivery. The `503` persists because Upstash env vars remain unset in Vercel — this is an environment configuration issue, not a code issue.
 - Vercel project configuration currently exposes Beehiiv and site metadata env vars, but no `UPSTASH_REDIS_REST_URL` or `UPSTASH_REDIS_REST_TOKEN`, and there are no attached Vercel marketplace resources for this project.
 - PR #49 merged into `main` as `2d16a240d7eb8c1ed241e70bbb2f722a00eaa588`; the latest launch hardening baseline is live and the corresponding `Verify and Deploy` run `23728134983` completed successfully on 30 March 2026.
-- PR #51 is currently open as a draft release-promotion follow-up to remove app-managed lead magnet delivery and keep Beehiiv email content as the sole cheatsheet delivery path.
 
 - PR #46 merged into `main` as `32ac4b326c60cf25600053da92c2fe503b6dc738`; `README.md`, `STATUS.md`, `beehiiv-setup.md`, and generated status metadata now match the merged repository truth.
 - The previous `main` baseline was `b48d8326cc306dd791efb3ae3d42b962944e7b84`, with successful `Verify and Deploy` run `23700345233` on 29 March 2026.
@@ -163,10 +161,10 @@ Note: `GITHUB_MODELS_TOKEN` is **not** a GitHub Secret. Workflows use the built-
 
 | Tool | Status | Tracking |
 |---|---|---|
-| NordVPN | **Working** | `aff_id=143381` via HasOffers — resolves to NordVPN special offer page |
-| Proton VPN | **Working** | CJ link resolves through `go.getproton.me` with `url_id=471` |
-| Proton Mail | **Working** | CJ link resolves through `go.getproton.me` with `url_id=921` |
-| PureVPN | **Working** | `affiliate_id=49384204` — resolves to PureVPN order page |
+| NordVPN | **Working** | HasOffers tracked link — resolves to NordVPN special offer page |
+| Proton VPN | **Working** | CJ link resolves through `go.getproton.me` |
+| Proton Mail | **Working** | CJ link resolves through `go.getproton.me` |
+| PureVPN | **Working** | PureVPN tracked link — resolves to PureVPN order page |
 | Mullvad | Non-affiliate | Direct link (expected — no affiliate program) |
 | Bitwarden | Non-affiliate | Direct link |
 | 1Password | Non-affiliate | Direct link (CJ pending) |

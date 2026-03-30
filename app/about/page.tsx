@@ -95,7 +95,7 @@ export default function AboutPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Publishing cadence</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              We publish new articles weekly, covering the latest developments across AI threats, privacy tooling, and security strategy. Each piece is backed by primary research, vendor documentation, and real-world testing. Subscribers receive a weekly newsletter digest via Beehiiv with the latest briefings delivered straight to their inbox.
+              We publish new articles weekly, covering the latest developments across AI threats, privacy tooling, and security strategy. Each piece is informed by vendor advisories, official documentation, and reputable security reporting. AI-assisted drafting accelerates our workflow, and every article is reviewed and edited by a human before publication. Subscribers receive a weekly newsletter digest via Beehiiv with the latest briefings delivered straight to their inbox.
             </p>
           </section>
 
@@ -112,7 +112,7 @@ export default function AboutPage() {
               }}
             >
               <p>
-                <strong style={{ color: '#d29922' }}>Transparency note:</strong> some links on this site are affiliate links. If you purchase a product through one of these links, we may earn a small commission at no extra cost to you. We only recommend tools we have personally evaluated and would use ourselves. Affiliate partnerships never influence our editorial content or the conclusions in our reviews. You can read more in our{' '}
+                <strong style={{ color: '#d29922' }}>Transparency note:</strong> some links on this site are affiliate links. If you purchase a product through one of these links, we may earn a small commission at no extra cost to you. We recommend tools based on documented security capabilities, independent audit results, and practitioner relevance. Affiliate commissions do not determine our rankings or conclusions. You can read more in our{' '}
                 <Link href="/privacy" className="font-medium transition-colors duration-200 hover:text-[#00b4ff]" style={{ color: '#00b4ff' }}>
                   Privacy Policy
                 </Link>.

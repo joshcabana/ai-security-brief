@@ -70,7 +70,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-white text-xl font-bold mb-4">Affiliate links</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#8b949e' }}>
-              Some links on this site are affiliate links. When you click an affiliate link and make a purchase, we may earn a commission at no additional cost to you. Affiliate partners may use cookies or tracking pixels to attribute referrals. We only recommend tools we have evaluated and would use ourselves. Affiliate relationships do not influence our editorial content.
+              Some links on this site are affiliate links. When you click an affiliate link and make a purchase, we may earn a commission at no additional cost to you. Affiliate partners may use cookies or tracking pixels to attribute referrals. We recommend tools based on documented security capabilities, independent audit results, and practitioner relevance. Affiliate commissions do not determine our rankings or conclusions. For details on how we select and evaluate tools, see our Methodology page.
             </p>
           </section>
 

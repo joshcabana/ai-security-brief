@@ -112,6 +112,8 @@ const status = {
     required: [
       'BEEHIIV_API_KEY',
       'BEEHIIV_PUBLICATION_ID',
+      'UPSTASH_REDIS_REST_URL',
+      'UPSTASH_REDIS_REST_TOKEN',
       'NEXT_PUBLIC_SITE_URL',
       'NEXT_PUBLIC_SITE_NAME',
     ],

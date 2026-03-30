@@ -28,11 +28,13 @@
 
 ## Affiliate Integration Notes
 
-- **VPN articles**: Use NordVPN as primary recommendation, Surfshark and PureVPN as alternatives
-- **Privacy/email articles**: Lead with Proton ecosystem (Mail + VPN + Pass)
-- **Security tools roundups**: Feature Malwarebytes (endpoint), 1Password (passwords), and VPNs
-- **AI tools content**: Include Jasper AI for security documentation workflows
-- **Australia Privacy Act articles**: Proton (encrypted comms) + NordVPN (privacy protection)
+> **Editorial rule:** Affiliate links belong on `/tools` and in explicitly labeled comparison/review articles only. Do not embed affiliate CTAs inside threat analysis, vulnerability writeups, or intelligence briefings.
+
+- **Tool comparison articles**: Feature tools based on documented capabilities and audit history, not commission rates
+- **Privacy/email articles**: Proton ecosystem where editorially relevant (Mail + VPN + Pass)
+- **Security tools roundups**: Feature by category relevance — endpoint (Malwarebytes), passwords (1Password), network privacy (VPNs)
+- **AI tools content**: Include where genuinely relevant to the coverage topic
+- **Threat analysis articles**: No affiliate links — keep defensive recommendations generic
 
 ## Placeholder Link Format
 

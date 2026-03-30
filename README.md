@@ -89,6 +89,8 @@ The app will be available at `http://localhost:3000`.
 | --- | --- | --- |
 | `BEEHIIV_API_KEY` | Yes for signup and performance logging | Beehiiv API authentication |
 | `BEEHIIV_PUBLICATION_ID` | Yes for signup and performance logging | Beehiiv publication target |
+| `UPSTASH_REDIS_REST_URL` | Yes for signup rate limiting | Upstash Redis REST endpoint for distributed rate limiting |
+| `UPSTASH_REDIS_REST_TOKEN` | Yes for signup rate limiting | Upstash Redis REST authentication token |
 | `NEXT_PUBLIC_SITE_URL` | Yes for `verify:ops` readiness | Canonical site URL |
 | `NEXT_PUBLIC_SITE_NAME` | Yes for `verify:ops` readiness | Public site name |
 | `AFFILIATE_NORDVPN` | Optional | Runtime link for NordVPN |

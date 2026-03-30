@@ -84,7 +84,7 @@ The OWASP Top 10 for LLM Applications 2025 provides actionable guidance. For age
 The organisations that will avoid the next generation of AI-enabled breaches are not those waiting for a mature governance standard. They are those applying existing security principles — least privilege, defence in depth, zero trust — to a new class of privileged non-human identity.
 
 Where teams test agents against untrusted web content or investigate hostile infrastructure from
-laptops outside a segregated lab, using [NordVPN]([AFFILIATE:NORDVPN]) on analyst devices is a
+laptops outside a segregated lab, using a reputable VPN service on analyst devices is a
 simple way to reduce avoidable network exposure.
 
 ---
