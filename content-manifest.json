@@ -1,10 +1,50 @@
 {
-  "articleCount": 12,
+  "articleCount": 14,
   "categories": [
     "AI Threats",
     "Privacy"
   ],
   "articles": [
+    {
+      "title": "Claude Extension Flaw: Zero-Click XSS Prompt Injection Threatens Browser Security",
+      "slug": "claude-extension-flaw-enabled-zero-click-xss-prompt-injection-via-any-website",
+      "date": "2026-03-30",
+      "author": "AI Security Brief",
+      "excerpt": "A critical vulnerability in Anthropic's Claude Chrome Extension allowed any website to silently inject malicious prompts, exposing users to zero-click XSS attacks. This flaw underscores the urgent need for robust security controls in browser-based AI integrations.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "Claude Extension Flaw Enabled Zero-Click XSS Prompt Injection via Any Website",
+      "metaDescription": "Cybersecurity researchers revealed a zero-click XSS vulnerability in Anthropic's Claude Chrome Extension, allowing prompt injection from any website. Learn about the risks, implications, and defensive strategies for browser-based AI tools.",
+      "keywords": [
+        "Claude extension vulnerability",
+        "zero-click XSS",
+        "prompt injection",
+        "browser security",
+        "AI threats"
+      ],
+      "readTime": "5 min",
+      "fileName": "claude-extension-flaw-enabled-zero-click-xss-prompt-injection-via-any-website.md"
+    },
+    {
+      "title": "Security Researchers Warn of Rising Vulnerabilities in AI-Generated Code",
+      "slug": "security-researchers-sound-the-alarm-on-vulnerabilities-in-ai-generated-code",
+      "date": "2026-03-30",
+      "author": "AI Security Brief",
+      "excerpt": "A surge in CVEs linked to AI-generated code has raised concerns among security researchers about the reliability and safety of software developed with AI tools. Organizations must strengthen code review and adopt defensive strategies to mitigate risks.",
+      "category": "AI Threats",
+      "featured": false,
+      "metaTitle": "Security Researchers Sound the Alarm on Vulnerabilities in AI-Generated Code",
+      "metaDescription": "Security researchers highlight an increase in vulnerabilities introduced by AI-generated code. Explore the risks, trends, and best practices for securing software developed with AI technologies.",
+      "keywords": [
+        "AI-generated code vulnerabilities",
+        "software security",
+        "CVE surge",
+        "code review",
+        "AI threats"
+      ],
+      "readTime": "5 min",
+      "fileName": "security-researchers-sound-the-alarm-on-vulnerabilities-in-ai-generated-code.md"
+    },
     {
       "title": "Best Password Managers for Security Teams 2026",
       "slug": "best-password-managers-for-security-teams-2026",
