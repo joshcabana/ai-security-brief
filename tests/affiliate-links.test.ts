@@ -272,7 +272,50 @@ test('replaceAffiliateTokens only resolves bare placeholders with configured url
   );
 });
 
-test('parseArticleSource renders resolved affiliate links into article html', async () => {
+test('parseArticleSource renders resolved affiliate links into article html for allowed categories', async () => {
+  const previousNordVpnValue = process.env.AFFILIATE_NORDVPN;
+  process.env.AFFILIATE_NORDVPN = 'https://example.com/nordvpn';
+
+  try {
+    const article = await parseArticleSource(
+      'example.md',
+      `---
+title: "Example"
+slug: "example"
+date: "2026-03-17"
+author: "AI Security Brief"
+excerpt: "Example excerpt."
+category: "Privacy Tools"
+featured: false
+meta_title: "Example Meta Title"
+meta_description: "Example meta description."
+keywords:
+  - one
+  - two
+  - three
+  - four
+  - five
+read_time: "5 min"
+---
+
+# Example
+
+Use [NordVPN]([AFFILIATE:NORDVPN]) when you need it.
+`,
+    );
+
+    assert.match(article.body, /\[NordVPN\]\(https:\/\/example\.com\/nordvpn\)/);
+    assert.match(article.contentHtml, /href="https:\/\/example\.com\/nordvpn"/);
+  } finally {
+    if (typeof previousNordVpnValue === 'string') {
+      process.env.AFFILIATE_NORDVPN = previousNordVpnValue;
+    } else {
+      delete process.env.AFFILIATE_NORDVPN;
+    }
+  }
+});
+
+test('parseArticleSource strips affiliate links for AI Threats category', async () => {
   const previousNordVpnValue = process.env.AFFILIATE_NORDVPN;
   process.env.AFFILIATE_NORDVPN = 'https://example.com/nordvpn';
 
@@ -304,8 +347,8 @@ Use [NordVPN]([AFFILIATE:NORDVPN]) when you need it.
 `,
     );
 
-    assert.match(article.body, /\[NordVPN\]\(https:\/\/example\.com\/nordvpn\)/);
-    assert.match(article.contentHtml, /href="https:\/\/example\.com\/nordvpn"/);
+    assert.equal(article.body, '# Example\n\nUse NordVPN when you need it.');
+    assert.match(article.contentHtml, /<p>Use NordVPN when you need it.<\/p>/);
   } finally {
     if (typeof previousNordVpnValue === 'string') {
       process.env.AFFILIATE_NORDVPN = previousNordVpnValue;

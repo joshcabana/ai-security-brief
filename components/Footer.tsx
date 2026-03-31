@@ -4,7 +4,7 @@ import ShieldLogo from './ShieldLogo';
 
 const footerSections = [
   {
-    title: 'Intelligence',
+    title: 'Briefings',
     links: [
       { label: 'Latest articles', href: '/blog' },
       { label: 'AI Threats', href: `/blog?category=${encodeURIComponent('AI Threats')}` },
@@ -63,7 +63,7 @@ export default function Footer() {
               <span className="font-bold text-white text-sm tracking-tight">AI Security Brief</span>
             </Link>
             <p className="text-sm leading-relaxed mb-5" style={{ color: '#8b949e' }}>
-              Independent intelligence on AI-powered cyber threats, privacy defence, and the tooling choices that support both.
+              AI-assisted security briefings on AI-powered threats, privacy defence, and the tooling choices that support both.
             </p>
             <a
               href="https://github.com/joshcabana/ai-security-brief"

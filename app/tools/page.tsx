@@ -89,6 +89,17 @@ const toolCategories: ToolCategory[] = [
         badge: 'Affiliate partner',
         badgeColor: '#3fb950',
       },
+      {
+        name: 'Surfshark',
+        description:
+          'Unlimited simultaneous devices, CleanWeb ad/malware blocking, and NoBorders mode for restricted networks. Independent audits by Deloitte. Strong value for teams protecting multiple endpoints.',
+        highlight: 'Unlimited devices, CleanWeb, NoBorders',
+        price: 'From $2.19/mo',
+        affiliateKeys: ['SURFSHARK'],
+        fallbackUrl: 'https://surfshark.com',
+        badge: 'Affiliate partner',
+        badgeColor: '#3fb950',
+      },
     ],
   },
   {
@@ -172,6 +183,26 @@ const toolCategories: ToolCategory[] = [
         url: 'https://crowdstrike.com',
         badge: 'Enterprise grade',
         badgeColor: '#d29922',
+      },
+    ],
+  },
+  {
+    id: 'privacy-tools',
+    icon: '🕵️',
+    title: 'Privacy & Data Removal',
+    description:
+      'Tools that reduce your attack surface by minimising publicly available personal data — a practical first step against social engineering and OSINT-based targeting.',
+    tools: [
+      {
+        name: 'Incogni',
+        description:
+          'Automated data broker removal service from Surfshark. Sends removal requests on your behalf to hundreds of data brokers, people-search sites, and marketing databases — and monitors for re-listing.',
+        highlight: 'Automated broker removal, continuous monitoring',
+        price: 'From $6.49/mo',
+        affiliateKeys: ['INCOGNI'],
+        fallbackUrl: 'https://incogni.com',
+        badge: 'Affiliate partner',
+        badgeColor: '#3fb950',
       },
     ],
   },

@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: `${siteName} — AI Threats, Privacy Tools & Cybersecurity Intelligence`,
+    default: `${siteName} — AI Threats, Privacy Tools & Security Briefings`,
     template: `%s | ${siteName}`,
   },
   description: siteDescription,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     'AI threats',
     'privacy tools',
     'endpoint protection',
-    'threat intelligence',
+    'security briefings',
     'AI privacy',
     'security brief',
     'VPN',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_AU',
     siteName,
-    title: `${siteName} — AI Threats, Privacy Tools & Cybersecurity Intelligence`,
+    title: `${siteName} — AI Threats, Privacy Tools & Security Briefings`,
     description: siteDescription,
   },
   twitter: {

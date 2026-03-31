@@ -2,7 +2,7 @@ import { getAllArticles } from '@/lib/articles';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://aithreatbrief.com';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME?.trim() || 'AI Security Brief';
-const siteDescription = 'Independent intelligence on AI-powered cyber threats, privacy defence strategies, and security tooling for technology professionals.';
+const siteDescription = 'AI-assisted security briefings on AI-powered threats, privacy defence strategies, and security tooling for technology professionals.';
 
 function escapeXml(text: string): string {
   return text

@@ -7,9 +7,9 @@ import { createPageMetadata } from '@/lib/page-metadata.mjs';
 
 export const metadata: Metadata = createPageMetadata({
   canonicalPath: '/',
-  title: 'AI Security Brief — AI Threats, Privacy Tools & Cybersecurity Intelligence',
+  title: 'AI Security Brief — AI Threats, Privacy Tools & Security Briefings',
   description:
-    'Independent intelligence on AI-powered cyber threats, privacy defence strategies, and security tools for technology professionals.',
+    'AI-assisted security briefings on AI-powered threats, privacy defence strategies, and security tools for technology professionals.',
 });
 
 const toolCategories = [
@@ -104,13 +104,13 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="stagger">
-              <div className="section-label mb-6">AI Security Intelligence</div>
+              <div className="section-label mb-6">AI Security Briefings</div>
               <h1 className="font-black text-white leading-tight mb-6" style={{ letterSpacing: '-0.03em' }}>
                 Intelligence on <span style={{ color: '#00b4ff' }}>AI-Powered Threats</span>
                 {' '}&amp; Privacy Defence
               </h1>
               <p className="text-lg leading-relaxed mb-10 max-w-xl" style={{ color: '#8b949e' }}>
-                A research-led publication for teams tracking AI-enabled attacks, privacy risk,
+                A weekly publication for teams tracking AI-enabled attacks, privacy risk,
                 and the controls that still hold up under pressure.
               </p>
               <div className="max-w-xl">
@@ -181,11 +181,11 @@ export default async function HomePage() {
 
       <div className="divider-accent" aria-hidden="true" />
 
-      <section className="py-20" style={{ background: '#0d1117' }} aria-label="Latest Intelligence articles">
+      <section className="py-20" style={{ background: '#0d1117' }} aria-label="Latest briefings">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <div className="section-label mb-3">Latest Intelligence</div>
+              <div className="section-label mb-3">Latest Briefings</div>
               <h2 className="text-white">Latest Briefings</h2>
             </div>
             <Link
